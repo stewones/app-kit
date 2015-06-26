@@ -1,0 +1,12 @@
+<!-- loader -->
+<loader></loader>
+<!-- /loader -->
+<!-- toolbar -->
+<md-toolbar ui-view="toolbar" class="main"ng-class="{'not-authed':!app.isAuthed()&&!app.user.current('company')}"md-scroll-shrink md-shrink-speed-factor="0.25"></md-toolbar>
+<!-- /toolbar -->
+<!-- content -->
+<md-content class="main-content" on-scroll-apply-opacity>
+<!--class="anim-in-out anim-slide-below-fade"-->
+<div ui-view="content" ng-class="{ 'anim-in-out anim-slide-below-fade': app.state.current.name != 'app.profile' && app.state.current.name != 'app.landing'}"></div>
+</md-content>
+<!-- /content -->

@@ -1,0 +1,27 @@
+.company-chooser {
+    font-size: 14px;
+    margin-left: 8px;
+    margin-top: -3px;
+}
+
+.company-chooser md-select {
+    padding: 0;
+    margin: 0
+}
+
+.company-chooser md-select:not([disabled]):focus .md-select-label {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.company-chooser md-select .md-select-label {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.company-chooser md-select .md-select-label.md-placeholder {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+@media (max-width: 600px) {
+    .company-chooser {}
+}

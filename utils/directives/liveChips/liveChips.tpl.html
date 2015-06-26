@@ -1,0 +1,33 @@
+<md-chips ng-model="vm.selectedItems" md-autocomplete-snap md-require-match>
+<md-autocomplete
+md-selected-item="vm.selectedItem"
+md-search-text="vm.searchText"
+md-items="item in vm.querySearch(vm.searchText)"
+md-item-text="item"
+placeholder="{{vm.placeholder}}">
+<span md-highlight-text="vm.searchText">{{item}}</span>
+</md-autocomplete>
+<md-chip-template>
+<span>
+<a ng-class="{'truncate':truncateInput}" title="{{$chip}}">{{$chip}}</a>
+</span>
+</md-chip-template>
+</md-chips>
+<v-accordion ng-hide="hideOptions" class="vAccordion--default" layout-align="start start" layout-align-sm="center start" control="accordion">
+<v-pane>
+<v-pane-header class="border-bottom" >
+<div>
+    Opções
+</div>
+</v-pane-header>
+<v-pane-content>
+<md-list>
+<md-list-item class="filter-opt" ng-repeat="chip in items track by $index">
+<div class="md-list-item-text compact">
+    <a ng-class="{'truncate':truncateOptions}"  title="{{chip}}" ng-click="vm.applyRole(chip,accordion)"><i class="fa fa-gear"></i> {{chip}}</a>
+</div>
+</md-list-item>
+</md-list>
+</v-pane-content>
+</v-pane>
+</v-accordion>

@@ -1,0 +1,11 @@
+<md-button ng-class="{'active' : isSelected()||vm.state.current.name === section.state}"
+ng-href="{{section.url}}">
+<i  ng-if="section.icon" class="{{section.icon}}"></i>
+<span>
+{{section | menuHuman }}
+</span>
+</md-button>
+<!--     <li>
+            <a class="md-button md-default-theme" ng-class="{'active' : app.state.current.name === 'app.dashboard'}" ui-sref="app.dashboard">
+            <i class="fa fa-home"></i> <span class="title">Dashboard</span></a>
+</li> -->

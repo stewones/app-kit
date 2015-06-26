@@ -1,0 +1,30 @@
+google-login {
+    margin: 0 auto 2px;
+}
+google-login button {
+	border: none;
+    background-color: #dd4b39;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    width: 185px;
+    display: inline-block;
+}
+google-login button:hover {
+    cursor: pointer;
+    opacity: .8;
+}
+google-login button i {
+    position: absolute;
+    margin-top: 0px !important;
+    border-right: 1px solid #bb3f30;
+    padding-right: 5px;
+}
+google-login button span {
+    display: inline-block;
+    padding-left: 30px;
+}

@@ -1,0 +1,14 @@
+loader {
+    margin-bottom: 0px;
+    margin-top: -5px;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+}
+
+.page-loader {/* margin-bottom: 10px; margin-top: 3px;*/ opacity: 0;   transition:0.5s linear all; }
+.page-loader.show { opacity: 1 !important; transition:0.5s linear all; }
+.page-loader.no-auth {/* margin-bottom: 10px; margin-top: 3px !important;*/ }
+.page-loader md-progress-linear {/* margin-top: -9px; margin-bottom: -2px; height: 0px;*/ }
+.page-loader .md-container {height: 3px;/* background-color: red !important; */ }
+.page-loader .md-bar { /*background-color: yellow !important;*/ }

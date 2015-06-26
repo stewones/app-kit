@@ -1,0 +1,68 @@
+'use strict';
+angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, user, layout, api, setting) {
+    return {
+        go: go
+    }
+
+    function go(cbSuccess, cbFail) {
+        layout.load.init();
+        Facebook.getLoginStatus(function(response) {
+            if (response.status === 'connected') {
+                return loginHandler(cbSuccess, cbFail);
+            } else {
+                Facebook.login(function(response) {
+                    if (response.error || !response.status || !response.authResponse) {
+                        layout.load.done();
+                        return;
+                    }
+                    return loginHandler(cbSuccess, cbFail);
+                }, {
+                    scope: setting.facebook.scope || 'email'
+                });
+            }
+        })
+    }
+
+    function me() {
+        return Facebook.api('/me', function() {
+            //$scope.user = response;
+        });
+    }
+
+    function loginHandler(cbSuccess, cbFail) {
+        var onSuccess = function(fbUser) {
+            var onSuccess = function(response) {
+                layout.load.done();
+                var msg = false;
+                var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
+                if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+                $auth.setToken(response.data.token);
+                user.instance.init(response.data.user, true, msg);
+                if (cbSuccess)
+                    cbSuccess()
+            }
+            var onFail = function(result) {
+                layout.load.done();
+                $mdToast.show($mdToast.simple()
+                    .content(result.data ? result.data : 'server away')
+                    .position('bottom right')
+                    .hideDelay(3000))
+                if (cbFail)
+                    cbFail()
+            }
+            var gender = '';
+            gender = fbUser.gender && fbUser.gender === 'female' ? 'F' : gender;
+            $http.post(api.url + '/auth/facebook', {
+                provider: 'facebook',
+                id: fbUser.id,
+                firstName: fbUser.first_name,
+                lastName: fbUser.last_name,
+                email: fbUser.email,
+                gender: gender,
+                applicant: true
+            }).then(onSuccess, onFail);
+        }
+        var onFail = function() {}
+        me().then(onSuccess, onFail);
+    }
+})

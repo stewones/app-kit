@@ -1,0 +1,30 @@
+facebook-login {
+    margin: 0 auto 2px;
+}
+facebook-login button {
+	border: none;
+    background-color: #45619d;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    width: 185px;
+    display: inline-block;
+}
+facebook-login button:hover {
+    cursor: pointer;
+    opacity: .8;
+}
+facebook-login button i {
+    position: absolute;
+    margin-top: 0px !important;
+    border-right: 1px solid #2f477a;
+    padding-right: 11px;
+}
+facebook-login button span {
+    display: inline-block;
+    padding-left: 30px;
+}

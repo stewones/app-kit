@@ -1,0 +1,20 @@
+<form class="lead-form" name="leadForm" novalidate>
+    <md-input-container flex>
+    <label>Seu nome</label>
+    <input name="name" ng-model="lead.name" required>
+    </md-input-container>
+    <md-input-container flex>
+    <label>Email</label>
+    <input name="email" type="email" ng-model="lead.email" required>
+    </md-input-container>
+    <md-input-container flex>
+    <label>Empresa</label>
+    <input name="company" ng-model="lead.company" required>
+    </md-input-container>
+    <md-input-container flex>
+    <label>Telefone</label>
+    <input name="phone" ng-model="lead.phone" ui-br-phone-number required>
+    </md-input-container>
+<md-button ng-click="register()" ng-disabled="leadForm.$invalid" class="md-primary">{{label?label:'Enviar'}}</md-button>
+<md-progress-circular md-diameter="20" class="md-warn md-hue-3" md-mode="indeterminate" ng-class="{'busy':vm.busy}"></md-progress-circular>
+</form>

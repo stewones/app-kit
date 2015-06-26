@@ -1,0 +1,38 @@
+register-form .registrar {
+    display: block;
+    margin: 0 auto;
+}
+register-form .wrapper, .login-lost .wrapper {
+    margin: 30px auto 10px;
+    max-width: 280px;
+    padding: 15px 15px;
+}
+register-form img.avatar, .login-lost .wrapper img.avatar {
+    display: block;
+    margin: 0 auto;
+    opacity: .3;
+}
+.login-lost .wrapper button {
+    margin: 0 auto;
+    display: block;
+}
+register-form .entrar {
+    height: 34px;
+    margin: 0 2px 0 0;
+    border: none;
+    background-color: #45619d;
+    padding: 0px 16px !important;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    width: 185px;
+    display: inline-block;
+}
+@media (max-width: 600px) {
+    register-form .wrapper, .login-lost .wrapper {
+        box-shadow: none !important;
+   }
+}

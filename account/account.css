@@ -1,0 +1,56 @@
+/*.account .head-bg md-input-container label:not(.md-no-float) {
+    color: #C5CAE9
+}*/
+
+.account md-input-container {
+    padding-bottom: 8px;
+}
+
+.account form {
+    background-color: #fff
+}
+
+.account form .save {
+    margin-top: -29px;
+    position: absolute;
+    right: 10px;
+}
+
+.account form .save i {
+    font-size: 24px;
+    margin-top: 13px;
+}
+
+.account-remove {
+    margin-top: -15px;
+}
+
+.account-remove a {
+    font-size: 11px;
+    color: #aaa;
+    margin: 10px;
+}
+
+.account-remove a:hover {
+    color: #333;
+}
+
+.account-wrapper {
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.account-wrapper.connections {
+    text-align: left;
+}
+
+.account .connections .empty {
+    padding: 10px;
+    font-size: 13px;
+    color: #ccc;
+}
+
+.account-wrapper > h4 {
+    text-align: left !important;
+    margin: 10px
+}

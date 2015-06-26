@@ -1,0 +1,50 @@
+<div layout="row" class="login-lost" ng-if="!app.isAuthed()">
+    <div layout="column" class="login" flex ng-if="!vm.userHash">
+        <div class="wrapper md-whiteframe-z1">
+            <img class="avatar" src="assets/images/avatar-m.jpg">
+            <md-content class="md-padding">
+                <form name="lost" novalidate>
+                    <div layout="row" class="email">
+                        <i class="fa fa-at"></i>
+                        <md-input-container flex>
+                        <label>Email</label>
+                        <input ng-model="email" type="email" required>
+                        </md-input-container>
+                    </div>
+                </form>
+            </md-content>
+        <md-button class="md-primary md-raised entrar" ng-disabled="lost.$invalid||app.layout.load.status" ng-click="!lost.$invalid?vm.lost(email):false">Recuperar</md-button>
+    </div>
+</div>
+<div layout="column" class="login" flex ng-if="vm.userHash">
+    <div class="wrapper md-whiteframe-z1">
+        <img class="avatar" src="assets/images/avatar-m.jpg">
+        <h4 class="text-center">Entre com sua nova senha</h4>
+        <md-content class="md-padding">
+            <form name="lost" novalidate>
+                <div layout="row" class="email">
+                    <i class="fa fa-key"></i>
+                    <md-input-container flex>
+                    <label>Senha</label>
+                    <input ng-model="senha" type="password" required>
+                    </md-input-container>
+                </div>
+                <div layout="row" class="email">
+                    <i class="fa fa-key"></i>
+                    <md-input-container flex>
+                    <label>Repetir senha</label>
+                    <input ng-model="senhaConfirm" name="senhaConfirm" type="password" match="senha" required>
+                    </md-input-container>
+                </div>
+            </form>
+        </md-content>
+    <md-button class="md-primary md-raised entrar" ng-disabled="lost.$invalid||app.layout.load.status" ng-click="!lost.$invalid?vm.change(senha):false">Alterar</md-button>
+</div>
+<div ng-show="lost.senhaConfirm.$error.match" class="warn">
+    <span>(!) As senhas não conferem</span>
+</div>
+</div>
+</div>
+<style>
+body, html {  overflow: auto;}
+</style>

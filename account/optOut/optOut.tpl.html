@@ -1,0 +1,14 @@
+<div class="opt-out md-whiteframe-z1" layout="column">
+    <img ng-if="itemImage" ng-src="{{itemImage}}">
+    <md-button class="md-fab md-primary md-hue-1" aria-label="{{putLabel}}" ng-click="callAction($event)">
+        <md-tooltip ng-if="putLabel">
+            {{putLabel}}
+        </md-tooltip>
+        <i class="fa fa-times"></i>
+    </md-button>
+    <a class="md-primary" href="{{itemLocation}}">
+    <h4 ng-if="itemTitle" ng-bind="itemTitle | cut:true:18:'..'"></h4>
+<md-tooltip ng-if="itemTitleTooltip">{{itemTitleTooltip}}</md-tooltip>
+</a>
+<p ng-bind-html="itemInfo"></p>
+</div>

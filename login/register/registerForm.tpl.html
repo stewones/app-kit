@@ -1,0 +1,42 @@
+<div class="wrapper md-whiteframe-z1">
+    <img class="avatar" src="assets/images/avatar-m.jpg">
+    <md-content>
+        <form name="registerForm" novalidate>
+            <div layout="row" layout-sm="column" class="nome">
+                <i hide-sm class="fa fa-smile-o"></i>
+                <md-input-container flex>
+                <label>Seu nome</label>
+                <input ng-model="sign.firstName" type="text" required>
+                </md-input-container>
+                <md-input-container flex>
+                <label>Sobrenome</label>
+                <input ng-model="sign.lastName" type="text" required>
+                </md-input-container>
+            </div>
+            <div layout="row" class="email">
+                <i class="fa fa-at"></i>
+                <md-input-container flex>
+                <label>Email</label>
+                <input ng-model="sign.email" type="email" required>
+                </md-input-container>
+            </div>
+            <div layout="row" class="senha">
+                <i class="fa fa-key"></i>
+                <md-input-container flex>
+                <label>Senha</label>
+                <input ng-model="sign.password" type="password" required>
+                </md-input-container>
+            </div>
+        </form>
+        <div layout="row" layout-padding>
+            <button flex class="entrar" ng-disabled="registerForm.$invalid||app.layout.load.status"  ng-click="register(sign)">Registrar</button>
+            <facebook-login user="user"></facebook-login>
+        </div>
+    </md-content>
+</div>
+<div layout="column">
+    <a flex class="lost" ui-sref="app.pages({slug:'terms'})"><i class="fa fa-warning"></i> Concordo com os termos</a>
+</div>
+<style>
+body, html {  overflow: auto;}
+</style>

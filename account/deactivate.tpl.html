@@ -1,0 +1,29 @@
+<md-dialog aria-label="Desativação de conta">
+<md-toolbar>
+<div class="md-toolbar-tools">
+    <h5>Desativação de conta</h5>
+    <span flex></span>
+    <md-button class="md-icon-button" ng-click="hide()">
+        <md-icon md-svg-src="/assets/images/icons/ic_close_24px.svg" aria-label="Fechar"></md-icon>
+    </md-button>
+</div>
+</md-toolbar>
+<md-dialog-content>
+<strong>Prezad{{gender}} {{account.profile.firstName}}</strong>
+<p>
+Conforme nossa política de usuários, não podemos apagar todos os seus dados, pois nem tudo está relacionado somente a você.<br />
+Iremos apagar suas conexões e o que mais for possível, além disso, você não receberá mais nenhuma oportunidade, ou notificação do LiveJob.
+</p>
+<p>
+Deseja realmente prosseguir com a desativação de sua conta?
+</p>
+</md-dialog-content>
+<div class="md-actions" layout="row">
+    <md-button ng-click="cancel()" class="md-primary">
+        Não, obrigado.
+    </md-button>
+    <md-button ng-click="confirm()" class="md-primary">
+        Ok, entendo.
+    </md-button>
+</div>
+</md-dialog>

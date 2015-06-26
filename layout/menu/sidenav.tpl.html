@@ -1,0 +1,51 @@
+<div layout="column">
+    <menu-facepile
+    ng-if="app.user.current('company').facebook && (app.state.current.name!='app.home' && app.state.current.name!='app.account') && app.enviroment !== 'development' && !app.iframe"
+    hide-sm
+    width="304"
+    url="https://www.facebook.com/{{app.user.current('company').facebook}}"
+    facepile="true"
+    hide-cover="false"
+    ng-hide="app.state.current.name==='app.pages'">
+    </menu-facepile>
+    <menu-avatar
+    first-name="app.user.profile.firstName"
+    last-name="app.user.profile.lastName"
+    gender="app.user.profile.gender"
+    facebook="app.user.facebook">
+    </menu-avatar>
+    <div flex>
+        <ul class="app-menu">
+            <li ng-repeat="section in app.menu.sections" class="parent-list-item" ng-class="{'parentActive' : app.menu.isSectionSelected(section)}">
+                <h2 class="menu-heading" ng-if="section.type === 'heading'" id="heading_{{ section.name | nospace }}" layout="row">
+                <i  ng-if="section.icon" class="{{section.icon}}"></i>
+                <my-svg-icon ng-if="section.iconSvg" class="ic_24px" icon="{{section.iconSvg}}" ></my-svg-icon>
+                <span>{{section.name}}</span>
+                </h2>
+                <menu-link section="section" ng-if="section.type === 'link'"></menu-link>
+                <menu-toggle section="section" ng-if="section.type === 'toggle'"></menu-toggle>
+                <ul ng-if="section.children" class="menu-nested-list">
+                    <li ng-repeat="child in section.children" ng-class="{'childActive' : app.menu.isChildSectionSelected(child)}">
+                        <menu-toggle section="child"></menu-toggle>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a class="md-button md-default-theme" ng-click="app.logout()">
+                <i class="fa fa-power-off"></i> <span class="title">Sair</span></a>
+            </li>
+        </ul>
+    </div>
+    <!-- footer -->
+    <div layout="column" layout-align="center center"class="page-footer text-center">
+        <md-content flex class="main-wrapper">
+            <div class="copyright">
+                <strong>{{ app.setting.copyright }} © {{ app.year }}</strong>
+            </div>
+            <div class="terms">
+                <a ui-sref="app.pages({slug:'privacy'})">Política de Privacidade</a> - <a ui-sref="app.pages({slug:'terms'})">Termos de Serviço</a>
+            </div>
+        </md-content>
+    </div>
+    <!-- /footer -->
+</div>

@@ -1,0 +1,10 @@
+.lead-form md-progress-circular {
+    margin: 14px 0 0 -18px;
+    opacity: 0
+}
+.lead-form md-progress-circular.busy {
+    opacity: 1
+}
+.lead-form md-input-container {
+    padding-bottom: 13px;
+}
