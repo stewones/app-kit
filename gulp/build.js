@@ -13,7 +13,7 @@ gulp.task('partials', function() {
 
     return gulp.src([
         //path.join(conf.paths.src, '/sample/**/*.html'),
-        path.join(conf.paths.src, '/lib/**/*.html'),
+        path.join(conf.paths.src, '/core/**/*.html'),
         //path.join(conf.paths.tmp, '/serve/sample/**/*.html')
     ])
         .pipe($.minifyHtml({
@@ -23,7 +23,7 @@ gulp.task('partials', function() {
         }))
         .pipe($.angularTemplatecache('templateCacheHtml.js', {
             module: conf.appName,
-            root: 'lib'
+            root: 'core'
         }))
         .pipe(gulp.dest(conf.paths.tmp + '/partials/'));
 });
@@ -104,7 +104,7 @@ gulp.task('clean', function(done) {
 
 gulp.task('serve-fa', function() {
     return gulp.src([
-        path.join(conf.paths.src, '/lib/layout/icons/font-awesome/fonts')
+        path.join(conf.paths.src, '/core/layout/icons/font-awesome/fonts')
     ])
         .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/sample')));
 });
@@ -112,10 +112,10 @@ gulp.task('serve-fa', function() {
 
 gulp.task('lib-js-min', [], function() {
     return gulp.src([
-        path.join(conf.paths.src, '/lib/**/*.module.js'),
-        path.join(conf.paths.src, '/lib/**/*.js'),
-        path.join('!' + conf.paths.src, '/lib/**/*.spec.js'),
-        path.join('!' + conf.paths.src, '/lib/**/*.mock.js')
+        path.join(conf.paths.src, '/core/**/*.module.js'),
+        path.join(conf.paths.src, '/core/**/*.js'),
+        path.join('!' + conf.paths.src, '/core/**/*.spec.js'),
+        path.join('!' + conf.paths.src, '/core/**/*.mock.js')
     ])
         .pipe($.ngAnnotate())
         .pipe($.concat('app-module.min.js'))
@@ -139,11 +139,11 @@ gulp.task('lib-js', ['partials'], function() {
 
     return gulp   
     .src([
-        path.join(conf.paths.src, '/lib/**/*.module.js'),
-        path.join(conf.paths.src, '/lib/**/*.js'),
+        path.join(conf.paths.src, '/core/**/*.module.js'),
+        path.join(conf.paths.src, '/core/**/*.js'),
         path.join(conf.paths.tmp, '/partials/templateCacheHtml.js'),
-        path.join('!' + conf.paths.src, '/lib/**/*.spec.js'),
-        path.join('!' + conf.paths.src, '/lib/**/*.mock.js')
+        path.join('!' + conf.paths.src, '/core/**/*.spec.js'),
+        path.join('!' + conf.paths.src, '/core/**/*.mock.js')
     ])
     //.pipe($.ngAnnotate())
     .pipe($.concat('app-module.js'))
@@ -157,7 +157,7 @@ gulp.task('lib-js', ['partials'], function() {
 gulp.task('lib-css', [], function() {
     return gulp   
     .src([
-        path.join(conf.paths.src, '/lib/**/*.css')
+        path.join(conf.paths.src, '/core/**/*.css')
     ])
 
     .pipe($.concat('app-module.css'))
@@ -165,5 +165,5 @@ gulp.task('lib-css', [], function() {
         .pipe(gulp.dest(path.join(conf.paths.src, '/')));
 });
 
-gulp.task('build-core', ['lib-js','lib-css','serve-fa']);
+gulp.task('build-core', ['lib-js','lib-css'/*,'serve-fa'*/]);
 gulp.task('build', ['html', 'fonts', 'other', /*'doc-pro', 'lib-js-min'*/,'build-core']);

@@ -31,10 +31,10 @@ gulp.task('inject', ['scripts', 'styles', 'build-core'], function() {
 
 
     var injectLibScripts = gulp.src([
-        path.join(conf.paths.src, '/lib/**/*.module.js'),
-        path.join(conf.paths.src, '/lib/**/*.js'),
-        path.join('!' + conf.paths.src, '/lib/**/*.spec.js'),
-        path.join('!' + conf.paths.src, '/lib/**/*.mock.js')
+        path.join(conf.paths.src, '/core/**/*.module.js'),
+        path.join(conf.paths.src, '/core/**/*.js'),
+        path.join('!' + conf.paths.src, '/core/**/*.spec.js'),
+        path.join('!' + conf.paths.src, '/core/**/*.mock.js')
 
     ]).pipe($.angularFilesort()).on('error', conf.errorHandler('AngularFilesort'));
 
