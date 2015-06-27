@@ -50,7 +50,7 @@ angular.module('app.module').controller('AppCtrl', /*@ngInject*/ function(settin
     });
     //
     // BOOTSTRAP
-    // 
+    //  
     bootstrap(true);
 
     function bootstrap(withUser) {

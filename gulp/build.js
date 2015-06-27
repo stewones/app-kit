@@ -12,9 +12,9 @@ var $ = require('gulp-load-plugins')({
 gulp.task('partials', function() {
 
     return gulp.src([
-        //path.join(conf.paths.src, '/doc/**/*.html'),
+        //path.join(conf.paths.src, '/sample/**/*.html'),
         path.join(conf.paths.src, '/lib/**/*.html'),
-        //path.join(conf.paths.tmp, '/serve/doc/**/*.html')
+        //path.join(conf.paths.tmp, '/serve/sample/**/*.html')
     ])
         .pipe($.minifyHtml({
             empty: true,
@@ -43,7 +43,7 @@ gulp.task('html', ['inject', 'partials'], function() {
     var cssFilter = $.filter('**/*.css');
     var assets;
 
-    return gulp.src(path.join(conf.paths.tmp, '/serve/doc/*.html'))
+    return gulp.src(path.join(conf.paths.tmp, '/serve/sample/*.html'))
         .pipe($.inject(partialsInjectFile, partialsInjectOptions))
         .pipe(assets = $.useref.assets())
         .pipe($.rev())
@@ -68,9 +68,9 @@ gulp.task('html', ['inject', 'partials'], function() {
             conditionals: true
         }))
         .pipe(htmlFilter.restore())
-        .pipe(gulp.dest(path.join(conf.paths.dist, '/doc')))
+        .pipe(gulp.dest(path.join(conf.paths.dist, '/sample')))
         .pipe($.size({
-            title: path.join(conf.paths.dist, '/doc'),
+            title: path.join(conf.paths.dist, '/sample'),
             showFiles: true
         }));
 });
@@ -106,7 +106,7 @@ gulp.task('serve-fa', function() {
     return gulp.src([
         path.join(conf.paths.src, '/lib/layout/icons/font-awesome/fonts')
     ])
-        .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/doc')));
+        .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/sample')));
 });
 
 

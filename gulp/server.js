@@ -45,11 +45,11 @@ browserSync.use(browserSyncSpa({
 }));
 
 gulp.task('serve', ['watch'/*,'doc-dev'*/], function () {
-  browserSyncInit([path.join(conf.paths.tmp, '/serve/doc'), conf.paths.src]);
+  browserSyncInit([path.join(conf.paths.tmp, '/serve/sample'), conf.paths.src]);
 });
 
 gulp.task('serve:dist', ['build'], function () {
-  browserSyncInit(conf.paths.dist+'/doc');
+  browserSyncInit(conf.paths.dist+'/sample');
 });
 
 gulp.task('serve:e2e', ['inject'], function () {

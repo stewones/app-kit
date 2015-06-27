@@ -15,8 +15,8 @@ gulp.task('watch', ['inject'], function() {
 
 
     gulp.watch([
-        path.join(conf.paths.src, '/doc/**/*.css'),
-        path.join(conf.paths.src, '/doc/**/*.less')
+        path.join(conf.paths.src, '/sample/**/*.css'),
+        path.join(conf.paths.src, '/sample/**/*.less')
     ], function(event) {
 
         if (isOnlyChange(event)) {
@@ -41,7 +41,7 @@ gulp.task('watch', ['inject'], function() {
     });
 
 
-    gulp.watch(path.join(conf.paths.src, '/doc/**/*.html'), function(event) {
+    gulp.watch(path.join(conf.paths.src, '/sample/**/*.html'), function(event) {
         browserSync.reload(event.path);
     });
 });

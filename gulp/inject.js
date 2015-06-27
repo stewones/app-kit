@@ -14,9 +14,9 @@ var _ = require('lodash');
 
 gulp.task('inject', ['scripts', 'styles', 'build-core'], function() {
     var injectStyles = gulp.src([
-        path.join(conf.paths.tmp, '/serve/doc/**/*.css'),
-        path.join(conf.paths.src, '/doc/**/*.css'), //inject components
-        //path.join('!' + conf.paths.tmp, '/serve/doc/vendor.css')
+        path.join(conf.paths.tmp, '/serve/sample/**/*.css'),
+        path.join(conf.paths.src, '/sample/**/*.css'), //inject components
+        //path.join('!' + conf.paths.tmp, '/serve/sample/vendor.css')
     ], {
         read: false
     });
@@ -40,26 +40,26 @@ gulp.task('inject', ['scripts', 'styles', 'build-core'], function() {
 
 
     var injectDocScripts = gulp.src([
-        path.join(conf.paths.src, '/doc/**/*.js'),
+        path.join(conf.paths.src, '/sample/**/*.js'),
 
-        path.join('!' + conf.paths.src, '/doc/**/*.spec.js'),
-        path.join('!' + conf.paths.src, '/doc/**/*.mock.js')
+        path.join('!' + conf.paths.src, '/sample/**/*.spec.js'),
+        path.join('!' + conf.paths.src, '/sample/**/*.mock.js')
 
     ])
         .pipe($.angularFilesort()).on('error', conf.errorHandler('AngularFilesort'));
 
 
     var injectOptions = {
-        ignorePath: [conf.paths.src, path.join(conf.paths.tmp, '/serve/doc')],
+        ignorePath: [conf.paths.src, path.join(conf.paths.tmp, '/serve/sample')],
         addRootSlash: false
     };
 
-    return gulp.src(path.join(conf.paths.src, '/doc/*.html'))
+    return gulp.src(path.join(conf.paths.src, '/sample/*.html'))
         .pipe($.inject(injectStyles, injectOptions))
         //.pipe($.inject(injectScripts, injectOptions))
         .pipe($.inject($.streamSeries(/*injectLibScripts,*/ injectDocScripts), injectOptions))
         .pipe(wiredep(_.extend({
             exclude: [/angular-mocks/]
         }, conf.wiredep)))
-        .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/doc')));
+        .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/sample')));
 });
