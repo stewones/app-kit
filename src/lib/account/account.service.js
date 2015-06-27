@@ -65,7 +65,7 @@ angular.module('account.module').service('Account', /*@ngInject*/ function($http
                 $scope.user = user.instance;
                 $scope.account = account.instance;
             },
-            templateUrl: 'app/account/confirm.tpl.html',
+            templateUrl: 'lib/account/confirm.tpl.html',
             parent: angular.element(document.body),
             //targetEvent: ev,
         }).then(function() {

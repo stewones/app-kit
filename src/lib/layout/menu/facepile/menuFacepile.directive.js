@@ -1,7 +1,7 @@
 'use strict';
 angular.module('menu.module').directive('menuFacepile', /*@ngInject*/ function() {
     return {
-        templateUrl: "app/layout/menu/facepile/menuFacepile.tpl.html",
+        templateUrl: "lib/layout/menu/facepile/menuFacepile.tpl.html",
         scope: {
             width: '=',
             url: '@',

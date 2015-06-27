@@ -5,7 +5,7 @@ angular.module('login.module').directive('loginForm', /*@ngInject*/ function() {
             config: '=',
             user: '='
         },
-        templateUrl: "app/login/form/loginForm.tpl.html",
+        templateUrl: "lib/login/form/loginForm.tpl.html",
         controller: 'LoginFormCtrl',
         controllerAs: 'vm',
         link: function() {}

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('login.module').controller('LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, Login, layout, setting, api) {
+angular.module('login.module').controller('LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, CoreLogin, layout, setting, api) {
     isAuthed();
     layout.setTitle(setting.name + setting.titleSeparator + 'Login');
     layout.setDescription('Entre para o ' + setting.name);
@@ -9,7 +9,7 @@ angular.module('login.module').controller('LoginCtrl', /*@ngInject*/ function($r
     vm.lost = lost;
     vm.change = change;
     vm.auth = auth;
-    vm.config = Login.config;
+    vm.config = CoreLogin.config;
     //lost password step2
     var userHash = $location.hash();
     if (userHash) vm.userHash = userHash;
@@ -53,7 +53,7 @@ angular.module('login.module').controller('LoginCtrl', /*@ngInject*/ function($r
     //
     function isAuthed() {
         if ($auth.isAuthenticated()) {
-            $state.go(Login.config.auth.loginSuccessStateRedirect);
+            $state.go(CoreLogin.config.auth.loginSuccessStateRedirect);
         }
     }
 })

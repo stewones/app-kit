@@ -12,7 +12,7 @@ var wiredep = require('wiredep').stream;
 var _ = require('lodash');
 
 
-gulp.task('inject', ['scripts', 'styles'], function() {
+gulp.task('inject', ['scripts', 'styles', 'build-core'], function() {
     var injectStyles = gulp.src([
         path.join(conf.paths.tmp, '/serve/doc/**/*.css'),
         path.join(conf.paths.src, '/doc/**/*.css'), //inject components
@@ -57,7 +57,7 @@ gulp.task('inject', ['scripts', 'styles'], function() {
     return gulp.src(path.join(conf.paths.src, '/doc/*.html'))
         .pipe($.inject(injectStyles, injectOptions))
         //.pipe($.inject(injectScripts, injectOptions))
-        .pipe($.inject($.streamSeries(injectLibScripts, injectDocScripts), injectOptions))
+        .pipe($.inject($.streamSeries(/*injectLibScripts,*/ injectDocScripts), injectOptions))
         .pipe(wiredep(_.extend({
             exclude: [/angular-mocks/]
         }, conf.wiredep)))

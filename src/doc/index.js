@@ -29,9 +29,16 @@
      * Sample app
      */
     'use strict';
-    angular.module('esgrupo.app', ['app.module']).controller('TestCtrl', [TestCtrl]);
+    angular.module('esgrupo.app', ['app.module']).controller('TestCtrl', [TestCtrl]).config(['CoreLoginProvider', TestConfig]);
 
     function TestCtrl() {
         alert('hello world')
+    }
+
+    function TestConfig(CoreLoginProvider) {
+        //
+        // Login Config
+        //
+        CoreLoginProvider.set('templateUrl', 'login.html');
     }
 })();

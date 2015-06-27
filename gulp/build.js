@@ -12,8 +12,9 @@ var $ = require('gulp-load-plugins')({
 gulp.task('partials', function() {
 
     return gulp.src([
-        path.join(conf.paths.src, '/doc/**/*.html'),
-        path.join(conf.paths.tmp, '/serve/doc/**/*.html')
+        //path.join(conf.paths.src, '/doc/**/*.html'),
+        path.join(conf.paths.src, '/lib/**/*.html'),
+        //path.join(conf.paths.tmp, '/serve/doc/**/*.html')
     ])
         .pipe($.minifyHtml({
             empty: true,
@@ -22,7 +23,7 @@ gulp.task('partials', function() {
         }))
         .pipe($.angularTemplatecache('templateCacheHtml.js', {
             module: conf.appName,
-            root: 'doc'
+            root: 'lib'
         }))
         .pipe(gulp.dest(conf.paths.tmp + '/partials/'));
 });
@@ -101,8 +102,15 @@ gulp.task('clean', function(done) {
 });
 
 
+gulp.task('serve-fa', function() {
+    return gulp.src([
+        path.join(conf.paths.src, '/lib/layout/icons/font-awesome/fonts')
+    ])
+        .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/doc')));
+});
 
-gulp.task('lib-min', [], function() {
+
+gulp.task('lib-js-min', [], function() {
     return gulp.src([
         path.join(conf.paths.src, '/lib/**/*.module.js'),
         path.join(conf.paths.src, '/lib/**/*.js'),
@@ -119,10 +127,21 @@ gulp.task('lib-min', [], function() {
 });
 
 
-gulp.task('lib', [], function() {
-    return gulp.src([
+gulp.task('lib-js', ['partials'], function() {
+    var partialsInjectFile = gulp.src(path.join(conf.paths.tmp, '/partials/templateCacheHtml.js'), {
+        read: false
+    });
+    var partialsInjectOptions = {
+        starttag: '<!-- inject:partials -->',
+        ignorePath: path.join(conf.paths.tmp, '/partials'),
+        addRootSlash: false
+    };
+
+    return gulp   
+    .src([
         path.join(conf.paths.src, '/lib/**/*.module.js'),
         path.join(conf.paths.src, '/lib/**/*.js'),
+        path.join(conf.paths.tmp, '/partials/templateCacheHtml.js'),
         path.join('!' + conf.paths.src, '/lib/**/*.spec.js'),
         path.join('!' + conf.paths.src, '/lib/**/*.mock.js')
     ])
@@ -135,12 +154,16 @@ gulp.task('lib', [], function() {
         .pipe(gulp.dest(path.join(conf.paths.src, '/')));
 });
 
-gulp.task('readme', [], function() {
-    return gulp.src([
-        path.join(conf.paths.src, '/doc/partials/readme.md')
+gulp.task('lib-css', [], function() {
+    return gulp   
+    .src([
+        path.join(conf.paths.src, '/lib/**/*.css')
     ])
-    .pipe($.rename("README.md"))
-        .pipe(gulp.dest('./'));
+
+    .pipe($.concat('app-module.css'))
+    .pipe($.size())
+        .pipe(gulp.dest(path.join(conf.paths.src, '/')));
 });
 
-gulp.task('build', ['html', 'fonts', 'other', 'doc-pro', 'lib-min', 'lib', 'readme']);
+gulp.task('build-core', ['lib-js','lib-css','serve-fa']);
+gulp.task('build', ['html', 'fonts', 'other', /*'doc-pro', 'lib-js-min'*/,'build-core']);

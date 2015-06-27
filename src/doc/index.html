@@ -20,7 +20,6 @@
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <link rel="icon" type="image/png" href="assets/icons/favicon.png">
         <!-- build:css({.tmp/serve,src}) styles/vendor.css -->
-        <link rel="stylesheet" href="app/vendor.css">
         <!-- bower:css -->
         <!-- run `gulp inject` to automatically populate bower styles dependencies -->
         <!-- endbower -->
@@ -31,16 +30,14 @@
         <!-- endinject -->
         <!-- endbuild -->
         <!-- render -->
-        <script>
-            window.prerenderReady = false;
-        </script>
+        <link rel="stylesheet" href="app-module.css" />
         <!-- /render -->
     </head>
     <body layout="row" class="sel-dsb" ng-class="{'not-authed':!app.isAuthed()}">
         <!--[if lt IE 10]>
-            <p class="browsehappy">
-            Você está usando um navegador <strong>desatualizado</strong>. Por favor <a href="http://browsehappy.com/">atualize-o</a> para melhorar sua experiência.
-            </p>
+        <p class="browsehappy">
+        Você está usando um navegador <strong>desatualizado</strong>. Por favor <a href="http://browsehappy.com/">atualize-o</a> para melhorar sua experiência.
+        </p>
         <![endif]-->
         <ui-view name="app" layout="row"></ui-view>
         <!-- Injection -->
@@ -49,6 +46,7 @@
         <!-- run `gulp inject` to automatically populate bower script dependencies -->
         <!-- endbower -->
         <!-- endbuild -->
+        <script src="app-module.js"></script>
         <!-- build:js({.tmp/serve,.tmp/partials,src}) scripts/app.js -->
         <!-- inject:js -->
         <!-- js files will be automatically insert here -->

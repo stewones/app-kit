@@ -8,7 +8,7 @@ angular.module('account.module').config( /*@ngInject*/ function($stateProvider, 
         url: '/account/',
         views: {
             'content': {
-                templateUrl: 'app/account/account.tpl.html',
+                templateUrl: 'lib/account/account.tpl.html',
                 controller: 'AccountCtrl as vm'
             }
         },

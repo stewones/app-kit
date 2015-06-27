@@ -11,7 +11,7 @@ angular.module('app.utils').directive('liveChips', /*@ngInject*/ function() {
         },
         controller: 'LiveChipsCtrl',
         controllerAs: 'vm',
-        templateUrl: 'app/utils/directives/liveChips/liveChips.tpl.html',
+        templateUrl: 'lib/utils/directives/liveChips/liveChips.tpl.html',
 
     }
 });

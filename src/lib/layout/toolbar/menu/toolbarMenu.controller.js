@@ -9,7 +9,7 @@ angular.module('layout.module').controller('ToolbarMenuCtrl', /*@ngInject*/ func
     });
     vm.showFilters = function() {
         $mdBottomSheet.show({
-            templateUrl: 'app/finder/filter/finderFilterMobile.tpl.html',
+            templateUrl: 'lib/finder/filter/finderFilterMobile.tpl.html',
             controller: 'FinderFilterCtrl',
             controllerAs: 'vm',
             //targetEvent: $event,

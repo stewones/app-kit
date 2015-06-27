@@ -1,0 +1,168 @@
+<div layout="column">
+    <div class="fieldset">
+        <h5>Seus dados</h5>
+        <div class="group" layout="row" layout-sm="column">
+            <div flex class="group-inner" layout="column">
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('firstName')}" flex>
+                <label>Nome</label>
+                <input name="firstName" ng-model="vm.profile.firstName" required focus>
+                </md-input-container>
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('cpf')}" flex>
+                <label>CPF</label>
+                <input name="cpf" ng-model="vm.profile.doc.cpf" ui-br-cpf-mask required>
+                </md-input-container>
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('email')}" flex>
+                <label>Email para contato</label>
+                <input name="email" ng-model="vm.profile.contact.email" required>
+                </md-input-container>
+            </div>
+            <div flex class="group-inner" layout="column">
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('lastName')}" flex>
+                <label>Sobrenome</label>
+                <input name="lastName" ng-model="vm.profile.lastName" required>
+                </md-input-container>
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('rg')}" flex>
+                <label>RG</label>
+                <input name="rg" ng-model="vm.profile.doc.rg" required>
+                </md-input-container>
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('birthday')}" flex>
+                <label>Data de nascimento</label>
+                <input name="birthday" ng-model="vm.profile.doc.birthday" mask="39/19/9999" required>
+                </md-input-container>
+            </div>
+        </div>
+    </div>
+    <div class="fieldset">
+        <h5>Sua localização</h5>
+        <div class="group" layout="row" layout-sm="column">
+            <div flex class="group-inner" layout="column">
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('cep')}">
+                <label>CEP</label>
+                <input name="cep" ng-model="vm.profile.address.default.cep" ng-change="vm.setAddrByCep()"
+                type="number" ng-maxlength="8" required>
+                </md-input-container>
+                <md-input-container>
+                <label>Complemento</label>
+                <input ng-model="vm.profile.address.default.comp">
+                </md-input-container>
+ 
+
+                         <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('district')}" >
+                <label>Bairro</label>
+                <input name="district" ng-model="vm.profile.address.default.district" required>
+                </md-input-container>
+
+
+
+                <md-select
+
+                required
+                placeholder="Estado"
+                class="state"
+                ng-model="vm.profile.address.default.state"
+                ng-class="{'md-input-invalid':!vm.profile.address.default.state}">
+                <md-option ng-value="opt.value" ng-repeat="opt in vm.states">
+                {{ opt.name }}
+                </md-option>
+                </md-select>
+         
+            </div>
+            <div flex class="group-inner" layout="column">
+
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('street')}" >
+                <label>Endereço</label>
+                <input name="street" ng-model="vm.profile.address.default.street" required>
+                </md-input-container>
+
+
+       <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('num')}">
+                <label>Número</label>
+                <input name="num" ng-model="vm.profile.address.default.num" type="number">
+                </md-input-container>
+
+                      <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('city')}">
+                <label>Cidade</label>
+                <input name="city" ng-model="vm.profile.address.default.city" required>
+                </md-input-container>
+
+
+
+
+            </div>
+        </div>
+    </div>
+    <div class="fieldset">
+        <h5>Informações de contato</h5>
+        <div class="group" layout="row" layout-sm="column">
+            <div flex class="group-inner" layout="column">
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('phone')}" flex>
+                <label>Telefone fixo</label>
+                <input name="phone" ng-model="vm.profile.contact.phone" ui-br-phone-number>
+                </md-input-container>
+            </div>
+            <div flex class="group-inner" layout="column">
+                <md-input-container ng-class="{'md-input-invalid':vm.hasFormError('mobile')}" flex>
+                <label>Telefone celular</label>
+                <input name="mobile" ng-model="vm.profile.contact.mobile" required ui-br-phone-number>
+                </md-input-container>
+            </div>
+        </div>
+    </div>
+    <div class="fieldset">
+        <h5>Informações adicionais</h5>
+        <div class="group m-bottom" layout="row" layout-sm="column">
+            <div flex class="group-inner" layout="column" ng-class="{'md-input-invalid':!vm.profile.gender}">
+                <label>Sexo</label>
+                <md-radio-group name="gender" ng-model="vm.profile.gender" layout="row" class="md-primary">
+                <md-radio-button value="M"> M</md-radio-button>
+                <md-radio-button value="F"> F</md-radio-button>
+                </md-radio-group>
+            </div>
+            <div flex class="group-inner" layout="column"  ng-class="{'md-input-invalid':!vm.profile.relocating && vm.profile.relocating != false}">
+                <label>
+                    Poderia mudar de cidade?
+                </label>
+                <md-radio-group ng-model="vm.profile.relocating" layout="row" class="md-primary">
+                <md-radio-button value="1"> Sim</md-radio-button>
+                <md-radio-button value="0"> Não</md-radio-button>
+                </md-radio-group>
+            </div>
+            <div flex class="group-inner feedback" layout="column" ng-class="{'md-input-invalid':!vm.profile.from}">
+                <label>
+                    Por onde conheceu {{vm.company.name}}?
+                </label>
+                <md-select name="feedback" flex
+                ng-model="vm.profile.from" placeholder="Selecione">
+                <md-option ng-value="opt.value" ng-repeat="opt in vm.feedback">{{ opt.label }}</md-option>
+                </md-select>
+            </div>
+        </div>
+        <div class="group m-bottom" layout="row" layout-sm="column">
+            <div flex class="group-inner" layout="column" ng-class="{'md-input-invalid':!vm.profile.working && vm.profile.working != false}">
+                <label>
+                    Está empregado atualmente?
+                </label>
+                <md-radio-group name="working" ng-model="vm.profile.working" layout="row" class="md-primary">
+                <md-radio-button value="1"> Sim</md-radio-button>
+                <md-radio-button value="0"> Não</md-radio-button>
+                </md-radio-group>
+            </div>
+            <div flex class="group-inner" layout="column" ng-class="{'md-input-invalid':!vm.profile.doc.pne && vm.profile.doc.pne != false}">
+                <label>
+                    É portador de necessidades?
+                </label>
+                <md-radio-group name="pne" ng-model="vm.profile.doc.pne" layout="row" class="md-primary">
+                <md-radio-button value="1"> Sim</md-radio-button>
+                <md-radio-button value="0"> Não</md-radio-button>
+                </md-radio-group>
+            </div>
+            <div flex class="group-inner" layout="column">
+                <label>
+                    Possui CNH?
+                </label>
+                <live-chips items="vm.cnh" placeholder="Selecione digitando A, B, C ou D" model="vm.profile.doc.cnh" hide-options="true">
+                </live-chips>
+            </div>
+        </div>
+    </div>
+</div>

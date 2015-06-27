@@ -14,8 +14,8 @@ gulp.task('scripts', function() {
 
     return gulp.src([
         path.join(conf.paths.src, '/**/*.js'),
-        path.join('!' + conf.paths.src, '/angular-morris-chart.min.js'),
-        path.join('!' + conf.paths.src, '/angular-morris-chart.js')
+        path.join('!' + conf.paths.src, '/app.module.min.js'),
+        path.join('!' + conf.paths.src, '/app.module.js')
     ])
         .pipe($.jshint())
         .pipe($.jshint.reporter('jshint-stylish'))

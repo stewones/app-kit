@@ -1,0 +1,75 @@
+<div layout="column">
+    <div class="fieldset">
+        <h5>Formação</h5>
+        <md-progress-circular
+        ng-show="vm.educationLoading"
+        md-diameter="24"
+        class="educationLoader md-warn"
+        md-mode="indeterminate">
+        </md-progress-circular>
+        <div ng-hide="vm.educationLoading" class="group" layout="row" layout-sm="column">
+            <!-- FORMAÇÃO -->
+            <div layout="column" class="chips-wrap" flex>
+                <live-chips
+                    items="vm.education.schooling"
+                    placeholder="Selecione uma formação"
+                    model="vm.profile.education.schooling"
+                    truncate-input="true"
+                    truncate-options="false">
+                </live-chipss>
+            </div>
+            <!-- /FORMAÇÃO -->
+            <!-- TECNICO -->
+            <div layout="column" class="chips-wrap" flex>
+                <live-chips
+                    items="vm.education.technical"
+                    placeholder="Selecione um curso técnico"
+                    model="vm.profile.education.technical"
+                    truncate-input="true"
+                    truncate-options="false">
+                </live-chips>
+            </div>
+            <!-- /TECNICO -->
+            <!-- GRADUAÇÃO -->
+            <div layout="column" class="chips-wrap" flex>
+                <live-chips
+                    items="vm.education.graduation"
+                    placeholder="Selecione uma graduação"
+                    model="vm.profile.education.graduation"
+                    truncate-input="true"
+                    truncate-options="false">
+                </live-chips>
+            </div>
+            <!-- /GRADUAÇÃO -->
+        </div>
+    </div>
+    <div class="fieldset">
+        <h5>Cursos</h5>
+        <div class="group animate-repeat" layout="row" ng-repeat="course in vm.profile.education.courses">
+            <md-input-container flex>
+            <label>Nome</label>
+            <input
+            required
+            name="name"
+            focus="$index===0"
+            ng-model="course.name">
+            </md-input-container>
+            <md-input-container flex>
+            <label>Horas</label>
+            <input
+            required
+            type="number"
+            name="hours"
+            ng-model="course.hours">
+            </md-input-container>
+            <md-button class="remove md-fab md-warn" aria-label="Remover {{course.name}}" title="Remover {{course.name}}" ng-click="vm.remove(course)">
+            <md-icon md-svg-src="assets/images/icons/ic_delete_24px.svg" ></md-icon>
+            </md-button>
+        </div>
+        <p class="subtitle warn" ng-show="!vm.profile.education.courses.length">
+        <i class="fa fa-lightbulb-o"></i> adicione cursos clicando no lápis -->
+        </p>
+    </div>
+</div>
+<br />
+<br />

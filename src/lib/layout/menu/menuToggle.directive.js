@@ -4,7 +4,7 @@ angular.module('menu.module').directive('menuToggle', /*@ngInject*/ function() {
         scope: {
             section: '='
         },
-        templateUrl: 'app/layout/menu/menuToggle.tpl.html',
+        templateUrl: 'lib/layout/menu/menuToggle.tpl.html',
         link: function($scope, $element) {
             var controller = $element.parent().controller();
             $scope.isOpen = function() {

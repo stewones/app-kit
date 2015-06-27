@@ -4,7 +4,7 @@ angular.module('app.utils').directive('leadForm', /*@ngInject*/ function() {
         scope: {
             label: '@'
         },
-        templateUrl: 'app/utils/directives/leadForm/leadForm.tpl.html',
+        templateUrl: 'lib/utils/directives/leadForm/leadForm.tpl.html',
         controller: 'LeadFormCtrl',
         controllerAs: 'vm',
         replace: true

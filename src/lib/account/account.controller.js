@@ -181,7 +181,7 @@ angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ functio
                     });
                 };
             },
-            templateUrl: 'app/account/deactivate.tpl.html',
+            templateUrl: 'lib/account/deactivate.tpl.html',
             parent: angular.element(document.body),
             targetEvent: ev
         }).then(function() {

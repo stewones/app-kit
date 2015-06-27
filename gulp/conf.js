@@ -1,7 +1,7 @@
 /**
  *  Settings
  */
-exports.appName = 'angular-morris-chart';
+exports.appName = 'app.module';
 /**
  *  This file contains the variables used in other gulp files
  *  which defines tasks

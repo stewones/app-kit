@@ -1,0 +1,8 @@
+<ul class="list-positions">
+    <!-- class="animate-repeat" -->
+    <li ng-repeat="item in options" class="animate-repeat">
+        <md-checkbox title="{{item}}" ng-checked="vm.exists(item, selected)" ng-click="vm.toggle(item, selected)">
+        {{item}}
+        </md-checkbox>
+    </li>
+</ul>

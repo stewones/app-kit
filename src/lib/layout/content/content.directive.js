@@ -4,6 +4,6 @@ angular.module('layout.module').directive('content', /*@ngInject*/ function() {
         scope: {
             app: '='
         },
-        templateUrl: "app/layout/content/content.tpl.html"
+        templateUrl: "lib/layout/content/content.tpl.html"
     }
 })

@@ -4,7 +4,7 @@ angular.module('login.module').directive('registerForm', /*@ngInject*/ function(
         scope: {
             config: '='
         },
-        templateUrl: "app/login/register/registerForm.tpl.html",
+        templateUrl: "lib/login/register/registerForm.tpl.html",
         controller: 'RegisterFormCtrl',
         controlerAs: 'vm'
     }

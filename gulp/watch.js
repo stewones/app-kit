@@ -11,8 +11,6 @@ function isOnlyChange(event) {
 }
 
 gulp.task('watch', ['inject'], function() {
-    //watch doc
-    gulp.watch([path.join(conf.paths.src, '/doc/partials/**/*.md')], ['watch','doc-dev']);
     gulp.watch([path.join(conf.paths.src, '/**/*.html'), 'bower.json'], ['inject']);
 
 
@@ -31,9 +29,12 @@ gulp.task('watch', ['inject'], function() {
 
 
 
-    gulp.watch(path.join(conf.paths.src, '/**/*.js'), function(event) {
+    gulp.watch([
+        path.join(conf.paths.src, '/**/*.js'),
+        path.join('!' + conf.paths.src, '/app-module.js'),
+        path.join('!' + conf.paths.src, '/app-module.min.js')], function(event) {
         if (isOnlyChange(event)) {
-            gulp.start('scripts');
+            gulp.start(['scripts','build-core']);
         } else {
             gulp.start('inject');
         }

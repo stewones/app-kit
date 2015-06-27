@@ -9,7 +9,7 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
         url: '/login/',
         views: {
             'content': {
-                templateUrl: 'app/login/login.tpl.html',
+                templateUrl: 'lib/login/login.tpl.html',
                 controller: 'LoginCtrl as vm'
             }
         }
@@ -29,7 +29,7 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
             url: '/signup/',
             views: {
                 'content': {
-                    templateUrl: 'app/login/register/register.tpl.html',
+                    templateUrl: 'lib/login/register/register.tpl.html',
                     controller: /*@ngInject*/ function(layout, setting) {
                         layout.setTitle(setting.name + setting.titleSeparator + 'Cadastro');
                     }
@@ -40,7 +40,7 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
             url: '/login/lost/',
             views: {
                 'content': {
-                    templateUrl: 'app/login/register/lost.tpl.html',
+                    templateUrl: 'lib/login/register/lost.tpl.html',
                     controller: 'LostCtrl as vm'
                 }
             }

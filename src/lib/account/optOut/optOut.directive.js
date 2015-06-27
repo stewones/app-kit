@@ -16,7 +16,7 @@ angular.module('account.module').directive('optOut', /*@ngInject*/ function() {
             itemLocation: '=',
             itemInfo: '='
         },
-        templateUrl: 'app/account/optOut/optOut.tpl.html',
+        templateUrl: 'lib/account/optOut/optOut.tpl.html',
         controller: 'OptOutCtrl',
         controllerAs: 'vm',
         replace: true

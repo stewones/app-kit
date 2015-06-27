@@ -10,6 +10,6 @@ angular.module('menu.module').directive('menuAvatar', /*@ngInject*/ function() {
         restrict: 'EA',
         controller: 'MenuAvatarCtrl',
         controllerAs: 'vm',
-        templateUrl: 'app/layout/menu/avatar/menuAvatar.tpl.html'
+        templateUrl: 'lib/layout/menu/avatar/menuAvatar.tpl.html'
     }
 });

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('login.module').provider('Login', /*@ngInject*/ function() {
+angular.module('login.module').provider('CoreLogin', /*@ngInject*/ function() {
     this.config = {};
     this.$get = this.get = function() {
         return {

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $anchorScrollProvider, $uiViewScrollProvider, FacebookProvider, LoginProvider, UserSettingProvider, setting, api) {
+angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $anchorScrollProvider, $uiViewScrollProvider, FacebookProvider, CoreLoginProvider, UserSettingProvider, setting, api) {
     //
     // States & Routes
     //
@@ -7,13 +7,13 @@ angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryPr
         abstract: true,
         views: {
             'app': {
-                templateUrl: 'app/layout/layout.tpl.html'
+                templateUrl: 'lib/layout/layout.tpl.html'
             },
             'toolbar@app': {
-                templateUrl: 'app/layout/toolbar/toolbar.tpl.html'
+                templateUrl: 'lib/layout/toolbar/toolbar.tpl.html'
             },
             'sidenav@app': {
-                templateUrl: 'app/layout/menu/sidenav.tpl.html'
+                templateUrl: 'lib/layout/menu/sidenav.tpl.html'
             }
         }
     });
@@ -76,13 +76,8 @@ angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryPr
     auth.loginSuccessRedirect = '/profile/';
     page.accessTitle = 'Acessar conta';
     page.registerTitle = 'Ainda não tem uma?';
-    LoginProvider.set('auth', auth);
-    LoginProvider.set('page', page);
+    CoreLoginProvider.set('auth', auth);
+    CoreLoginProvider.set('page', page);
     UserSettingProvider.set('logoutStateRedirect', 'app.home');
     UserSettingProvider.set('roleForCompany', 'profile');
-    //
-    // Disable Auto Scrolling
-    //
-    //$uiViewScrollProvider.useAnchorScroll();
-    //$anchorScrollProvider.disableAutoScrolling();
 });

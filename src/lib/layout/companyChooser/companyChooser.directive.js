@@ -11,7 +11,7 @@ angular.module('layout.module').directive('companyChooser', /*@ngInject*/ functi
         restrict: 'EA',
         controller: 'CompanyChooserCtrl',
         controllerAs: 'vm',
-        templateUrl: 'app/layout/companyChooser/companyChooser.tpl.html'
+        templateUrl: 'lib/layout/companyChooser/companyChooser.tpl.html'
             // link: function($scope, $elem) {
             //     //acompanhando issue no github https://github.com/angular/material/issues/2114
             //     //quando o model é alterado, as vezes, ele adiciona "," repetindo o valor corrente. Ex: "Shopping Boulevard, Shopping Boulevard"

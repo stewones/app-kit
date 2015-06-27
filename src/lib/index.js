@@ -12,5 +12,6 @@ angular.module('app.module', [
     'layout.module',
     'login.module',
     'user.module',
+    'profile.module',
     'account.module'
 ]);
