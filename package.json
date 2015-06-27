@@ -1,5 +1,6 @@
 {
     "name": "@esgrupo/app-module",
+    "private": "true",
     "version": "0.0.1",
     "description": "app skeleton",
     "main": "index.js",
