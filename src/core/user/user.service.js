@@ -1,5 +1,11 @@
 'use strict';
 /* global window */
+/**
+ * @ngdoc service
+ * @name user.module.User
+ * @description 
+ * Comportamentos de usuário
+ **/
 angular.module('user.module').service('User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, layout, setting) {
     var User = function(params, alert, message) {
             params = params ? params : {};

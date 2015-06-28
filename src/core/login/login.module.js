@@ -7,10 +7,10 @@ angular.module('login.module', [
     'satellizer',
     'google.login',
     'facebook.login'
-]).run( /*@ngInject*/ function (CoreLogin, $rootScope) {
+]).run( /*@ngInject*/ function ($login, $rootScope) {
 	$rootScope.$on('$stateChangeStart', function(event, toState, toParams) {	
-        if (CoreLogin.config.templateUrl && toState.name === 'app.login') {
-         	toState.views.content.templateUrl = CoreLogin.config.templateUrl;
+        if ($login.config.templateUrl && toState.name === 'app.login') {
+         	toState.views.content.templateUrl = $login.config.templateUrl;
         }
     });
 });

@@ -1,6 +1,6 @@
 'use strict';
 /* global moment */
-angular.module('app.module').controller('AppCtrl', /*@ngInject*/ function(setting, lodash, $window, $rootScope, $scope, $state, $location, $mdSidenav, $mdBottomSheet, $mdToast, $timeout, $auth, layout, Profile, User, user, account, enviroment, menu, CoreLogin) {
+angular.module('app.module').controller('AppCtrl', /*@ngInject*/ function(setting, lodash, $window, $rootScope, $scope, $state, $location, $mdSidenav, $mdBottomSheet, $mdToast, $timeout, $auth, layout, Profile, User, user, account, enviroment, menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -68,7 +68,7 @@ angular.module('app.module').controller('AppCtrl', /*@ngInject*/ function(settin
         vm.isAuthed = $auth.isAuthenticated;
         vm.logout = logout;
         vm.menu = menu.api();
-        vm.loginConfig = CoreLogin.config;
+        vm.loginConfig = $login.config;
         vm.iframe = $location.hash() === 'iframe' ? true : false;
     }
     //

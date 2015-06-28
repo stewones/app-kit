@@ -165,5 +165,12 @@ gulp.task('lib-css', [], function() {
         .pipe(gulp.dest(path.join(conf.paths.src, '/')));
 });
 
+gulp.task('build-docs', [], function () {
+  var gulpDocs = require('gulp-ngdocs');
+  return gulp.src(path.join(conf.paths.src, '/core/**/*.js'))
+    .pipe(gulpDocs.process())
+    .pipe(gulp.dest('docs'));
+});
+
 gulp.task('build-core', ['lib-js','lib-css'/*,'serve-fa'*/]);
 gulp.task('build', ['html', 'fonts', 'other', /*'doc-pro', 'lib-js-min'*/,'build-core']);

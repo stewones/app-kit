@@ -12,7 +12,7 @@ var wiredep = require('wiredep').stream;
 var _ = require('lodash');
 
 
-gulp.task('inject', ['scripts', 'styles', 'build-core'], function() {
+gulp.task('inject', ['scripts', 'styles', 'build-core','build-docs'], function() {
     var injectStyles = gulp.src([
         path.join(conf.paths.tmp, '/serve/sample/**/*.css'),
         path.join(conf.paths.src, '/sample/**/*.css'), //inject components

@@ -5,7 +5,7 @@ angular.module('profile.module').directive('profileFormPositions', /*@ngInject*/
             options: '=',
             selected: '=',
         },
-        templateUrl: "app/profile/form/positions/profileFormPositions.tpl.html",
+        templateUrl: "core/profile/form/positions/profileFormPositions.tpl.html",
         controller: 'ProfileFormPositionsCtrl',
         controllerAs: 'vm'
     }

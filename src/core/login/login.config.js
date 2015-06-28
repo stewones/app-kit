@@ -10,7 +10,14 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
         views: {
             'content': {
                 templateUrl: 'core/login/login.tpl.html',
-                controller: 'LoginCtrl as vm'
+                controller: '$LoginCtrl as vm'
+            }
+        },
+        resolve: {
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
             }
         }
     }).state('app.logout', {
@@ -22,29 +29,28 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
                 controller: 'LogoutCtrl as vm'
             }
         }
-    })
-        .state('app.signup', {
-            // parent: 'app',
-            protected: false,
-            url: '/signup/',
-            views: {
-                'content': {
-                    templateUrl: 'core/login/register/register.tpl.html',
-                    controller: /*@ngInject*/ function(layout, setting) {
-                        layout.setTitle(setting.name + setting.titleSeparator + 'Cadastro');
-                    }
+    }).state('app.signup', {
+        // parent: 'app',
+        protected: false,
+        url: '/signup/',
+        views: {
+            'content': {
+                templateUrl: 'core/login/register/register.tpl.html',
+                controller: /*@ngInject*/ function(layout, setting) {
+                    layout.setTitle(setting.name + setting.titleSeparator + 'Cadastro');
                 }
             }
-        }).state('app.login-lost', {
-            // parent: 'app',
-            url: '/login/lost/',
-            views: {
-                'content': {
-                    templateUrl: 'core/login/register/lost.tpl.html',
-                    controller: 'LostCtrl as vm'
-                }
+        }
+    }).state('app.login-lost', {
+        // parent: 'app',
+        url: '/login/lost/',
+        views: {
+            'content': {
+                templateUrl: 'core/login/register/lost.tpl.html',
+                controller: 'LostCtrl as vm'
             }
-        });
+        }
+    });
     //$urlRouterProvider.otherwise('/login');
     $locationProvider.html5Mode(true);
 })

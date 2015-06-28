@@ -3,7 +3,7 @@ angular.module('login.module').directive('login', /*@ngInject*/ function() {
     return {
         scope: {},
         templateUrl: 'core/login/login.tpl.html',
-        controller: 'LoginCtrl',
+        controller: '$LoginCtrl',
         controllerAs: 'vm'
     }
 });

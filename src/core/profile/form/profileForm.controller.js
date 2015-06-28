@@ -41,31 +41,31 @@ angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ fun
         slug: 'positions',
         title: "<i class='fa fa-heartbeat'></i> Área de Interesse",
         subtitle: "Escolha em quais cargos você se encaixa em <strong>" + user.instance.current('company').name + "</strong>",
-        template: "app/profile/form/profileForm-step1.tpl.html"
+        template: "core/profile/form/profileForm-step1.tpl.html"
     }, {
         name: 'Dados Pessoais',
         slug: 'personal',
         title: "<i class='fa fa-smile-o'></i> Dados Pessoais",
         subtitle: "Algumas informações sobre você",
-        template: "app/profile/form/profileForm-step2.tpl.html"
+        template: "core/profile/form/profileForm-step2.tpl.html"
     }, {
         name: 'Curso',
         slug: 'graduation',
         title: "<i class='fa fa-graduation-cap'></i> Formação e Cursos",
         subtitle: "Nos informe sua formação escolar e cite alguns cursos que já tenha realizado",
-        template: "app/profile/form/profileForm-step3.tpl.html"
+        template: "core/profile/form/profileForm-step3.tpl.html"
     }, {
         name: 'Experiência',
         slug: 'xps',
         title: "<i class='fa fa-flask'></i> Experiências",
         subtitle: "Conte-nos um pouco sobre sua trajetória.",
-        template: "app/profile/form/profileForm-step4.tpl.html"
+        template: "core/profile/form/profileForm-step4.tpl.html"
     }, {
         name: 'Idioma',
         slug: 'idioms',
         title: "<i class='fa fa-language'></i> Idiomas",
         subtitle: "Especifique alguns idiomas que você fale",
-        template: "app/profile/form/profileForm-step5.tpl.html"
+        template: "core/profile/form/profileForm-step5.tpl.html"
     }];
     $scope.tabs = tabs;
     $scope.tabCurrent = 0;

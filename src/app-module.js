@@ -31,10 +31,10 @@ angular.module('login.module', [
     'satellizer',
     'google.login',
     'facebook.login'
-]).run( /*@ngInject*/ function (CoreLogin, $rootScope) {
+]).run( /*@ngInject*/ function ($login, $rootScope) {
 	$rootScope.$on('$stateChangeStart', function(event, toState, toParams) {	
-        if (CoreLogin.config.templateUrl && toState.name === 'app.login') {
-         	toState.views.content.templateUrl = CoreLogin.config.templateUrl;
+        if ($login.config.templateUrl && toState.name === 'app.login') {
+         	toState.views.content.templateUrl = $login.config.templateUrl;
         }
     });
 });
@@ -433,6 +433,12 @@ angular.module('account.module').service('Account', /*@ngInject*/ function($http
     return Account;
 })
 'use strict';
+/**
+ * @ngdoc service
+ * @name layout.module.layout
+ * @description 
+ * Comportamentos básicos de layout
+ **/
 angular.module('layout.module').factory('layout', /*@ngInject*/ function($mdToast) {
     this.title = '';
     this.description = '';
@@ -444,7 +450,6 @@ angular.module('layout.module').factory('layout', /*@ngInject*/ function($mdToas
     this.ogImage = '';
     this.ogSection = '';
     this.ogTag = '';
-
     return {
         load: load(),
         progress: progress(),
@@ -462,13 +467,25 @@ angular.module('layout.module').factory('layout', /*@ngInject*/ function($mdToas
         ogSection: ogSection,
         ogTag: ogTag
     }
-    //
-    // SEO
-    //
+    /**
+     * @ngdoc function
+     * @name layout.module.layout#setTitle
+     * @methodOf layout.module.layout
+     * @description
+     * Setar meta tag título
+     * @param {string} str titulo    
+     **/
     function setTitle(str) {
         this.title = str;
     }
-
+    /**
+     * @ngdoc function
+     * @name layout.module.layout#setDescription
+     * @methodOf layout.module.layout
+     * @description
+     * Setar meta tag descrição
+     * @param {string} str titulo    
+     **/
     function setDescription(str) {
         this.description = str;
     }
@@ -480,62 +497,44 @@ angular.module('layout.module').factory('layout', /*@ngInject*/ function($mdToas
     // OPEN GRAPH
     //
     function ogLocale(value) {
-        if (value)
-            this._ogLocale = value;
-        else
-            return this._ogLocale;
+        if (value) this._ogLocale = value;
+        else return this._ogLocale;
     }
 
     function ogSiteName(value) {
-        if (value)
-            this._ogSiteName = value;
-        else
-            return this._ogSiteName;
+        if (value) this._ogSiteName = value;
+        else return this._ogSiteName;
     }
 
     function ogTitle(value) {
-        if (value)
-            this._ogTitle = value;
-        else
-            return this._ogTitle;
+        if (value) this._ogTitle = value;
+        else return this._ogTitle;
     }
 
     function ogDescription(value) {
-        if (value)
-            this._ogDescription = value;
-        else
-            return this._ogDescription;
+        if (value) this._ogDescription = value;
+        else return this._ogDescription;
     }
 
     function ogUrl(value) {
-        if (value)
-            this._ogUrl = value;
-        else
-            return this._ogUrl;
+        if (value) this._ogUrl = value;
+        else return this._ogUrl;
     }
 
     function ogImage(value) {
-        if (value)
-            this._ogImage = value;
-        else
-            return this._ogImage;
+        if (value) this._ogImage = value;
+        else return this._ogImage;
     }
 
     function ogSection(value) {
-        if (value)
-            this._ogSection = value;
-        else
-            return this._ogSection;
+        if (value) this._ogSection = value;
+        else return this._ogSection;
     }
 
     function ogTag(value) {
-        if (value)
-            this._ogTag = value;
-        else
-            return this._ogTag;
+        if (value) this._ogTag = value;
+        else return this._ogTag;
     }
-
-
     //
     // PAGE LOADER
     //
@@ -584,7 +583,14 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
         views: {
             'content': {
                 templateUrl: 'core/login/login.tpl.html',
-                controller: 'LoginCtrl as vm'
+                controller: '$LoginCtrl as vm'
+            }
+        },
+        resolve: {
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
             }
         }
     }).state('app.logout', {
@@ -596,35 +602,44 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
                 controller: 'LogoutCtrl as vm'
             }
         }
-    })
-        .state('app.signup', {
-            // parent: 'app',
-            protected: false,
-            url: '/signup/',
-            views: {
-                'content': {
-                    templateUrl: 'core/login/register/register.tpl.html',
-                    controller: /*@ngInject*/ function(layout, setting) {
-                        layout.setTitle(setting.name + setting.titleSeparator + 'Cadastro');
-                    }
+    }).state('app.signup', {
+        // parent: 'app',
+        protected: false,
+        url: '/signup/',
+        views: {
+            'content': {
+                templateUrl: 'core/login/register/register.tpl.html',
+                controller: /*@ngInject*/ function(layout, setting) {
+                    layout.setTitle(setting.name + setting.titleSeparator + 'Cadastro');
                 }
             }
-        }).state('app.login-lost', {
-            // parent: 'app',
-            url: '/login/lost/',
-            views: {
-                'content': {
-                    templateUrl: 'core/login/register/lost.tpl.html',
-                    controller: 'LostCtrl as vm'
-                }
+        }
+    }).state('app.login-lost', {
+        // parent: 'app',
+        url: '/login/lost/',
+        views: {
+            'content': {
+                templateUrl: 'core/login/register/lost.tpl.html',
+                controller: 'LostCtrl as vm'
             }
-        });
+        }
+    });
     //$urlRouterProvider.otherwise('/login');
     $locationProvider.html5Mode(true);
 })
 'use strict';
-angular.module('login.module').controller('LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, CoreLogin, layout, setting, api) {
-    isAuthed();
+/**
+ * @ngdoc object
+ * @name login.module.controller:$LoginCtrl
+ * @description 
+ * Responsável pelos comportamentos básicos de login na aplicação
+ * @requires login.module.$loginProvider
+ * @requires layout.module.layout
+ * @requires setting
+ * @requires api
+ **/
+'use strict';
+angular.module('login.module').controller('$LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, $login, layout, setting, api) {
     layout.setTitle(setting.name + setting.titleSeparator + 'Login');
     layout.setDescription('Entre para o ' + setting.name);
     layout.banner = false;
@@ -633,7 +648,8 @@ angular.module('login.module').controller('LoginCtrl', /*@ngInject*/ function($r
     vm.lost = lost;
     vm.change = change;
     vm.auth = auth;
-    vm.config = CoreLogin.config;
+    vm.config = $login.config;
+    vm.ChildController = $login.controller ? $login.controller : function() {};
     //lost password step2
     var userHash = $location.hash();
     if (userHash) vm.userHash = userHash;
@@ -672,36 +688,117 @@ angular.module('login.module').controller('LoginCtrl', /*@ngInject*/ function($r
             email: email
         }).success(onSuccess).error(onError);
     }
-    //
-    // SECURED AREA
-    //
-    function isAuthed() {
-        if ($auth.isAuthenticated()) {
-            $state.go(CoreLogin.config.auth.loginSuccessStateRedirect);
-        }
-    }
 })
 'use strict';
 angular.module('login.module').directive('login', /*@ngInject*/ function() {
     return {
         scope: {},
         templateUrl: 'core/login/login.tpl.html',
-        controller: 'LoginCtrl',
+        controller: '$LoginCtrl',
         controllerAs: 'vm'
     }
 });
 'use strict';
-angular.module('login.module').provider('CoreLogin', /*@ngInject*/ function() {
-    this.config = {};
-    this.$get = this.get = function() {
-        return {
-            config: this.config
+angular.module('login.module').provider('$login',
+    /**
+     * @ngdoc object
+     * @name login.module.$loginProvider
+     * @description 
+     * Configurações de Login
+     **/
+    /*@ngInject*/
+    function $loginProvider() {
+        /**
+         * @ngdoc object
+         * @name login.module.$loginProvider#config
+         * @propertyOf login.module.$loginProvider
+         * @description 
+         * Configurações
+         **/
+        this.config = {};
+        /**
+         * @ngdoc object
+         * @name login.module.$loginProvider#controller
+         * @propertyOf login.module.$loginProvider
+         * @description 
+         * Contralador filho para rota de login
+         **/
+        this.controller = '$loginCtrl';
+        /**
+         * @ngdoc function
+         * @name login.module.$loginProvider#$get
+         * @propertyOf login.module.$loginProvider
+         * @description 
+         * Getter que vira factory pelo angular
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($login) {     
+         *      console.log($login.templateUrl);
+         *      //prints the current templateUrl of `login.module`
+         *      //ex.: "core/login/login.tpl.html"     
+         *      console.log($login.controller);
+         *      //prints the current child controller of `login.module`
+         *      //ex.: "$loginCtrl"
+         * })
+         * </pre>
+         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e controller
+         **/
+        this.$get = this.get = function() {
+                return {
+                    config: this.config,
+                    controller: this.controller,
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name login.module.$loginProvider#setConfig
+             * @methodOf login.module.$loginProvider
+             * @description
+             * Setter para configurações
+             * @example
+             * <pre>
+             * $loginProvider.setConfig('myOwnConfiguration', {
+             *      configA: 54,
+             *      configB: '=D'
+             * })
+             * </pre>
+             * @param {string} key chave
+             * @param {*} val valor   
+             **/
+        this.setConfig = function(key, val) {
+                this.config[key] = val;
+            }
+            /**
+             * @ngdoc function
+             * @name login.module.$loginProvider#setController
+             * @methodOf login.module.$loginProvider
+             * @description
+             * Setter de controlador filho para a rota de login
+             * @example
+             * <pre>
+             * $loginProvider.setController('MyLoginCtrl')
+             * </pre>
+             * @param {string} val nome do controlador    
+             **/
+        this.setController = function(val) {
+                this.controller = val;
+            }
+            /**
+             * @ngdoc function
+             * @name login.module.$loginProvider#setTemplateUrl
+             * @methodOf login.module.$loginProvider
+             * @description
+             * Setter para url de template
+             * @example
+             * <pre>
+             * $loginProvider.setTemplateUrl('app/login/my-login.html')
+             * </pre>
+             * @param {string} val url do template
+             **/
+        this.setTemplateUrl = function(val) {
+            this.templateUrl = val;
         }
-    }
-    this.set = function(key, val) {
-        this.config[key] = val;
-    }
-});
+    });
 'use strict';
 angular.module('login.module').controller('LogoutCtrl', /*@ngInject*/ function(user) {
     user.instance.destroy();
@@ -762,7 +859,7 @@ angular.module('login.module').controller('LostCtrl', /*@ngInject*/ function($ro
     }
 })
 'use strict';
-angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $anchorScrollProvider, $uiViewScrollProvider, FacebookProvider, CoreLoginProvider, UserSettingProvider, setting, api) {
+angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $anchorScrollProvider, $uiViewScrollProvider, FacebookProvider, $loginProvider, UserSettingProvider, setting, api) {
     //
     // States & Routes
     //
@@ -839,14 +936,14 @@ angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryPr
     auth.loginSuccessRedirect = '/profile/';
     page.accessTitle = 'Acessar conta';
     page.registerTitle = 'Ainda não tem uma?';
-    CoreLoginProvider.set('auth', auth);
-    CoreLoginProvider.set('page', page);
+    $loginProvider.setConfig('auth', auth);
+    $loginProvider.setConfig('page', page);
     UserSettingProvider.set('logoutStateRedirect', 'app.home');
     UserSettingProvider.set('roleForCompany', 'profile');
 });
 'use strict';
 /* global moment */
-angular.module('app.module').controller('AppCtrl', /*@ngInject*/ function(setting, lodash, $window, $rootScope, $scope, $state, $location, $mdSidenav, $mdBottomSheet, $mdToast, $timeout, $auth, layout, Profile, User, user, account, enviroment, menu, CoreLogin) {
+angular.module('app.module').controller('AppCtrl', /*@ngInject*/ function(setting, lodash, $window, $rootScope, $scope, $state, $location, $mdSidenav, $mdBottomSheet, $mdToast, $timeout, $auth, layout, Profile, User, user, account, enviroment, menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -914,7 +1011,7 @@ angular.module('app.module').controller('AppCtrl', /*@ngInject*/ function(settin
         vm.isAuthed = $auth.isAuthenticated;
         vm.logout = logout;
         vm.menu = menu.api();
-        vm.loginConfig = CoreLogin.config;
+        vm.loginConfig = $login.config;
         vm.iframe = $location.hash() === 'iframe' ? true : false;
     }
     //
@@ -1235,7 +1332,7 @@ angular.module('profile.module').controller('ProfileCtrl', /*@ngInject*/ functio
 'use strict';
 angular.module('profile.module').directive('profile', /*@ngInject*/ function() {
     return {
-        templateUrl: "app/profile/profile.tpl.html",
+        templateUrl: "core/profile/profile.tpl.html",
         controller: 'ProfileCtrl',
         controllerAs: 'vm'
     }
@@ -1333,6 +1430,12 @@ angular.module('user.module').provider('UserSetting', /*@ngInject*/ function() {
 })
 'use strict';
 /* global window */
+/**
+ * @ngdoc service
+ * @name user.module.User
+ * @description 
+ * Comportamentos de usuário
+ **/
 angular.module('user.module').service('User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, layout, setting) {
     var User = function(params, alert, message) {
             params = params ? params : {};
@@ -2231,31 +2334,31 @@ angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ fun
         slug: 'positions',
         title: "<i class='fa fa-heartbeat'></i> Área de Interesse",
         subtitle: "Escolha em quais cargos você se encaixa em <strong>" + user.instance.current('company').name + "</strong>",
-        template: "app/profile/form/profileForm-step1.tpl.html"
+        template: "core/profile/form/profileForm-step1.tpl.html"
     }, {
         name: 'Dados Pessoais',
         slug: 'personal',
         title: "<i class='fa fa-smile-o'></i> Dados Pessoais",
         subtitle: "Algumas informações sobre você",
-        template: "app/profile/form/profileForm-step2.tpl.html"
+        template: "core/profile/form/profileForm-step2.tpl.html"
     }, {
         name: 'Curso',
         slug: 'graduation',
         title: "<i class='fa fa-graduation-cap'></i> Formação e Cursos",
         subtitle: "Nos informe sua formação escolar e cite alguns cursos que já tenha realizado",
-        template: "app/profile/form/profileForm-step3.tpl.html"
+        template: "core/profile/form/profileForm-step3.tpl.html"
     }, {
         name: 'Experiência',
         slug: 'xps',
         title: "<i class='fa fa-flask'></i> Experiências",
         subtitle: "Conte-nos um pouco sobre sua trajetória.",
-        template: "app/profile/form/profileForm-step4.tpl.html"
+        template: "core/profile/form/profileForm-step4.tpl.html"
     }, {
         name: 'Idioma',
         slug: 'idioms',
         title: "<i class='fa fa-language'></i> Idiomas",
         subtitle: "Especifique alguns idiomas que você fale",
-        template: "app/profile/form/profileForm-step5.tpl.html"
+        template: "core/profile/form/profileForm-step5.tpl.html"
     }];
     $scope.tabs = tabs;
     $scope.tabCurrent = 0;
@@ -2980,7 +3083,7 @@ angular.module('profile.module').directive('profileFormPositions', /*@ngInject*/
             options: '=',
             selected: '=',
         },
-        templateUrl: "app/profile/form/positions/profileFormPositions.tpl.html",
+        templateUrl: "core/profile/form/positions/profileFormPositions.tpl.html",
         controller: 'ProfileFormPositionsCtrl',
         controllerAs: 'vm'
     }
@@ -3174,7 +3277,7 @@ angular.module("app.module").run(["$templateCache", function($templateCache) {$t
 $templateCache.put("core/account/confirm.tpl.html","<md-dialog aria-label=\"Confirme sua identidade\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Confirme sua identidade</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><menu-avatar first-name=\"user.profile.firstName\" last-name=\"user.profile.lastName\" gender=\"user.profile.gender\" facebook=\"user.facebook\"></menu-avatar><br><form name=\"passwordForm\"><md-input-container><label>Senha</label> <input type=\"password\" ng-model=\"account.password\" required=\"\"></md-input-container></form></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"confirm()\" class=\"md-primary\" ng-disabled=\"passwordForm.$invalid||!passwordForm.$dirty\">Confirmar</md-button></div></md-dialog>");
 $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"Desativação de conta\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Desativação de conta</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><strong>Prezad{{gender}} {{account.profile.firstName}}</strong><p>Conforme nossa política de usuários, não podemos apagar todos os seus dados, pois nem tudo está relacionado somente a você.<br>Iremos apagar suas conexões e o que mais for possível, além disso, você não receberá mais nenhuma oportunidade, ou notificação do LiveJob.</p><p>Deseja realmente prosseguir com a desativação de sua conta?</p></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"cancel()\" class=\"md-primary\">Não, obrigado.</md-button><md-button ng-click=\"confirm()\" class=\"md-primary\">Ok, entendo.</md-button></div></md-dialog>");
 $templateCache.put("core/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.isAuthed()\"></md-sidenav><div content=\"\" layout=\"column\" flex=\"\" class=\"main-content-wrapper\" app=\"app\"></div>");
-$templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
+$templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" ng-controller=\"vm.ChildController\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/profile/profile.tpl.html","<md-content class=\"main-wrapper md-padding\" layout=\"column\" flex=\"\"><profile-form company=\"app.user.current(\'company\')\" ng-if=\"vm.companyCurrent\"></profile-form></md-content>");
 $templateCache.put("core/account/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");
 $templateCache.put("core/layout/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");

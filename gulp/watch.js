@@ -34,7 +34,7 @@ gulp.task('watch', ['inject'], function() {
         path.join('!' + conf.paths.src, '/app-module.js'),
         path.join('!' + conf.paths.src, '/app-module.min.js')], function(event) {
         if (isOnlyChange(event)) {
-            gulp.start(['scripts','build-core']);
+            gulp.start(['scripts','build-core', 'build-docs']);
         } else {
             gulp.start('inject');
         }

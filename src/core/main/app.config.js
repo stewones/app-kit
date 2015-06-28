@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $anchorScrollProvider, $uiViewScrollProvider, FacebookProvider, CoreLoginProvider, UserSettingProvider, setting, api) {
+angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $anchorScrollProvider, $uiViewScrollProvider, FacebookProvider, $loginProvider, UserSettingProvider, setting, api) {
     //
     // States & Routes
     //
@@ -76,8 +76,8 @@ angular.module('app.module').config( /*@ngInject*/ function($urlMatcherFactoryPr
     auth.loginSuccessRedirect = '/profile/';
     page.accessTitle = 'Acessar conta';
     page.registerTitle = 'Ainda não tem uma?';
-    CoreLoginProvider.set('auth', auth);
-    CoreLoginProvider.set('page', page);
+    $loginProvider.setConfig('auth', auth);
+    $loginProvider.setConfig('page', page);
     UserSettingProvider.set('logoutStateRedirect', 'app.home');
     UserSettingProvider.set('roleForCompany', 'profile');
 });
