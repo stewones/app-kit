@@ -1,7 +1,7 @@
 /**
  *  Settings
  */
-exports.appName = 'app.module';
+exports.appName = 'app.kit';
 /**
  *  This file contains the variables used in other gulp files
  *  which defines tasks

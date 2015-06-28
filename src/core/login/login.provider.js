@@ -23,7 +23,15 @@ angular.module('login.module').provider('$login',
          * @description 
          * Contralador filho para rota de login
          **/
-        this.controller = '$loginCtrl';
+        this.controller = false;
+        /**
+         * @ngdoc object
+         * @name login.module.$loginProvider#templateUrl
+         * @propertyOf login.module.$loginProvider
+         * @description 
+         * Url do template para a rota
+         **/
+        this.templateUrl = 'core/login/login.tpl.html';
         /**
          * @ngdoc function
          * @name login.module.$loginProvider#$get

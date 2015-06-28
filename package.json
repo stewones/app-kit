@@ -1,18 +1,18 @@
 {
-  "name": "@esgrupo/app-module",
+  "name": "@esgrupo/app-kit",
   "version": "0.0.1",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esgrupo/app-module.git"
+    "url": "git+https://github.com/esgrupo/app-kit.git"
   },
   "author": "ES Grupo",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/esgrupo/app-module/issues"
+    "url": "https://github.com/esgrupo/app-kit/issues"
   },
-  "homepage": "https://github.com/esgrupo/app-module#readme",
-  "main": "src/app-module.min.js",
+  "homepage": "https://github.com/esgrupo/app-kit#readme",
+  "main": "src/app-kit.min.js",
   "dependencies": {},
   "devDependencies": {
     "browser-sync": "~2.7.6",

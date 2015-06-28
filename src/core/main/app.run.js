@@ -1,5 +1,5 @@
  'use strict';
- angular.module('app.module').run( /*@ngInject*/ function($rootScope) {
+ angular.module('app.kit').run( /*@ngInject*/ function($rootScope) {
      $rootScope.$on('$locationChangeSuccess', function() {
          $rootScope.$emit('locationChanged');
 

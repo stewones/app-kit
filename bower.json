@@ -1,9 +1,9 @@
 {
-  "name": "esgrupo-app-module",
+  "name": "esgrupo-app-kit",
   "version": "0.0.1",
   "main": [
-    "src/app-module.js",
-    "src/app-module.css"
+    "src/app-kit.js",
+    "src/app-kit.css"
   ],
   "dependencies": {
     "jquery": "~2.1.4",

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.module', [
+angular.module('app.kit', [
     'app.setting',
     'app.env',
     'app.utils',

@@ -29,7 +29,7 @@
      * Sample app
      */
     'use strict';
-    angular.module('esgrupo.app', ['app.module']).controller('TestCtrl', [TestCtrl]).config(['$loginProvider', TestConfig]);
+    angular.module('esgrupo.app', ['app.kit']).controller('TestCtrl', [TestCtrl]).config(['$loginProvider', TestConfig]);
 
     function TestCtrl() {
         alert('hello world')
