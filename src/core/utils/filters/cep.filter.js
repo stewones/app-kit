@@ -1,8 +1,15 @@
 'use strict';
-//
-// Usage:
-// {{some_text | cep}}
-//
+/**
+ * @ngdoc filter
+ * @name app.utils.filter:cep
+ * @description 
+ * Filtro para adicionar máscara de CEP
+ * @param {string} value código postal
+ * @example
+ * <pre>
+ * {{some_text | cep}}
+ * </pre>
+ **/
 angular.module('app.utils').filter('cep', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';

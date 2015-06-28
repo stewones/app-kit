@@ -1,8 +1,15 @@
 'use strict';
-//
-// Usage:
-// {{some_text | phone}}
-//
+/**
+ * @ngdoc filter
+ * @name app.utils.filter:phone
+ * @description 
+ * Adicionar máscara de telefone
+ * @param {string} value telefone
+ * @example
+ * <pre>
+ * {{some_text | phone}}
+ * </pre>
+ **/
 angular.module('app.utils').filter('phone', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';

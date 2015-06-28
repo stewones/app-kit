@@ -874,6 +874,15 @@ NAO IDENTAR VIA CTRL+ALT+F POIS O CODE FORMATER ESTA COLOCANDO UM ESPAÇO QUANDO
         padding-left: 0px !important;
     }
 }
+ul.top-menu { list-style-type: none; margin: 0; font-size: 12px; padding: 0;}
+ul.top-menu li { display: inline-block; margin: 0 5px 0; }
+ul.top-menu li i { font-size: 20px; margin-left: 12px}
+ul.top-menu li a { color: #fff }
+ul.top-menu li a:hover { color: yellow }
+
+@media (max-width: 600px) {
+ul.top-menu { margin: 24px 0 0; }
+}
 menu-avatar { margin: 20px auto;}
 menu-avatar img { margin: 0 auto; width: 150px;height: 150px;border-radius: 50%;box-sizing: content-box; }
 menu-avatar p.name { margin: 20px auto 0px; }
@@ -885,15 +894,6 @@ menu-avatar .avatar-wrapper { max-width: 270px; }
 menu-avatar .md-select-label {  padding-top: 0; margin-top: 15px; margin: 15px auto;}
 menu-facepile { min-height: 225px; }
 menu-facepile .loading { margin: 50px auto; }
-ul.top-menu { list-style-type: none; margin: 0; font-size: 12px; padding: 0;}
-ul.top-menu li { display: inline-block; margin: 0 5px 0; }
-ul.top-menu li i { font-size: 20px; margin-left: 12px}
-ul.top-menu li a { color: #fff }
-ul.top-menu li a:hover { color: yellow }
-
-@media (max-width: 600px) {
-ul.top-menu { margin: 24px 0 0; }
-}
 profile-form ul.list-positions {
     margin: 0;
 }

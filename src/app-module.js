@@ -713,7 +713,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#config
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Configurações
+         * Armazenar configurações
          **/
         this.config = {};
         /**
@@ -2632,10 +2632,17 @@ angular.module('profile.module').directive('profileForm', /*@ngInject*/ function
 })
  'use strict';
  /* global moment */
- //
- // Usage:
- // {{some_date | age }}
- //
+ /**
+  * @ngdoc filter
+  * @name app.utils.filter:age
+  * @description 
+  * Filtro para converter data (EN) para idade
+  * @param {date} value data de nascimento
+  * @example
+  * <pre>
+  * {{some_date | age}}
+  * </pre>
+  **/
  angular.module('app.utils').filter('age', /*@ngInject*/ function() {
      return function(value) {
          if (!value) return '';
@@ -2643,10 +2650,17 @@ angular.module('profile.module').directive('profileForm', /*@ngInject*/ function
      };
  })
 'use strict';
-//
-// Usage:
-// {{some_text | cep}}
-//
+/**
+ * @ngdoc filter
+ * @name app.utils.filter:cep
+ * @description 
+ * Filtro para adicionar máscara de CEP
+ * @param {string} value código postal
+ * @example
+ * <pre>
+ * {{some_text | cep}}
+ * </pre>
+ **/
 angular.module('app.utils').filter('cep', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';
@@ -2656,10 +2670,17 @@ angular.module('app.utils').filter('cep', /*@ngInject*/ function() {
     }
 })
 'use strict';
-//
-// Usage:
-// {{some_text | cep}}
-//
+/**
+ * @ngdoc filter
+ * @name app.utils.filter:cnpj
+ * @description 
+ * Filtro para adicionar máscara de CNPJ
+ * @param {string} value CNPJ
+ * @example
+ * <pre>
+ * {{some_text | cnpj}}
+ * </pre>
+ **/
 angular.module('app.utils').filter('cnpj', /*@ngInject*/ function() {
     return function(input) {
         // regex créditos @ Matheus Biagini de Lima Dias
@@ -2673,10 +2694,17 @@ angular.module('app.utils').filter('cnpj', /*@ngInject*/ function() {
     }
 });
 'use strict';
-//
-// Usage:
-// {{some_text | cpf}}
-//
+/**
+ * @ngdoc filter
+ * @name app.utils.filter:cpf
+ * @description 
+ * Filtro para adicionar máscara de CPF
+ * @param {string} value CPF
+ * @example
+ * <pre>
+ * {{some_text | cpf}}
+ * </pre>
+ **/
 angular.module('app.utils').filter('cpf', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';
@@ -2688,10 +2716,20 @@ angular.module('app.utils').filter('cpf', /*@ngInject*/ function() {
     }
 });
 'use strict';
-//
-// Usage:
-// {{some_text | cut:true:100:' ...'}}
-//
+/**
+ * @ngdoc filter
+ * @name app.utils.filter:cut
+ * @description 
+ * Filtro para cortar strings e adicionar "..."
+ * @param {string} value palavra ou texto
+ * @param {bool} wordwise cortar por palavras
+ * @param {integer} max tamanho máximo do corte
+ * @param {string} tail final da string (cauda)
+ * @example
+ * <pre>
+ * {{some_text | cut:true:100:' ...'}}
+ * </pre>
+ **/
 angular.module('app.utils').filter('cut', /*@ngInject*/ function() {
     return function(value, wordwise, max, tail) {
         if (!value) return '';
@@ -2709,10 +2747,17 @@ angular.module('app.utils').filter('cut', /*@ngInject*/ function() {
     };
 })
 'use strict';
-//
-// Usage:
-// {{some_text | phone}}
-//
+/**
+ * @ngdoc filter
+ * @name app.utils.filter:phone
+ * @description 
+ * Adicionar máscara de telefone
+ * @param {string} value telefone
+ * @example
+ * <pre>
+ * {{some_text | phone}}
+ * </pre>
+ **/
 angular.module('app.utils').filter('phone', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';
@@ -2726,10 +2771,19 @@ angular.module('app.utils').filter('phone', /*@ngInject*/ function() {
     }
 });
  'use strict';
- //
- // Usage:
- // {{some_number | randomInteger:1:10 }}
- //
+ /**
+  * @ngdoc filter
+  * @name app.utils.filter:randomInteger
+  * @description 
+  * Convertar para um número random
+  * @param {integer} value valor corrente
+  * @param {integer} min valor mínimo
+  * @param {integer} max valor máximo
+  * @example
+  * <pre>
+  * {{some_number | randomInteger:1:10}}
+  * </pre>
+  **/
  angular.module('app.utils').filter('randomInteger', /*@ngInject*/ function() {
      return function(value, min, max) {
          return Math.floor(Math.random() * (max - min)) + min;
@@ -3291,10 +3345,10 @@ $templateCache.put("core/account/optOut/optOut.tpl.html","<div class=\"opt-out m
 $templateCache.put("core/layout/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
 $templateCache.put("core/layout/content/content.tpl.html","<loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state.current.name != \'app.profile\' && app.state.current.name != \'app.landing\'}\"></div></md-content>");
 $templateCache.put("core/layout/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.layout.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
+$templateCache.put("core/layout/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" src=\"https://livejob.s3.amazonaws.com/livejob-white.png\"></a></div></div>");
 $templateCache.put("core/layout/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span>{{section | menuHuman }}</span></md-button>");
 $templateCache.put("core/layout/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/layout/menu/sidenav.tpl.html","<div layout=\"column\"><menu-facepile ng-if=\"app.user.current(\'company\').facebook && (app.state.current.name!=\'app.home\' && app.state.current.name!=\'app.account\') && app.enviroment !== \'development\' && !app.iframe\" hide-sm=\"\" width=\"304\" url=\"https://www.facebook.com/{{app.user.current(\'company\').facebook}}\" facepile=\"true\" hide-cover=\"false\" ng-hide=\"app.state.current.name===\'app.pages\'\"></menu-facepile><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu.sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu.isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu.isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting.copyright }} © {{ app.year }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
-$templateCache.put("core/layout/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" src=\"https://livejob.s3.amazonaws.com/livejob-white.png\"></a></div></div>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.layout.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
 $templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.layout.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.layout.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
@@ -3307,10 +3361,10 @@ $templateCache.put("core/profile/form/profileForm-step3.tpl.html","<div layout=\
 $templateCache.put("core/profile/form/profileForm-step4.tpl.html","<div layout=\"column\"><div class=\"fieldset\"><div class=\"group animate-repeat\" layout=\"row\" layout-sm=\"column\" ng-repeat=\"company in vm.profile.xp.companies\"><div flex=\"\" layout=\"column\"><div layout=\"row\" flex=\"\"><md-input-container flex=\"\"><label>Nome da empresa</label> <input focus=\"$index===0\" required=\"\" name=\"name\" ng-model=\"company.name\"></md-input-container><md-input-container flex=\"\"><label>Cargo</label> <input required=\"\" name=\"position\" ng-model=\"company.position\"></md-input-container></div><div layout=\"row\" flex=\"\"><md-input-container flex=\"\"><label>Começou</label> <input required=\"\" mask=\"39/19/9999\" name=\"start\" ng-model=\"company.start\" ng-change=\"vm.cycleXpMonths()\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container><md-input-container flex=\"\"><label>Saiu</label> <input focus=\"\" focus-when=\"!company.current\" mask=\"39/19/9999\" name=\"end\" ng-disabled=\"company.current\" ng-model=\"company.end\" ng-change=\"vm.cycleXpMonths()\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container></div><div layout=\"column\" flex=\"\"><md-input-container flex=\"\"><label>Breve descrição do seu trabalho com {{company.name}}</label> <textarea ng-model=\"company.info\" columns=\"1\" md-maxlength=\"150\">\r\n                    </textarea></md-input-container></div></div><div layout=\"row\"><div class=\"action-button-checkbox-wrap\"><label class=\"subtitle\">meu trabalho atual</label><md-button class=\"action-button checkbox md-fab\"><md-checkbox ng-model=\"company.current\" aria-label=\"Trabalha atualmente em {{company.name}}?\"></md-checkbox></md-button></div><md-button class=\"action-button remove md-fab md-warn\" aria-label=\"Remover {{company.name}}\" title=\"Remover {{company.name}}\" ng-click=\"vm.remove(company)\"><md-icon md-svg-src=\"assets/images/icons/ic_delete_24px.svg\"></md-icon></md-button></div></div><h5 ng-show=\"vm.profile.xp.months\"><br><i class=\"fa fa-lightbulb-o\"></i> Você possui ~{{vm.profile.xp.months | toYears }} de experiência</h5><p class=\"subtitle warn\" ng-show=\"!vm.profile.xp.companies.length\"><i class=\"fa fa-lightbulb-o\"></i> adicione empresas clicando no lápis --></p></div></div><br><br>");
 $templateCache.put("core/profile/form/profileForm-step5.tpl.html","<div class=\"fieldset\"><h5>Idiomas</h5><div class=\"group animate-repeat\" layout=\"row\" ng-repeat=\"idiom in vm.profile.education.idioms\"><md-select flex=\"\" required=\"\" placeholder=\"Língua\" class=\"lang\" ng-model=\"idiom.lang\" ng-class=\"{\'md-input-invalid\':!idiom.lang}\"><md-option ng-value=\"opt\" ng-repeat=\"opt in vm.idioms\">{{ opt }}</md-option></md-select><md-select flex=\"\" required=\"\" placeholder=\"Nível\" class=\"lang\" ng-model=\"idiom.level\" ng-class=\"{\'md-input-invalid\':!idiom.level}\"><md-option ng-value=\"opt\" ng-repeat=\"opt in vm.idiomsLevel\">{{ opt }}</md-option></md-select><md-button class=\"remove md-fab md-warn\" aria-label=\"Remover {{idiom.lang}}\" title=\"Remover {{idiom.lang}}\" ng-click=\"vm.remove(idiom)\"><md-icon md-svg-src=\"assets/images/icons/ic_delete_24px.svg\"></md-icon></md-button></div><p class=\"subtitle warn\" ng-show=\"!vm.profile.education.idioms.length\"><i class=\"fa fa-lightbulb-o\"></i> adicione idiomas clicando no lápis --></p></div>");
 $templateCache.put("core/profile/form/profileForm.tpl.html","<form novalidate=\"\" name=\"vm.forms.profile\" class=\"md-whiteframe-z1\"><md-tabs md-dynamic-height=\"\" md-center-tabs=\"\" md-selected=\"tabCurrent\" md-border-bottom=\"\"><md-tab ng-repeat=\"tab in tabs\" ng-disabled=\"tab.disabled\"><md-tab-label><span ng-bind-html=\"tab.title\"></span></md-tab-label><md-tab-body><div class=\"profile-tab {{tab.slug}}\"><p class=\"subtitle\" ng-bind-html=\"tab.subtitle\"></p><div ng-include=\"tab.template\"></div></div></md-tab-body></md-tab></md-tabs><div layout=\"\" class=\"row actions content-action-wrapper\"><md-button ng-hide=\"vm.hideActionAddWhen()\" class=\"add md-fab md-warn\" aria-label=\"Adicionar {{tabs[tabCurrent].name}}\" title=\"Adicionar {{tabs[tabCurrent].name}}\" ng-click=\"vm.add()\"><md-icon md-svg-src=\"assets/images/icons/ic_mode_edit_18px.svg\"></md-icon></md-button><md-button class=\"save md-fab md-primary\" aria-label=\"Atualizar Perfil\" title=\"Atualizar Perfil\" ng-click=\"vm.save()\" ng-disabled=\"vm.profile.busy||(vm.forms.profile.$invalid&&tabCurrent!=0)||!vm.forms.profile.$dirty\"><md-icon md-svg-src=\"assets/images/icons/ic_thumb_up_24px.svg\" ng-click=\"vm.hasFormErrorToast()\"></md-icon></md-button></div></form>");
-$templateCache.put("core/layout/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
-$templateCache.put("core/layout/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
 $templateCache.put("core/layout/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" ng-click=\"vm.handlerClick(item)\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/layout/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img ng-if=\"app.state.current.name != \'app.home\'\" hide-sm=\"\" hide-md=\"\" class=\"logo-header\" src=\"https://livejob.s3.amazonaws.com/livejob-white.png\"></a><h4 class=\"name\" ng-hide=\"app.isAuthed()\" ng-if=\"app.state.current.name === \'app.landing\'||app.state.current.name === \'app.profile\'\">{{app.user.current(\'company\').name || app.user.session(\'company\').name}}</h4><company-chooser companyid=\"app.user.current(\'company\')._id\" companies=\"app.user.current(\'companies\')\" placeholder=\"\'Conexões\'\" hide-me=\"app.state.current.name!=\'app.profile\'&&app.state.current.name!=\'app.landing\'\"></company-chooser></div>");
+$templateCache.put("core/layout/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
+$templateCache.put("core/layout/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
 $templateCache.put("core/profile/form/positions/profileFormPositions.tpl.html","<ul class=\"list-positions\"><li ng-repeat=\"item in options\" class=\"animate-repeat\"><md-checkbox title=\"{{item}}\" ng-checked=\"vm.exists(item, selected)\" ng-click=\"vm.toggle(item, selected)\">{{item}}</md-checkbox></li></ul>");
 $templateCache.put("core/utils/directives/leadForm/leadForm.tpl.html","<form class=\"lead-form\" name=\"leadForm\" novalidate=\"\"><md-input-container flex=\"\"><label>Seu nome</label> <input name=\"name\" ng-model=\"lead.name\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Email</label> <input name=\"email\" type=\"email\" ng-model=\"lead.email\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Empresa</label> <input name=\"company\" ng-model=\"lead.company\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Telefone</label> <input name=\"phone\" ng-model=\"lead.phone\" ui-br-phone-number=\"\" required=\"\"></md-input-container><md-button ng-click=\"register()\" ng-disabled=\"leadForm.$invalid\" class=\"md-primary\">{{label?label:\'Enviar\'}}</md-button><md-progress-circular md-diameter=\"20\" class=\"md-warn md-hue-3\" md-mode=\"indeterminate\" ng-class=\"{\'busy\':vm.busy}\"></md-progress-circular></form>");
 $templateCache.put("core/utils/directives/liveChips/liveChips.tpl.html","<md-chips ng-model=\"vm.selectedItems\" md-autocomplete-snap=\"\" md-require-match=\"\"><md-autocomplete md-selected-item=\"vm.selectedItem\" md-search-text=\"vm.searchText\" md-items=\"item in vm.querySearch(vm.searchText)\" md-item-text=\"item\" placeholder=\"{{vm.placeholder}}\"><span md-highlight-text=\"vm.searchText\">{{item}}</span></md-autocomplete><md-chip-template><span><a ng-class=\"{\'truncate\':truncateInput}\" title=\"{{$chip}}\">{{$chip}}</a></span></md-chip-template></md-chips><v-accordion ng-hide=\"hideOptions\" class=\"vAccordion--default\" layout-align=\"start start\" layout-align-sm=\"center start\" control=\"accordion\"><v-pane><v-pane-header class=\"border-bottom\"><div>Opções</div></v-pane-header><v-pane-content><md-list><md-list-item class=\"filter-opt\" ng-repeat=\"chip in items track by $index\"><div class=\"md-list-item-text compact\"><a ng-class=\"{\'truncate\':truncateOptions}\" title=\"{{chip}}\" ng-click=\"vm.applyRole(chip,accordion)\"><i class=\"fa fa-gear\"></i> {{chip}}</a></div></md-list-item></md-list></v-pane-content></v-pane></v-accordion>");}]);

@@ -13,7 +13,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#config
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Configurações
+         * Armazenar configurações
          **/
         this.config = {};
         /**

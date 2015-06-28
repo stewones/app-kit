@@ -1,8 +1,18 @@
 'use strict';
-//
-// Usage:
-// {{some_text | cut:true:100:' ...'}}
-//
+/**
+ * @ngdoc filter
+ * @name app.utils.filter:cut
+ * @description 
+ * Filtro para cortar strings e adicionar "..."
+ * @param {string} value palavra ou texto
+ * @param {bool} wordwise cortar por palavras
+ * @param {integer} max tamanho máximo do corte
+ * @param {string} tail final da string (cauda)
+ * @example
+ * <pre>
+ * {{some_text | cut:true:100:' ...'}}
+ * </pre>
+ **/
 angular.module('app.utils').filter('cut', /*@ngInject*/ function() {
     return function(value, wordwise, max, tail) {
         if (!value) return '';
