@@ -1,9 +1,17 @@
 'use strict';
-//
-// Usage:
-// {{some_text | real:true}}
-//
-angular.module('app.utils').filter('real', /*@ngInject*/ function() {
+/**
+ * @ngdoc filter
+ * @name utils.module.filter:real
+ * @description 
+ * Adicionar mascára de moeda no formato real (BR)
+ * @param {string} value valor
+ * @param {bool} prefix prefixo R$
+ * @example
+ * <pre>
+ * {{some_text | real:true}}
+ * </pre>
+ **/
+angular.module('utils.module').filter('real', /*@ngInject*/ function() {
     return function(input, prefix) {
         return prefix ? 'R$ ' : '' + formatReal(input);
     }

@@ -3,7 +3,7 @@
         <a ng-click="app.menu.open()" ng-if="app.isAuthed()" aria-label="menu" >
         <md-icon md-svg-src="assets/images/icons/ic_menu_24px.svg"></md-icon>
         </a>
-        <toolbar-title></toolbar-title>
+        <toolbar-title hide-sm hide-md></toolbar-title>
     </div>
     <toolbar-title hide show-gt-md></toolbar-title>
     <div layout="row" ng-if="app.state.current.name != 'app.home'">

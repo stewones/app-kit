@@ -3,7 +3,7 @@
 // Usage:
 // {{months | toYears }}
 //
-angular.module('app.utils').filter('toYears', /*@ngInject*/ function() {
+angular.module('utils.module').filter('toYears', /*@ngInject*/ function() {
     return function(value) {
         if (!value) return '';
         var what = value,

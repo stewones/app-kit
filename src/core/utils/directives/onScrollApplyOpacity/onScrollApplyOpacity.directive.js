@@ -1,6 +1,6 @@
 'use strict';
 /* jshint undef: false, unused: false */
-angular.module('app.utils').directive('onScrollApplyOpacity', /*@ngInject*/ function() {
+angular.module('utils.module').directive('onScrollApplyOpacity', /*@ngInject*/ function() {
     //
     // Essa diretiva é um hack pra resolver um bug de scroll nos botões de ação que contem wrapper com margin-top negativa
     //

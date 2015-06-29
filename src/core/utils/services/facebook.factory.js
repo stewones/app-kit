@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.utils').factory('Fb', /*@ngInject*/ function(Facebook) {
+angular.module('utils.module').factory('Fb', /*@ngInject*/ function(Facebook) {
     return {
         getLikes: getLikes,
         getFriends: getFriends,

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.utils').directive('focus', /*@ngInject*/ function() {
+angular.module('utils.module').directive('focus', /*@ngInject*/ function() {
     return {
         scope: {
             focus: '=',

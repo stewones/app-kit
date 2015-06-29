@@ -60,12 +60,12 @@ describe('Component <profile/form/profileForm> controller', function() {
             expect(vm.educationLoading).toEqual(false);
         });
         it('toast on server error', function() {
-            spyOn(layout, 'toast');
+            spyOn($page, 'toast');
             requestHandler.respond(500);
             $scope.tabCurrent = 2;
             $httpBackend.flush();
             $timeout.flush();
-            expect(layout.toast).toHaveBeenCalled();
+            expect($page.toast).toHaveBeenCalled();
         });
         it('needs to have graduation options', function() {
             $scope.tabCurrent = 2;

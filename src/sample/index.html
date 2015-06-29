@@ -1,21 +1,21 @@
 <!doctype html>
-<html class="no-js" ng-app="esgrupo.app" ng-controller="AppCtrl as app">
+<html class="no-js" ng-app="esgrupo.app" ng-controller="$AppCtrl as app">
     <head>
         <base href="/" />
         <meta charset="utf-8">
-        <title ng-bind="app.layout.title"></title>
+        <title ng-bind="app.$page.title"></title>
         <meta name="fragment" content="!">
-        <meta name="description" content="{{ app.layout.getDescription() }}">
+        <meta name="description" content="{{ app.$page.description() }}">
         <meta name="viewport" content="width=device-width">
         <!-- og -->
-        <meta content="{{ app.layout.ogLocale() }}" property="og:locale" />
-        <meta content="{{ app.layout.ogSiteName() }}" property="og:site_name">
-        <meta content="{{ app.layout.ogTitle() }}" property="og:title">
-        <meta content="{{ app.layout.ogDescription() }}" property="og:description">
-        <meta content="{{ app.layout.ogUrl() }}" property="og:url">
-        <meta content="{{ app.layout.ogImage() }}" property="og:image">
-        <meta content="{{ app.layout.ogSection() }}" property="article:section">
-        <meta content="{{ app.layout.ogTag() }}" property="article:tag">
+        <meta content="{{ app.$page.ogLocale() }}" property="og:locale" />
+        <meta content="{{ app.$page.ogSiteName() }}" property="og:site_name">
+        <meta content="{{ app.$page.ogTitle() }}" property="og:title">
+        <meta content="{{ app.$page.ogDescription() }}" property="og:description">
+        <meta content="{{ app.$page.ogUrl() }}" property="og:url">
+        <meta content="{{ app.$page.ogImage() }}" property="og:image">
+        <meta content="{{ app.$page.ogSection() }}" property="article:section">
+        <meta content="{{ app.$page.ogTag() }}" property="article:tag">
         <!-- /og -->
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <link rel="icon" type="image/png" href="assets/icons/favicon.png">

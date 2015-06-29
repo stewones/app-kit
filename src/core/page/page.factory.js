@@ -1,29 +1,26 @@
 'use strict';
 /**
  * @ngdoc service
- * @name layout.module.layout
+ * @name page.module.factory:$page
  * @description 
- * Comportamentos básicos de layout
+ * Comportamentos e estados da página
  **/
-angular.module('layout.module').factory('layout', /*@ngInject*/ function($mdToast) {
-    this.title = '';
-    this.description = '';
-    this._ogLocale = '';
-    this.ogSiteName = '';
-    this.ogTitle = '';
-    this.ogDescription = '';
-    this.ogUrl = '';
-    this.ogImage = '';
-    this.ogSection = '';
-    this.ogTag = '';
+angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) {
+    this._title = '';
+    this._description = '';
+    this._ogSiteName = '';
+    this._ogTitle = '';
+    this._ogDescription = '';
+    this._ogUrl = '';
+    this._ogImage = '';
+    this._ogSection = '';
+    this._ogTag = '';
     return {
         load: load(),
         progress: progress(),
-        setTitle: setTitle,
-        setDescription: setDescription,
-        getDescription: getDescription,
-        banner: this.banner,
         toast: toast,
+        title: title,
+        description: description,
         ogLocale: ogLocale,
         ogSiteName: ogSiteName,
         ogTitle: ogTitle,
@@ -35,29 +32,27 @@ angular.module('layout.module').factory('layout', /*@ngInject*/ function($mdToas
     }
     /**
      * @ngdoc function
-     * @name layout.module.layout#setTitle
-     * @methodOf layout.module.layout
+     * @name page.module.factory:$page#title
+     * @methodOf page.module.factory:$page
      * @description
      * Setar meta tag título
      * @param {string} str titulo    
      **/
-    function setTitle(str) {
-        this.title = str;
+    function title(value) {
+        if (value) this._title = value;
+        else return this._title;
     }
     /**
      * @ngdoc function
-     * @name layout.module.layout#setDescription
-     * @methodOf layout.module.layout
+     * @name page.module.factory:$page#description
+     * @methodOf page.module.factory:$page
      * @description
      * Setar meta tag descrição
      * @param {string} str titulo    
      **/
-    function setDescription(str) {
-        this.description = str;
-    }
-
-    function getDescription() {
-        return this.description;
+    function description(value) {
+        if (value) this._description = value;
+        else return this._description;
     }
     //
     // OPEN GRAPH

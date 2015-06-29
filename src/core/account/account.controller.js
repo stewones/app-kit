@@ -1,11 +1,11 @@
 'use strict';
-angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, User, UserSetting, utils, layout, user, setting, api) {
+angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, User, UserSetting, utils, $page, user, setting, api) {
     var vm = this;
     //
     // SEO
     //
-    layout.setTitle(setting.title);
-    layout.setDescription(setting.description);
+    $page.title(setting.title);
+    $page.description(setting.description);
     //
     // Events
     //
@@ -71,7 +71,7 @@ angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ functio
 
     function saveAccount() {
         confirmAccount(function() {
-            layout.load.init();
+            $page.load.init();
             //company unlink
             $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/updateInfo', {
                 firstName: vm.account.profile.firstName, //nome do perfil
@@ -86,21 +86,21 @@ angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ functio
                 user.instance.profile = _profile; //atualizar profile
                 user.set(new User(user.instance)); //re-instanciar usuario
                 bootstrap(); //re-instanciar profile
-                layout.toast('Dados atualizados');
-                layout.load.done();
+                $page.toast('Dados atualizados');
+                $page.load.done();
                 $rootScope.$emit('AccountUpdated');
             }
             //handle unlink fail
             function onFailUpdateInfo(response) {
-                layout.toast('não foi possível atualizar seus dados ' + response.error ? response.error : '');
-                layout.load.done();
+                $page.toast('não foi possível atualizar seus dados ' + response.error ? response.error : '');
+                $page.load.done();
             }
         });
     }
 
     function unlinkCompany(id) {
         confirmAccount(function() {
-            layout.load.init();
+            $page.load.init();
             //company unlink
             $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/unlinkCompany', {
                 cid: id
@@ -117,33 +117,33 @@ angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ functio
                 }
                 user.set(new User(user.instance)); //re-instanciar usuario
                 bootstrap();
-                layout.toast('empresa desconectada');
-                layout.load.done();
+                $page.toast('empresa desconectada');
+                $page.load.done();
                 $rootScope.$emit('AccountUpdated');
             }
             //handle unlink fail
             function onFailUnlink(response) {
-                layout.toast('não foi possível desconectar da empresa  ' + response.error ? response.error : '');
+                $page.toast('não foi possível desconectar da empresa  ' + response.error ? response.error : '');
             }
         });
     }
 
     function savePassword() {
         confirmAccount(function() {
-            layout.load.init();
+            $page.load.init();
             $http.put(api.url + '/api/profiles/' + user.instance.id + '/updatePassword', {
                 pw: vm.account._password,
             }).success(onSuccessUpdatePassword).error(onFailUpdatePassword);
 
             function onSuccessUpdatePassword(response) {
-                layout.toast('Senha atualizada');
-                layout.load.done();
+                $page.toast('Senha atualizada');
+                $page.load.done();
                 bootstrap();
             }
 
             function onFailUpdatePassword(response) {
-                layout.toast('não foi possível alterar sua senha ' + response && response.error ? response.error : '');
-                layout.load.done();
+                $page.toast('não foi possível alterar sua senha ' + response && response.error ? response.error : '');
+                $page.load.done();
             }
         });
     }
@@ -162,13 +162,13 @@ angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ functio
                 };
                 $scope.confirm = function() {
                     confirmAccount(function() {
-                        layout.load.init();
+                        $page.load.init();
                         //company unlink
                         $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/deactivateAccount').success(onSuccessDeactivate).error(onFailDeactivate);
                         //handle unlink success
                         function onSuccessDeactivate(response) {
-                            layout.toast('Sua conta foi cancelada, você será desconectado em 5 segundos...');
-                            layout.load.done();
+                            $page.toast('Sua conta foi cancelada, você será desconectado em 5 segundos...');
+                            $page.load.done();
                             $timeout(function() {
                                 user.instance.destroy();
                                 $location.path('/');
@@ -176,7 +176,7 @@ angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ functio
                         }
                         //handle unlink fail
                         function onFailDeactivate(response) {
-                            layout.toast('não foi possível cancelar sua conta, por favor entre em contato ' + response.error ? response.error : '');
+                            $page.toast('não foi possível cancelar sua conta, por favor entre em contato ' + response.error ? response.error : '');
                         }
                     });
                 };

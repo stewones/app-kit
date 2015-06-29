@@ -7,13 +7,13 @@ angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvi
         abstract: true,
         views: {
             'app': {
-                templateUrl: 'core/layout/layout.tpl.html'
+                templateUrl: 'core/page/layout/layout.tpl.html'
             },
             'toolbar@app': {
-                templateUrl: 'core/layout/toolbar/toolbar.tpl.html'
+                templateUrl: 'core/page/toolbar/toolbar.tpl.html'
             },
             'sidenav@app': {
-                templateUrl: 'core/layout/menu/sidenav.tpl.html'
+                templateUrl: 'core/page/menu/sidenav.tpl.html'
             }
         }
     });

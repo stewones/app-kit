@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.utils').directive('updateModelKeyEnter', /*@ngInject*/ function() {
+angular.module('utils.module').directive('updateModelKeyEnter', /*@ngInject*/ function() {
     return {
         restrict: 'A',
         require: 'ngModel',

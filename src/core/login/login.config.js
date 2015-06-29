@@ -36,8 +36,8 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
         views: {
             'content': {
                 templateUrl: 'core/login/register/register.tpl.html',
-                controller: /*@ngInject*/ function(layout, setting) {
-                    layout.setTitle(setting.name + setting.titleSeparator + 'Cadastro');
+                controller: /*@ngInject*/ function($page, setting) {
+                    $page.title(setting.name + setting.titleSeparator + 'Cadastro');
                 }
             }
         }

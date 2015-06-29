@@ -6,7 +6,7 @@
  * @description 
  * Comportamentos de usuário
  **/
-angular.module('user.module').service('User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, layout, setting) {
+angular.module('user.module').service('User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
     var User = function(params, alert, message) {
             params = params ? params : {};
             this.currentData = {};
@@ -34,7 +34,7 @@ angular.module('user.module').service('User', /*@ngInject*/ function($state, $ht
                     this.current('companies', getCompanies(this));
                 }
                 if (!message) message = 'Olá ' + params.profile.firstName + ', você entrou. Bem vind' + gender + ' de volta.';
-                if (alert) layout.toast(message, 10000);
+                if (alert) $page.toast(message, 10000);
                 if (this.session('company') && this.session('company')._id) {
                     this.current('company', this.filterCompany(this.session('company')._id));
                 }
@@ -108,8 +108,8 @@ angular.module('user.module').service('User', /*@ngInject*/ function($state, $ht
         removeStorageUser();
         // if (UserSetting.logoutStateRedirect)
         // $state.go(UserSetting.logoutStateRedirect);
-        layout.load.done();
-        if (alert) layout.toast('Você saiu', 3000);
+        $page.load.done();
+        if (alert) $page.toast('Você saiu', 3000);
     }
     User.prototype.getWorkPosition = function(companyid) {
         var result = false,

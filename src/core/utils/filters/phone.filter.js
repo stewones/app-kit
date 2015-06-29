@@ -1,7 +1,7 @@
 'use strict';
 /**
  * @ngdoc filter
- * @name app.utils.filter:phone
+ * @name utils.module.filter:phone
  * @description 
  * Adicionar máscara de telefone
  * @param {string} value telefone
@@ -10,7 +10,7 @@
  * {{some_text | phone}}
  * </pre>
  **/
-angular.module('app.utils').filter('phone', /*@ngInject*/ function() {
+angular.module('utils.module').filter('phone', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';
         str = str.replace(/\D/g, '');

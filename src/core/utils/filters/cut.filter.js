@@ -1,7 +1,7 @@
 'use strict';
 /**
  * @ngdoc filter
- * @name app.utils.filter:cut
+ * @name utils.module.filter:cut
  * @description 
  * Filtro para cortar strings e adicionar "..."
  * @param {string} value palavra ou texto
@@ -13,7 +13,7 @@
  * {{some_text | cut:true:100:' ...'}}
  * </pre>
  **/
-angular.module('app.utils').filter('cut', /*@ngInject*/ function() {
+angular.module('utils.module').filter('cut', /*@ngInject*/ function() {
     return function(value, wordwise, max, tail) {
         if (!value) return '';
         max = parseInt(max, 10);

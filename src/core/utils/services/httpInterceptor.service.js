@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.utils').factory('HttpInterceptor', /*@ngInject*/ function($q, $rootScope) {
+angular.module('utils.module').factory('HttpInterceptor', /*@ngInject*/ function($q, $rootScope) {
     return {
         // optional method
         'request': function(config) {

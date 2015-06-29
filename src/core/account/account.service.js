@@ -1,5 +1,5 @@
 'use strict';
-angular.module('account.module').service('Account', /*@ngInject*/ function($http, $mdDialog, layout, api) {
+angular.module('account.module').service('Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
     var Account = function(params) {
         params = params ? params : {};
         if (typeof params === 'object') {
@@ -16,17 +16,17 @@ angular.module('account.module').service('Account', /*@ngInject*/ function($http
     Account.prototype.save = function(cbSuccess, cbError) {
         if (this.busy) return;
         this.busy = true;
-        layout.load.init();
+        $page.load.init();
         var url = api.url + '/api/accounts';
         $http.put(url + '/' + this.id, this).success(function(response) {
-            layout.load.done();
+            $page.load.done();
             this.busy = false;
-            layout.toast(response.firstName + ', sua conta foi atualizada.');
+            $page.toast(response.firstName + ', sua conta foi atualizada.');
             if (cbSuccess) return cbSuccess(response);
         }.bind(this)).error(function(response) {
-            layout.load.done();
+            $page.load.done();
             this.busy = false;
-            layout.toast('Problema ao atualizar conta');
+            $page.toast('Problema ao atualizar conta');
             if (cbError) return cbError(response);
         }.bind(this));
     }
@@ -43,22 +43,22 @@ angular.module('account.module').service('Account', /*@ngInject*/ function($http
                     $mdDialog.cancel();
                 };
                 $scope.confirm = function() {
-                    layout.load.init();
+                    $page.load.init();
                     var url = api.url + '/api/users';
                     $http.post(url + '/confirmIdentity', {
                         //id: vm.id, //nao necessario, recupero pelo req.user no express
                         pw: vm.password
                     }).success(function(response) {
-                        layout.load.done();
+                        $page.load.done();
                         this.busy = false;
                         vm.password = '';
                         $mdDialog.hide();
                         if (cbSuccess) return cbSuccess(response);
                     }.bind(this)).error(function(response) {
-                        layout.load.done();
+                        $page.load.done();
                         this.busy = false;
                         vm.password = '';
-                        layout.toast('Senha incorreta');
+                        $page.toast('Senha incorreta');
                         if (cbError) return cbError(response);
                     }.bind(this));
                 };

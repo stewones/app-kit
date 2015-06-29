@@ -4,4 +4,4 @@
  * @author Stewan P. <hi@stpa.co>
  *
  */
-angular.module('app.utils', ['layout.module', 'angularMoment']);
+angular.module('utils.module', ['page.module', 'angularMoment']);

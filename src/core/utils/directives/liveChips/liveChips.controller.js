@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.utils').controller('LiveChipsCtrl', /*@ngInject*/ function($scope, $rootScope) {
+angular.module('utils.module').controller('LiveChipsCtrl', /*@ngInject*/ function($scope, $rootScope) {
     var vm = this;
     vm.applyRole = applyRole;
     vm.selectedItem = '';

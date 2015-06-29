@@ -6,7 +6,7 @@ describe('Component <helpers/directive/leadForm> controller', function() {
         $scope,
         vm,
         api,
-        layout,
+        $page,
         requestHandler;
     beforeEach(module('livejob'));
     beforeEach(inject(function($injector, _$controller_, _api_, _layout_) {
@@ -53,11 +53,11 @@ describe('Component <helpers/directive/leadForm> controller', function() {
             expect($scope.lead).toEqual({});
         });
         it('toast on server error', function() {
-            spyOn(layout, 'toast');
+            spyOn($page, 'toast');
             requestHandler.respond(500);
             $scope.register();
             $httpBackend.flush();
-            expect(layout.toast).toHaveBeenCalled();
+            expect($page.toast).toHaveBeenCalled();
         });
     });
 });

@@ -13,17 +13,9 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#config
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Armazenar configurações
+         * Armazena as configurações
          **/
         this.config = {};
-        /**
-         * @ngdoc object
-         * @name login.module.$loginProvider#controller
-         * @propertyOf login.module.$loginProvider
-         * @description 
-         * Contralador filho para rota de login
-         **/
-        this.controller = false;
         /**
          * @ngdoc object
          * @name login.module.$loginProvider#templateUrl
@@ -37,7 +29,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#$get
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Getter que vira factory pelo angular
+         * Getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
          * angular.module('myApp.module').controller('MyCtrl', function($login) {     
@@ -54,7 +46,7 @@ angular.module('login.module').provider('$login',
         this.$get = this.get = function() {
                 return {
                     config: this.config,
-                    controller: this.controller,
+                    templateUrl: this.templateUrl
                 }
             }
             /**
@@ -75,21 +67,6 @@ angular.module('login.module').provider('$login',
              **/
         this.setConfig = function(key, val) {
                 this.config[key] = val;
-            }
-            /**
-             * @ngdoc function
-             * @name login.module.$loginProvider#setController
-             * @methodOf login.module.$loginProvider
-             * @description
-             * Setter de controlador filho para a rota de login
-             * @example
-             * <pre>
-             * $loginProvider.setController('MyLoginCtrl')
-             * </pre>
-             * @param {string} val nome do controlador    
-             **/
-        this.setController = function(val) {
-                this.controller = val;
             }
             /**
              * @ngdoc function

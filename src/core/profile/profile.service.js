@@ -1,5 +1,5 @@
 'use strict';
-angular.module('profile.module').service('Profile', /*@ngInject*/ function($http, string, layout, user, api, moment) {
+angular.module('profile.module').service('Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
 
     var Profile = function(params) {
         params = params ? params : {};
@@ -41,20 +41,20 @@ angular.module('profile.module').service('Profile', /*@ngInject*/ function($http
 
     }
     Profile.prototype.save = function(cbSuccess, cbError) {
-        layout.load.init();
+        $page.load.init();
         if (this.busy) return;
         this.busy = true;
         var url = api.url + '/api/profiles';
         $http.put(url + '/' + this.id, this).success(function(response) {
-            layout.load.done();
+            $page.load.done();
             this.busy = false;
-            layout.toast('Seu perfil foi atualizado, ' + response.firstName + '.');
+            $page.toast('Seu perfil foi atualizado, ' + response.firstName + '.');
             if (cbSuccess)
                 return cbSuccess(response);
         }.bind(this)).error(function(response) {
-            layout.load.done();
+            $page.load.done();
             this.busy = false;
-            layout.toast('Problema ao atualizar perfil');
+            $page.toast('Problema ao atualizar perfil');
             if (cbError)
                 return cbError(response);
         }.bind(this));

@@ -1,18 +1,18 @@
 'use strict';
-angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, user, layout, api, setting) {
+angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, user, $page, api, setting) {
     return {
         go: go
     }
 
     function go(cbSuccess, cbFail) {
-        layout.load.init();
+        $page.load.init();
         Facebook.getLoginStatus(function(response) {
             if (response.status === 'connected') {
                 return loginHandler(cbSuccess, cbFail);
             } else {
                 Facebook.login(function(response) {
                     if (response.error || !response.status || !response.authResponse) {
-                        layout.load.done();
+                        $page.load.done();
                         return;
                     }
                     return loginHandler(cbSuccess, cbFail);
@@ -32,7 +32,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
     function loginHandler(cbSuccess, cbFail) {
         var onSuccess = function(fbUser) {
             var onSuccess = function(response) {
-                layout.load.done();
+                $page.load.done();
                 var msg = false;
                 var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
                 if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
@@ -42,7 +42,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                     cbSuccess()
             }
             var onFail = function(result) {
-                layout.load.done();
+                $page.load.done();
                 $mdToast.show($mdToast.simple()
                     .content(result.data ? result.data : 'server away')
                     .position('bottom right')

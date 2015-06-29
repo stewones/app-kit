@@ -1,0 +1,30 @@
+ul.top-menu {
+    list-style-type: none;
+    margin: 0;
+    font-size: 12px;
+    padding: 0;
+}
+
+ul.top-menu li {
+    display: inline-block;
+    margin: 0 5px 0;
+}
+
+ul.top-menu li i {
+    font-size: 20px;
+    margin-left: 12px
+}
+
+ul.top-menu li a {
+    color: #fff
+}
+
+ul.top-menu li a:hover {
+    color: yellow
+}
+
+@media (max-width: 600px) {
+    ul.top-menu {
+        margin: 24px 0 0;
+    }
+}

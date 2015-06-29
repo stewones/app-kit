@@ -1,1 +1,30 @@
-angular.module("app.setting",[]).constant("setting",{name:"LiveJob",slug:"livejob",version:"0.0.2",title:"LiveJob",baseUrl:"https://www.livejob.com.br",titleSeparator:" — ",description:"livejob",copyright:"LiveJob (beta)",google:{clientId:"130659612163-85bs2fcla6caehkbrh0pf0aj8kfbuitb.apps.googleusercontent.com",language:"pt-BR"},facebook:{scope:"email, user_likes, user_friends, user_about_me, user_actions.books, user_birthday, user_photos, user_status, user_work_history",appId:"400355400060797",appSecret:"889dc1acc7a72e65b447c01ef52c3a79",language:"pt-BR"},https:["livejob.com.br"],redirWww:!0,ogLocale:"pt_BR",ogSiteName:"LiveJob",ogTitle:"LiveJob",ogDescription:"Conectando empresas e pessoas",ogUrl:"https://www.livejob.com.br",ogImage:"https://livejob.s3-sa-east-1.amazonaws.com/livejob-blue.png",ogSection:"oportunidades",ogTag:"emprego, oportunidades, curriculos, trabalho"});
+angular.module("app.setting", []).constant("setting", {
+    name: "app kit",
+    slug: "app-kit",
+    version: "0.0.1",
+    title: "app kit",
+    baseUrl: "",
+    titleSeparator: " — ",
+    description: "app-kit",
+    copyright: "app-kit",
+    google: {
+        clientId: "",
+        language: "pt-BR"
+    },
+    facebook: {
+        scope: "email",
+        appId: "",
+        appSecret: "",
+        language: "pt-BR"
+    },
+    https: [],
+    redirWww: false,
+    ogLocale: "pt_BR",
+    ogSiteName: "app-kit",
+    ogTitle: "app-kit",
+    ogDescription: "app-kit",
+    ogUrl: "",
+    ogImage: "",
+    ogSection: "app-kit",
+    ogTag: "app-kit"
+});

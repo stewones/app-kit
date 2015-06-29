@@ -1,6 +1,6 @@
 'use strict';
 angular.module('profile.module', [
-    'app.utils',
+    'utils.module',
     'user.module',
     'menu.module',
     'ui.router',

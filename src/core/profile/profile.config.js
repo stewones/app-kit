@@ -33,7 +33,7 @@ angular.module('profile.module').config( /*@ngInject*/ function($stateProvider, 
             },
             companyCurrent: /*@ngInject*/ function($location, $timeout, user, layout) {
                 if (!user.instance.current('company') || !user.instance.current('company')._id) {
-                    layout.toast('Acesse o LiveJob de alguma empresa para criar conexões', 10000);
+                    $page.toast('Acesse o LiveJob de alguma empresa para criar conexões', 10000);
                     $timeout(function() {
                         $location.path('/');
                     }, 1000)

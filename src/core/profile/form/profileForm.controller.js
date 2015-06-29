@@ -1,6 +1,6 @@
 'use strict';
 /* global moment, confirm */
-angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, layout, user, Profile, setting, api) {
+angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, Profile, setting, api) {
     var vm = this;
     //
     // Estados Brasileiros
@@ -82,7 +82,7 @@ angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ fun
             }, 1000);
         }
         var onFail = function() {
-            layout.toast('Impossible to load education options');
+            $page.toast('Impossible to load education options');
             $timeout(function() {
                 vm.educationLoading = false;
             }, 1000);
@@ -230,7 +230,7 @@ angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ fun
 
     function hasFormErrorToast() {
         if (hasFormInvalid() && $scope.tabCurrent !== 0) {
-            layout.toast(user.instance.profile.firstName + ', verifique todos os campos e corrija os erros.', 10000);
+            $page.toast(user.instance.profile.firstName + ', verifique todos os campos e corrija os erros.', 10000);
         }
     }
 
@@ -239,9 +239,9 @@ angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ fun
         default.cep;
         if (cep && cep.toString().length === 8) {
             var url = api.url + '/api/cep/';
-            //layout.load.init();
+            //$page.load.init();
             var onSuccess = function(response) {
-                //layout.load.done();
+                //$page.load.done();
                 var addr = response.data;
                 vm.profile.address.
                 default.street = addr.street;
@@ -253,7 +253,7 @@ angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ fun
                 default.state = addr.state;
             }
             var onError = function() {
-                layout.load.done();
+                $page.load.done();
             }
             $http.get(url + cep, {}).then(onSuccess, onError);
         }

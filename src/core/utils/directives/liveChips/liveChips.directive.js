@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.utils').directive('liveChips', /*@ngInject*/ function() {
+angular.module('utils.module').directive('liveChips', /*@ngInject*/ function() {
     return {
         scope: {
             items: '=',

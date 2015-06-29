@@ -1,7 +1,7 @@
 'use strict';
-angular.module('layout.module').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu(Menu) {
+angular.module('page.module').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu(Menu) {
     return {
-        templateUrl: "core/layout/toolbar/menu/toolbarMenu.tpl.html",
+        templateUrl: "core/page/toolbar/menu/toolbarMenu.tpl.html",
         scope: {
             company: '='
         },

@@ -29,7 +29,7 @@
             </div>
         </form>
         <div layout="row" layout-padding>
-            <button flex class="entrar" ng-disabled="registerForm.$invalid||app.layout.load.status"  ng-click="register(sign)">Registrar</button>
+            <button flex class="entrar" ng-disabled="registerForm.$invalid||app.$page.load.status"  ng-click="register(sign)">Registrar</button>
             <facebook-login user="user"></facebook-login>
         </div>
     </md-content>

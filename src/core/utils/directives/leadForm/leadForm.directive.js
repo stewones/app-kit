@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.utils').directive('leadForm', /*@ngInject*/ function() {
+angular.module('utils.module').directive('leadForm', /*@ngInject*/ function() {
     return {
         scope: {
             label: '@'

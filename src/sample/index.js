@@ -29,16 +29,17 @@
      * Sample app
      */
     'use strict';
-    angular.module('esgrupo.app', ['app.kit']).controller('TestCtrl', [TestCtrl]).config(['$loginProvider', TestConfig]);
+    angular.module('esgrupo.app', ['app.kit']).controller('LoginCtrl', [LoginCtrl]).config(['$loginProvider', TestConfig]);
 
-    function TestCtrl() {
-        alert('hello world')
+    function LoginCtrl() {
+        var vm = this;
+        vm.hello = '"As pessoas não sabem o que querem, até mostrarmos a elas."';
     }
 
     function TestConfig($loginProvider) {
         //
         // Login Config
         //
-       // CoreLoginProvider.set('templateUrl', 'login.html');
+        $loginProvider.setTemplateUrl('login.html');
     }
 })();

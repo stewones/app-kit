@@ -1,16 +1,16 @@
 'use strict';
-angular.module('login.module').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user, layout, setting) {
+angular.module('login.module').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user, $page, setting) {
     $scope.register = register;
     $scope.sign = {};
 
     function register(sign) {
-        layout.load.init();
+        $page.load.init();
         var onSuccess = function(result) {
-            layout.load.done();
+            $page.load.done();
             user.instance.init(result.data.user, true, 'Olá ' + result.data.user.profile.firstName + ', você entrou para o ' + setting.name, 10000);
         }
         var onError = function(result) {
-            layout.load.done();
+            $page.load.done();
             $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'server away').position('bottom right').hideDelay(10000))
         }
         $auth.signup({

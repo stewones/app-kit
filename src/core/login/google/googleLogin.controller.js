@@ -1,6 +1,6 @@
 'use strict';
 /* global gapi */
-angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, layout, user, setting, api) {
+angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, user, setting, api) {
     var vm = this;
     vm.clientId = setting.google.clientId;
     vm.language = setting.google.language;
@@ -24,9 +24,9 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
     }
 
     function login(glUser) {
-        layout.load.init();
+        $page.load.init();
         var onSuccess = function(response) {
-            layout.load.done();
+            $page.load.done();
             var msg = false;
             var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
             if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
@@ -34,7 +34,7 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
             user.instance.init(response.data.user, true, msg);
         }
         var onFail = function(result) {
-            layout.load.done();
+            $page.load.done();
             $mdToast.show($mdToast.simple()
                 .content(result.data ? result.data : 'server away')
                 .position('bottom right')

@@ -2,7 +2,7 @@
 /*jshint -W117 */
 describe('Http Interceptor Service', function() {
     var Interceptor, rootScope;
-    beforeEach(module('app.utils'));
+    beforeEach(module('utils.module'));
     beforeEach(inject(function($rootScope, _HttpInterceptor_) {
         Interceptor = _HttpInterceptor_;
         rootScope = $rootScope;

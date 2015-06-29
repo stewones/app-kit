@@ -1,6 +1,6 @@
 'use strict';
 angular.module('account.module', [
-    'app.utils',
+    'utils.module',
     'user.module',
     'menu.module',
     'ui.router',

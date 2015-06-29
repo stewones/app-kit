@@ -3,7 +3,7 @@
 // Usage:
 // {{some_date | title }}
 //
-angular.module('app.utils').filter('title', /*@ngInject*/ function titleFilter() {
+angular.module('utils.module').filter('title', /*@ngInject*/ function titleFilter() {
     return function(input) {
         input = input || '';
         return input.replace(/\w\S*/g, function(txt) {

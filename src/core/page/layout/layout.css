@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Damion);
+
 img.logo-header { height: 48px; margin-top: 6px; }
 body, html {  overflow: hidden; overflow-y:hidden; overflow-x: hidden}
 body { background-color: #eee; }
@@ -10,7 +12,7 @@ a { outline: none }
 .el-center { margin: 0 auto; }
 .text-center { text-align: center; }
 .bold { font-weight: bold; }
-.app-font { font-family: 'Mr Dafoe', cursive; font-size: 29px; font-weight: normal; /*color: rgb(0,150,136); */}
+.app-kit-font { font-family: 'Damion', cursive; font-size: 29px; font-weight: normal; /*color: rgb(0,150,136); */}
 ui-view { width: 100%; }
 button[disabled] { background-color: #ddd !important;}
 

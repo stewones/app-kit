@@ -1,24 +1,24 @@
 'use strict';
 /* global moment */
-angular.module('app.kit').controller('AppCtrl', /*@ngInject*/ function(setting, lodash, $window, $rootScope, $scope, $state, $location, $mdSidenav, $mdBottomSheet, $mdToast, $timeout, $auth, layout, Profile, User, user, account, enviroment, menu, $login) {
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, lodash, $window, $rootScope, $scope, $state, $location, $mdSidenav, $mdBottomSheet, $mdToast, $timeout, $auth, $page, Profile, User, user, account, enviroment, menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //
     // SEO
     //
-    layout.setTitle(setting.title);
-    layout.setDescription(setting.description);
+    $page.title(setting.title);
+    $page.description(setting.description);
     //
     // OPEN GRAPH
     //
-    layout.ogLocale(setting.ogLocale);
-    layout.ogSiteName(setting.ogSiteName);
-    layout.ogTitle(setting.ogTitle);
-    layout.ogDescription(setting.ogDescription);
-    layout.ogUrl(setting.ogUrl);
-    layout.ogImage(setting.ogImage);
-    layout.ogSection(setting.ogSection);
-    layout.ogTag(setting.ogTag);
+    $page.ogLocale(setting.ogLocale);
+    $page.ogSiteName(setting.ogSiteName);
+    $page.ogTitle(setting.ogTitle);
+    $page.ogDescription(setting.ogDescription);
+    $page.ogUrl(setting.ogUrl);
+    $page.ogImage(setting.ogImage);
+    $page.ogSection(setting.ogSection);
+    $page.ogTag(setting.ogTag);
     //
     // Moment
     //
@@ -61,7 +61,7 @@ angular.module('app.kit').controller('AppCtrl', /*@ngInject*/ function(setting, 
             user.set(newUser);
         }
         vm.user = user.instance;
-        vm.layout = layout;
+        vm.$page = $page;
         vm.setting = setting;
         vm.year = moment().format('YYYY');
         vm.state = $state;
