@@ -571,27 +571,25 @@ angular.module('login.module').provider('$login',
     /**
      * @ngdoc object
      * @name login.module.$loginProvider
-     * @description 
-     * Configurações de Login
      **/
     /*@ngInject*/
     function $loginProvider() {
         /**
          * @ngdoc object
-         * @name login.module.$loginProvider#config
+         * @name login.module.$loginProvider#_config
          * @propertyOf login.module.$loginProvider
          * @description 
          * Armazena as configurações
          **/
-        this.config = {};
+        this._config = {};
         /**
          * @ngdoc object
-         * @name login.module.$loginProvider#templateUrl
+         * @name login.module.$loginProvider#_templateUrl
          * @propertyOf login.module.$loginProvider
          * @description 
          * Url do template para a rota
          **/
-        this.templateUrl = 'core/login/login.tpl.html';
+        this._templateUrl = 'core/login/login.tpl.html';
         /**
          * @ngdoc function
          * @name login.module.$loginProvider#$get
@@ -604,52 +602,58 @@ angular.module('login.module').provider('$login',
          *      console.log($login.templateUrl);
          *      //prints the current templateUrl of `login.module`
          *      //ex.: "core/login/login.tpl.html"     
-         *      console.log($login.controller);
-         *      //prints the current child controller of `login.module`
-         *      //ex.: "$loginCtrl"
+         *      console.log($login.config('myOwnConfiguration'));
+         *      //prints the current config
+         *      //ex.: "{ configA: 54, configB: '=D' }"
          * })
          * </pre>
          * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e controller
          **/
         this.$get = this.get = function() {
                 return {
-                    config: this.config,
-                    templateUrl: this.templateUrl
+                    config: this._config,
+                    templateUrl: this._templateUrl
                 }
             }
             /**
              * @ngdoc function
-             * @name login.module.$loginProvider#setConfig
+             * @name login.module.$loginProvider#config
              * @methodOf login.module.$loginProvider
              * @description
-             * Setter para configurações
+             * getter/setter para configurações
              * @example
              * <pre>
-             * $loginProvider.setConfig('myOwnConfiguration', {
-             *      configA: 54,
-             *      configB: '=D'
+             * angular.module('myApp.module').config(function($loginProvider) {     
+             *     $loginProvider.config('myOwnConfiguration', {
+             *          configA: 54,
+             *          configB: '=D'
+             *      })
              * })
              * </pre>
              * @param {string} key chave
              * @param {*} val valor   
              **/
-        this.setConfig = function(key, val) {
-                this.config[key] = val;
+        this.config = function(key, val) {
+                if (val) return this._config[key] = val;
+                else return this._config[key];
             }
             /**
              * @ngdoc function
-             * @name login.module.$loginProvider#setTemplateUrl
+             * @name login.module.$loginProvider#templateUrl
              * @methodOf login.module.$loginProvider
              * @description
-             * Setter para url de template
+             * getter/setter para url de template
              * @example
              * <pre>
-             * $loginProvider.setTemplateUrl('app/login/my-login.html')
+             * angular.module('myApp.module').config(function($loginProvider) {     
+             *      $loginProvider.templateUrl('app/login/my-login.html')
+             * })
              * </pre>
              * @param {string} val url do template
              **/
-        this.setTemplateUrl = function(val) {
-            this.templateUrl = val;
+        this.templateUrl = function(val) {
+            if (val) return this._templateUrl = val;
+            else return this._templateUrl;
         }
     });
 'use strict';
@@ -789,8 +793,8 @@ angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvi
     auth.loginSuccessRedirect = '/profile/';
     page.accessTitle = 'Acessar conta';
     page.registerTitle = 'Ainda não tem uma?';
-    $loginProvider.setConfig('auth', auth);
-    $loginProvider.setConfig('page', page);
+    $loginProvider.config('auth', auth);
+    $loginProvider.config('page', page);
     UserSettingProvider.set('logoutStateRedirect', 'app.home');
     UserSettingProvider.set('roleForCompany', 'profile');
 });
@@ -1170,6 +1174,7 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     this._ogImage = '';
     this._ogSection = '';
     this._ogTag = '';
+    this._logoWhite = '';
     return {
         load: load(),
         progress: progress(),
@@ -1190,11 +1195,12 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
      * @name page.module.factory:$page#title
      * @methodOf page.module.factory:$page
      * @description
-     * Setar meta tag título
-     * @param {string} str titulo    
+     * getter/getter para meta tag título
+     * @param {string} str título da página
+     * @return {string} título da página
      **/
     function title(value) {
-        if (value) this._title = value;
+        if (value) return this._title = value;
         else return this._title;
     }
     /**
@@ -1202,58 +1208,129 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
      * @name page.module.factory:$page#description
      * @methodOf page.module.factory:$page
      * @description
-     * Setar meta tag descrição
-     * @param {string} str titulo    
+     * getter/getter para meta tag descrição
+     * @param {string} value descrição da página    
      **/
     function description(value) {
-        if (value) this._description = value;
+        if (value) return this._description = value;
         else return this._description;
     }
-    //
-    // OPEN GRAPH
-    //
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#logoWhite
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para logo na versão branca com fundo transparente
+     * @param {string} value caminho para logomarca    
+     **/
+    function logoWhite(value) {
+        if (value) return this._logoWhite = value;
+        else return this._logoWhite;
+    }
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#ogLocale
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para open-graph locale
+     * @param {string} value locale    
+     **/
     function ogLocale(value) {
-        if (value) this._ogLocale = value;
+        if (value) return this._ogLocale = value;
         else return this._ogLocale;
     }
-
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#ogSiteName
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para open-graph site name
+     * @param {string} value site name    
+     **/
     function ogSiteName(value) {
-        if (value) this._ogSiteName = value;
+        if (value) return this._ogSiteName = value;
         else return this._ogSiteName;
     }
-
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#ogTitle
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para open-graph title
+     * @param {string} value title    
+     **/
     function ogTitle(value) {
-        if (value) this._ogTitle = value;
+        if (value) return this._ogTitle = value;
         else return this._ogTitle;
     }
-
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#ogDescription
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para open-graph description
+     * @param {string} value description    
+     **/
     function ogDescription(value) {
-        if (value) this._ogDescription = value;
+        if (value) return this._ogDescription = value;
         else return this._ogDescription;
     }
-
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#ogUrl
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para open-graph url
+     * @param {string} value url    
+     **/
     function ogUrl(value) {
-        if (value) this._ogUrl = value;
+        if (value) return this._ogUrl = value;
         else return this._ogUrl;
     }
-
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#ogImage
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para open-graph image
+     * @param {string} value image    
+     **/
     function ogImage(value) {
-        if (value) this._ogImage = value;
+        if (value) return this._ogImage = value;
         else return this._ogImage;
     }
-
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#ogSection
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para open-graph section
+     * @param {string} value section    
+     **/
     function ogSection(value) {
-        if (value) this._ogSection = value;
+        if (value) return this._ogSection = value;
         else return this._ogSection;
     }
-
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#ogTag
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para open-graph tag
+     * @param {string} value tag    
+     **/
     function ogTag(value) {
-        if (value) this._ogTag = value;
+        if (value) return this._ogTag = value;
         else return this._ogTag;
     }
-    //
-    // PAGE LOADER
-    //
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#load
+     * @methodOf page.module.factory:$page
+     * @description
+     * inicia e termina o carregamento da página
+     * @return {object} com metodos de inicialização (init) e finalização (done)
+     **/
     function load() {
         return {
             init: function() {
@@ -1266,9 +1343,20 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
             }
         }
     }
-    //
-    // PROGRESS (SPIN)
-    //
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#toast
+     * @methodOf page.module.factory:$page
+     * @description
+     * mostra uma mensagem de aviso
+     * @param {string} msg mensagem
+     * @param {integer} time tempo em milisegundos
+     **/
+    function toast(msg, time) {
+        time = time ? time : 5000;
+        $mdToast.show($mdToast.simple().content(msg).position('bottom right').hideDelay(time));
+    }
+    //another type of load
     function progress() {
         return {
             init: function() {
@@ -1280,11 +1368,6 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
                 //console.log('progress finalizado...' + this.status);
             }
         }
-    }
-
-    function toast(msg, time) {
-        time = time ? time : 5000;
-        $mdToast.show($mdToast.simple().content(msg).position('bottom right').hideDelay(time));
     }
 })
 'use strict';

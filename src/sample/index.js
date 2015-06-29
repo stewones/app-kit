@@ -40,6 +40,6 @@
         //
         // Login Config
         //
-        $loginProvider.setTemplateUrl('login.html');
+        $loginProvider.templateUrl('login.html');
     }
 })();

@@ -76,8 +76,8 @@ angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvi
     auth.loginSuccessRedirect = '/profile/';
     page.accessTitle = 'Acessar conta';
     page.registerTitle = 'Ainda não tem uma?';
-    $loginProvider.setConfig('auth', auth);
-    $loginProvider.setConfig('page', page);
+    $loginProvider.config('auth', auth);
+    $loginProvider.config('page', page);
     UserSettingProvider.set('logoutStateRedirect', 'app.home');
     UserSettingProvider.set('roleForCompany', 'profile');
 });
