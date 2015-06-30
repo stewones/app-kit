@@ -1,24 +1,32 @@
 'use strict';
-angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $anchorScrollProvider, $uiViewScrollProvider, FacebookProvider, $loginProvider, UserSettingProvider, setting, api) {
+angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, UserSettingProvider, setting, api) {
     //
     // States & Routes
-    //
+    //    
     $stateProvider.state('app', {
         abstract: true,
         views: {
             'app': {
-                templateUrl: 'core/page/layout/layout.tpl.html'
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider._layoutUrl
+                },
             },
             'toolbar@app': {
-                templateUrl: 'core/page/toolbar/toolbar.tpl.html'
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider._toolbarUrl
+                }
             },
             'sidenav@app': {
-                templateUrl: 'core/page/menu/sidenav.tpl.html'
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider._sidenavUrl
+                }
             }
         }
     });
-    //$urlRouterProvider.otherwise('/');
     $locationProvider.html5Mode(true);
+    //
+    // Redirect Trailing Slash
+    //
     $urlMatcherFactoryProvider.strictMode(false);
     $urlRouterProvider.rule(function($injector, $location) {
         if ($location.hash() !== 'iframe') {
@@ -45,7 +53,9 @@ angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvi
     }).accentPalette('deep-orange', {
         // 'hue-1': '600'
     });
-    // dark theme 
+    //
+    // Dark theme
+    //
     $mdThemingProvider.theme('darkness').primaryPalette('cyan').dark();
     //
     // Auth options
@@ -69,15 +79,11 @@ angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvi
     //
     // Module Configs
     //
-    var auth = {},
-        page = {};
-    auth.loginFailStateRedirect = 'app.login';
-    auth.loginSuccessStateRedirect = 'app.profile';
-    auth.loginSuccessRedirect = '/profile/';
-    page.accessTitle = 'Acessar conta';
-    page.registerTitle = 'Ainda não tem uma?';
-    $loginProvider.config('auth', auth);
-    $loginProvider.config('page', page);
+    $loginProvider.config('auth', {
+        loginFailStateRedirect: 'app.login',
+        loginSuccessStateRedirect: 'app.profile',
+        loginSuccessRedirect: '/profile/'
+    });
     UserSettingProvider.set('logoutStateRedirect', 'app.home');
     UserSettingProvider.set('roleForCompany', 'profile');
 });

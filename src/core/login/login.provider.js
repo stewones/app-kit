@@ -11,7 +11,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#_config
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Armazena as configurações
+         * armazena configurações
          **/
         this._config = {};
         /**
@@ -19,7 +19,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#_templateUrl
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Url do template para a rota
+         * url do template para a rota
          **/
         this._templateUrl = 'core/login/login.tpl.html';
         /**
@@ -27,7 +27,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#$get
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
          * angular.module('myApp.module').controller('MyCtrl', function($login) {     
@@ -39,7 +39,7 @@ angular.module('login.module').provider('$login',
          *      //ex.: "{ configA: 54, configB: '=D' }"
          * })
          * </pre>
-         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e controller
+         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e templateUrl
          **/
         this.$get = this.get = function() {
                 return {
@@ -52,7 +52,7 @@ angular.module('login.module').provider('$login',
              * @name login.module.$loginProvider#config
              * @methodOf login.module.$loginProvider
              * @description
-             * getter/setter para configurações
+             * setter para configurações
              * @example
              * <pre>
              * angular.module('myApp.module').config(function($loginProvider) {     
@@ -74,7 +74,7 @@ angular.module('login.module').provider('$login',
              * @name login.module.$loginProvider#templateUrl
              * @methodOf login.module.$loginProvider
              * @description
-             * getter/setter para url de template
+             * setter para url do template
              * @example
              * <pre>
              * angular.module('myApp.module').config(function($loginProvider) {     

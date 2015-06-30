@@ -1,8 +1,25 @@
 'use strict';
-angular.module('login.module').controller('LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user) {
+/**
+ * @ngdoc object
+ * @name login.module.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires user.module.factory:$user
+ **/
+angular.module('login.module').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
     var vm = this;
     vm.login = login;
-
+    /**
+     * @ngdoc function
+     * @name login.module.controller:$LoginFormCtrl#login
+     * @propertyOf login.module.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
     function login(logon) {
         $page.load.init();
         var onSuccess = function(result) {
@@ -15,8 +32,7 @@ angular.module('login.module').controller('LoginFormCtrl', /*@ngInject*/ functio
         }
         $auth.login({
             email: logon.email,
-            password: logon.password,
-            applicant: true
+            password: logon.password
         }).then(onSuccess, onError);
     }
 })

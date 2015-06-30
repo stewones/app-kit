@@ -26,13 +26,7 @@ angular.module('login.module', [
     'satellizer',
     'google.login',
     'facebook.login'
-]).run( /*@ngInject*/ function ($login, $rootScope) {
-	$rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
-        if ($login.templateUrl && toState.name === 'app.login') {
-         	toState.views.content.templateUrl = $login.templateUrl;
-        }
-    });
-});
+]);
 'use strict';
 angular.module('page.module', [
 	'menu.module',
@@ -441,17 +435,18 @@ angular.module('account.module').service('Account', /*@ngInject*/ function($http
     return Account;
 })
 'use strict';
-angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
     // States & Routes
     //
     $stateProvider.state('app.login', {
-        // parent: 'app',
         protected: false,
         url: '/login/',
         views: {
             'content': {
-                templateUrl: 'core/login/login.tpl.html',
+                templateUrl: /*@ngInject*/ function() {
+                    return $loginProvider._templateUrl
+                },
                 controller: '$LoginCtrl as vm'
             }
         },
@@ -463,16 +458,14 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
             }
         }
     }).state('app.logout', {
-        // parent: 'app',
         protected: false,
         url: '/logout/',
         views: {
             'content': {
-                controller: 'LogoutCtrl as vm'
+                controller: '$LogoutCtrl as vm'
             }
         }
     }).state('app.signup', {
-        // parent: 'app',
         protected: false,
         url: '/signup/',
         views: {
@@ -481,29 +474,36 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
                 controller: /*@ngInject*/ function($page, setting) {
                     $page.title(setting.name + setting.titleSeparator + 'Cadastro');
                 }
+            },
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
             }
         }
     }).state('app.login-lost', {
-        // parent: 'app',
+        protected: false,
         url: '/login/lost/',
         views: {
             'content': {
                 templateUrl: 'core/login/register/lost.tpl.html',
-                controller: 'LostCtrl as vm'
+                controller: '$LostCtrl as vm'
+            }
+        },
+        authed: /*@ngInject*/ function($auth, $location, $login) {
+            if ($auth.isAuthenticated()) {
+                $location.path($login.config.auth.loginSuccessRedirect);
             }
         }
     });
-    //$urlRouterProvider.otherwise('/login');
     $locationProvider.html5Mode(true);
 })
 'use strict';
 /**
  * @ngdoc object
  * @name login.module.controller:$LoginCtrl
- * @description 
- * Responsável pelos comportamentos básicos de login na aplicação
  * @requires login.module.$loginProvider
- * @requires page.module.$page
+ * @requires page.module.factory:$page
  * @requires setting
  * @requires api
  **/
@@ -511,59 +511,26 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
 angular.module('login.module').controller('$LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, $login, $page, setting, api) {
     $page.title(setting.name + setting.titleSeparator + 'Login');
     $page.description('Entre para o ' + setting.name);
-    $page.banner = false;
     $page.load.done();
     var vm = this;
-    vm.lost = lost;
-    vm.change = change;
-    vm.auth = auth;
     vm.config = $login.config;
-    //lost password step2
-    var userHash = $location.hash();
-    if (userHash) vm.userHash = userHash;
-
-    function auth(provider) {
-        $auth.authenticate(provider);
-    }
-
-    function change(pw) {
-        $page.load.init();
-        var onSuccess = function(data) {
-            $page.load.done();
-            $state.transitionTo('app.login');
-            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
-        }
-        var onError = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
-        }
-        $http.put(api.url + "/api/users/" + userHash + '/newPassword', {
-            password: pw
-        }).success(onSuccess).error(onError);
-    }
-
-    function lost(email) {
-        $page.load.init();
-        var onSuccess = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
-        }
-        var onError = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
-        }
-        $http.post(api.url + "/api/users/lost", {
-            email: email
-        }).success(onSuccess).error(onError);
-    }
 })
 'use strict';
+/**
+ * @ngdoc directive
+ * @name login.module.directive:login
+ * @restrict EA
+ * @description 
+ * Diretiva "wrapper" pro template de login
+ * @element div
+ **/
 angular.module('login.module').directive('login', /*@ngInject*/ function() {
     return {
         scope: {},
         templateUrl: 'core/login/login.tpl.html',
         controller: '$LoginCtrl',
-        controllerAs: 'vm'
+        controllerAs: 'vm',
+        restrict: 'EA'
     }
 });
 'use strict';
@@ -579,7 +546,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#_config
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Armazena as configurações
+         * armazena configurações
          **/
         this._config = {};
         /**
@@ -587,7 +554,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#_templateUrl
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Url do template para a rota
+         * url do template para a rota
          **/
         this._templateUrl = 'core/login/login.tpl.html';
         /**
@@ -595,7 +562,7 @@ angular.module('login.module').provider('$login',
          * @name login.module.$loginProvider#$get
          * @propertyOf login.module.$loginProvider
          * @description 
-         * Getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
          * angular.module('myApp.module').controller('MyCtrl', function($login) {     
@@ -607,7 +574,7 @@ angular.module('login.module').provider('$login',
          *      //ex.: "{ configA: 54, configB: '=D' }"
          * })
          * </pre>
-         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e controller
+         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e templateUrl
          **/
         this.$get = this.get = function() {
                 return {
@@ -620,7 +587,7 @@ angular.module('login.module').provider('$login',
              * @name login.module.$loginProvider#config
              * @methodOf login.module.$loginProvider
              * @description
-             * getter/setter para configurações
+             * setter para configurações
              * @example
              * <pre>
              * angular.module('myApp.module').config(function($loginProvider) {     
@@ -642,7 +609,7 @@ angular.module('login.module').provider('$login',
              * @name login.module.$loginProvider#templateUrl
              * @methodOf login.module.$loginProvider
              * @description
-             * getter/setter para url de template
+             * setter para url do template
              * @example
              * <pre>
              * angular.module('myApp.module').config(function($loginProvider) {     
@@ -657,25 +624,42 @@ angular.module('login.module').provider('$login',
         }
     });
 'use strict';
-angular.module('login.module').controller('LogoutCtrl', /*@ngInject*/ function(user) {
+/**
+ * @ngdoc object
+ * @name login.module.controller:$LogoutCtrl
+ * @description 
+ * Destruir sessão
+ * @requires login.module.$user
+ **/
+angular.module('login.module').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
     user.instance.destroy();
 })
 'use strict';
-angular.module('login.module').controller('LostCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, Login, $page, setting, api) {
-    isAuthed();
+/**
+ * @ngdoc object
+ * @name login.module.controller:$LostCtrl
+ * @requires page.module.factory:$page
+ * @requires setting
+ * @requires api
+ **/
+angular.module('login.module').controller('$LostCtrl', /*@ngInject*/ function($state, $auth, $http, $mdToast, $location, $page, setting, api) {
     $page.title(setting.name + setting.titleSeparator + 'Mudar senha');
     $page.description('Entre para o ' + setting.name);
     $page.load.done();
     var vm = this;
     vm.lost = lost;
     vm.change = change;
-
-    vm.config = Login.config;
     //lost password step2
     var userHash = $location.hash();
     if (userHash) vm.userHash = userHash;
-
-
+    /**
+     * @ngdoc function
+     * @name login.module.controller:$LostCtrl#change
+     * @methodOf login.module.controller:$LostCtrl
+     * @description 
+     * Alterar senha
+     * @param {string} pw senha
+     **/
     function change(pw) {
         $page.load.init();
         var onSuccess = function(data) {
@@ -691,7 +675,14 @@ angular.module('login.module').controller('LostCtrl', /*@ngInject*/ function($ro
             password: pw
         }).success(onSuccess).error(onError);
     }
-
+    /**
+     * @ngdoc function
+     * @name login.module.controller:$LostCtrl#lost
+     * @methodOf login.module.controller:$LostCtrl
+     * @description 
+     * Link para alteração de senha
+     * @param {string} email email
+     **/
     function lost(email) {
         $page.load.init();
         var onSuccess = function(data) {
@@ -706,36 +697,36 @@ angular.module('login.module').controller('LostCtrl', /*@ngInject*/ function($ro
             email: email
         }).success(onSuccess).error(onError);
     }
-    //
-    // SECURED AREA
-    //
-    function isAuthed() {
-        if ($auth.isAuthenticated()) {
-            $state.go(Login.config.auth.loginSuccessStateRedirect);
-        }
-    }
 })
 'use strict';
-angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $anchorScrollProvider, $uiViewScrollProvider, FacebookProvider, $loginProvider, UserSettingProvider, setting, api) {
+angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, UserSettingProvider, setting, api) {
     //
     // States & Routes
-    //
+    //    
     $stateProvider.state('app', {
         abstract: true,
         views: {
             'app': {
-                templateUrl: 'core/page/layout/layout.tpl.html'
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider._layoutUrl
+                },
             },
             'toolbar@app': {
-                templateUrl: 'core/page/toolbar/toolbar.tpl.html'
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider._toolbarUrl
+                }
             },
             'sidenav@app': {
-                templateUrl: 'core/page/menu/sidenav.tpl.html'
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider._sidenavUrl
+                }
             }
         }
     });
-    //$urlRouterProvider.otherwise('/');
     $locationProvider.html5Mode(true);
+    //
+    // Redirect Trailing Slash
+    //
     $urlMatcherFactoryProvider.strictMode(false);
     $urlRouterProvider.rule(function($injector, $location) {
         if ($location.hash() !== 'iframe') {
@@ -762,7 +753,9 @@ angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvi
     }).accentPalette('deep-orange', {
         // 'hue-1': '600'
     });
-    // dark theme 
+    //
+    // Dark theme
+    //
     $mdThemingProvider.theme('darkness').primaryPalette('cyan').dark();
     //
     // Auth options
@@ -786,15 +779,11 @@ angular.module('app.kit').config( /*@ngInject*/ function($urlMatcherFactoryProvi
     //
     // Module Configs
     //
-    var auth = {},
-        page = {};
-    auth.loginFailStateRedirect = 'app.login';
-    auth.loginSuccessStateRedirect = 'app.profile';
-    auth.loginSuccessRedirect = '/profile/';
-    page.accessTitle = 'Acessar conta';
-    page.registerTitle = 'Ainda não tem uma?';
-    $loginProvider.config('auth', auth);
-    $loginProvider.config('page', page);
+    $loginProvider.config('auth', {
+        loginFailStateRedirect: 'app.login',
+        loginSuccessStateRedirect: 'app.profile',
+        loginSuccessRedirect: '/profile/'
+    });
     UserSettingProvider.set('logoutStateRedirect', 'app.home');
     UserSettingProvider.set('roleForCompany', 'profile');
 });
@@ -1078,16 +1067,154 @@ angular.module("ngLocale", [], ["$provide",
         });
     }
 ]);
+   'use strict';
+   angular.module('app.kit').provider('$app',
+       /**
+        * @ngdoc object
+        * @name app.kit.$appProvider
+        * @description
+        * Provém configurações para aplicação
+        **/
+       /*@ngInject*/
+       function $appProvider($stateProvider) {
+           /**
+            * @ngdoc object
+            * @name app.kit.$appProvider#_config
+            * @propertyOf app.kit.$appProvider
+            * @description 
+            * armazena configurações
+            **/
+           this._config = {};
+           /**
+            * @ngdoc object
+            * @name app.kit.$appProvider#_layoutUrl
+            * @propertyOf app.kit.$appProvider
+            * @description 
+            * url do template para layout
+            **/
+           this._layoutUrl = 'core/page/layout/layout.tpl.html';
+           /**
+            * @ngdoc object
+            * @name app.kit.$appProvider#_toolbarUrl
+            * @propertyOf app.kit.$appProvider
+            * @description 
+            * url do template para toolbar
+            **/
+           this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
+           /**
+            * @ngdoc object
+            * @name app.kit.$appProvider#_sidenavUrl
+            * @propertyOf app.kit.$appProvider
+            * @description 
+            * url do template para sidenav
+            **/
+           this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
+           /**
+            * @ngdoc function
+            * @name app.kit.$appProvider#$get
+            * @propertyOf app.kit.$appProvider
+            * @description 
+            * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+            * @example
+            * <pre>
+            * angular.module('myApp.module').controller('MyCtrl', function($layout) {     
+            *      console.log($layout.layoutUrl);
+            *      //prints the current layoutUrl
+            *      //ex.: "core/page/layout/layout.tpl.html"     
+            *      console.log($layout.config('myOwnConfiguration'));
+            *      //prints the current config
+            *      //ex.: "{ configA: 54, configB: '=D' }"
+            * })
+            * </pre>
+            * @return {object} Retorna um objeto contendo valores das propriedades.
+            **/
+           this.$get = this.get = function() {
+                   return {
+                       config: this._config,
+                       layoutUrl: this._layoutUrl,
+                       toolbarUrl: this._toolbarUrl,
+                       sidenavUrl: this._sidenavUrl
+                   }
+               }
+               /**
+                * @ngdoc function
+                * @name app.kit.$appProvider#config
+                * @methodOf app.kit.$appProvider
+                * @description
+                * setter para configurações
+                * @example
+                * <pre>
+                * angular.module('myApp.module').config(function($appProvider) {     
+                *     $appProvider.config('myOwnConfiguration', {
+                *          configA: 54,
+                *          configB: '=D'
+                *      })
+                * })
+                * </pre>
+                * @param {string} key chave
+                * @param {*} val valor   
+                **/
+           this.config = function(key, val) {
+                   if (val) return this._config[key] = val;
+                   else return this._config[key];
+               }
+               /**
+                * @ngdoc function
+                * @name app.kit.$appProvider#layoutUrl
+                * @methodOf app.kit.$appProvider
+                * @description
+                * setter para url do layout
+                * @example
+                * <pre>
+                * angular.module('myApp.module').config(function($appProvider) {     
+                *      $appProvider.layoutUrl('app/layout/my-layout.html')
+                * })
+                * </pre>
+                * @param {string} val url do template
+                **/
+           this.layoutUrl = function(val) {
+                   if (val) return this._layoutUrl = val;
+                   else return this._layoutUrl;
+               }
+               /**
+                * @ngdoc function
+                * @name app.kit.$appProvider#toolbarUrl
+                * @methodOf app.kit.$appProvider
+                * @description
+                * setter para url do toolbar
+                * @example
+                * <pre>
+                * angular.module('myApp.module').config(function($appProvider) {     
+                *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
+                * })
+                * </pre>
+                * @param {string} val url do template
+                **/
+           this.toolbarUrl = function(val) {
+                   if (val) return this._toolbarUrl = val;
+                   else return this._toolbarUrl;
+               }
+               /**
+                * @ngdoc function
+                * @name app.kit.$appProvider#sidenavUrl
+                * @methodOf app.kit.$appProvider
+                * @description
+                * setter para url do sidenav
+                * @example
+                * <pre>
+                * angular.module('myApp.module').config(function($appProvider) {     
+                *      $appProvider.sidenavUrl('app/layout/my-sidenav.html')
+                * })
+                * </pre>
+                * @param {string} val url do template
+                **/
+           this.sidenavUrl = function(val) {
+               if (val) return this._sidenavUrl = val;
+               else return this._sidenavUrl;
+           }
+       });
  'use strict';
- angular.module('app.kit').run( /*@ngInject*/ function($rootScope) {
-     $rootScope.$on('$locationChangeSuccess', function() {
-         $rootScope.$emit('locationChanged');
-
-     });
-     $rootScope.$on('$stateChangeSuccess', function() {
-         $rootScope.$emit('stateChanged');
-     });
- });
+ angular.module('app.kit').run( /*@ngInject*/ function() {});
 angular.module("app.setting", []).constant("setting", {
     name: "app kit",
     slug: "app-kit",
@@ -1174,6 +1301,7 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     this._ogImage = '';
     this._ogSection = '';
     this._ogTag = '';
+    this._logo = '';
     this._logoWhite = '';
     return {
         load: load(),
@@ -1215,6 +1343,19 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
         if (value) return this._description = value;
         else return this._description;
     }
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#logo
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para logo
+     * @param {string} value caminho para logomarca    
+     **/
+    function logo(value) {
+        if (value) return this._logo = value;
+        else return this._logo;
+    }
+
     /**
      * @ngdoc function
      * @name page.module.factory:$page#logoWhite
@@ -1991,10 +2132,27 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
     }
 })
 'use strict';
-angular.module('login.module').controller('LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user) {
+/**
+ * @ngdoc object
+ * @name login.module.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires user.module.factory:$user
+ **/
+angular.module('login.module').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
     var vm = this;
     vm.login = login;
-
+    /**
+     * @ngdoc function
+     * @name login.module.controller:$LoginFormCtrl#login
+     * @propertyOf login.module.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
     function login(logon) {
         $page.load.init();
         var onSuccess = function(result) {
@@ -2007,20 +2165,30 @@ angular.module('login.module').controller('LoginFormCtrl', /*@ngInject*/ functio
         }
         $auth.login({
             email: logon.email,
-            password: logon.password,
-            applicant: true
+            password: logon.password
         }).then(onSuccess, onError);
     }
 })
 'use strict';
+/**
+ * @ngdoc directive
+ * @name login.module.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ **/
 angular.module('login.module').directive('loginForm', /*@ngInject*/ function() {
     return {
         scope: {
             config: '=',
             user: '='
         },
+        restrict: 'EA',
         templateUrl: "core/login/form/loginForm.tpl.html",
-        controller: 'LoginFormCtrl',
+        controller: '$LoginFormCtrl',
         controllerAs: 'vm',
         link: function() {}
     }
@@ -3440,9 +3608,9 @@ $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding a
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/profile/profile.tpl.html","<md-content class=\"main-wrapper md-padding\" layout=\"column\" flex=\"\"><profile-form company=\"app.user.current(\'company\')\" ng-if=\"vm.companyCurrent\"></profile-form></md-content>");
 $templateCache.put("core/account/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");
+$templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
 $templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
-$templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");

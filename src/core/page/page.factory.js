@@ -15,6 +15,7 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     this._ogImage = '';
     this._ogSection = '';
     this._ogTag = '';
+    this._logo = '';
     this._logoWhite = '';
     return {
         load: load(),
@@ -56,6 +57,19 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
         if (value) return this._description = value;
         else return this._description;
     }
+    /**
+     * @ngdoc function
+     * @name page.module.factory:$page#logo
+     * @methodOf page.module.factory:$page
+     * @description
+     * getter/getter para logo
+     * @param {string} value caminho para logomarca    
+     **/
+    function logo(value) {
+        if (value) return this._logo = value;
+        else return this._logo;
+    }
+
     /**
      * @ngdoc function
      * @name page.module.factory:$page#logoWhite

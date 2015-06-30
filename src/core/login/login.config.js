@@ -1,15 +1,16 @@
 'use strict';
-angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
     // States & Routes
     //
     $stateProvider.state('app.login', {
-        // parent: 'app',
         protected: false,
         url: '/login/',
         views: {
             'content': {
-                templateUrl: 'core/login/login.tpl.html',
+                templateUrl: /*@ngInject*/ function() {
+                    return $loginProvider._templateUrl
+                },
                 controller: '$LoginCtrl as vm'
             }
         },
@@ -21,16 +22,14 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
             }
         }
     }).state('app.logout', {
-        // parent: 'app',
         protected: false,
         url: '/logout/',
         views: {
             'content': {
-                controller: 'LogoutCtrl as vm'
+                controller: '$LogoutCtrl as vm'
             }
         }
     }).state('app.signup', {
-        // parent: 'app',
         protected: false,
         url: '/signup/',
         views: {
@@ -39,18 +38,27 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
                 controller: /*@ngInject*/ function($page, setting) {
                     $page.title(setting.name + setting.titleSeparator + 'Cadastro');
                 }
+            },
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
             }
         }
     }).state('app.login-lost', {
-        // parent: 'app',
+        protected: false,
         url: '/login/lost/',
         views: {
             'content': {
                 templateUrl: 'core/login/register/lost.tpl.html',
-                controller: 'LostCtrl as vm'
+                controller: '$LostCtrl as vm'
+            }
+        },
+        authed: /*@ngInject*/ function($auth, $location, $login) {
+            if ($auth.isAuthenticated()) {
+                $location.path($login.config.auth.loginSuccessRedirect);
             }
         }
     });
-    //$urlRouterProvider.otherwise('/login');
     $locationProvider.html5Mode(true);
 })
