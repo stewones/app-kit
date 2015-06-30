@@ -1,6 +1,6 @@
 'use strict';
 /* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
-angular.module('core.utils').factory('utils', /*@ngInject*/ function($q) {
+angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     var vm = this;
     return {
         isImg: isImg,      

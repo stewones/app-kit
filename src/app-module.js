@@ -57,11 +57,6 @@ angular.module('core.profile', [
 'use strict';
 angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','core.page']);
 'use strict';
-/*
- * App Helpers
- * @author Stewan P. <hi@stpa.co>
- *
- */
 angular.module('core.utils', ['core.page', 'angularMoment']);
 'use strict';
 angular.module('facebook.login', [
@@ -157,7 +152,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, UserSetting, utils, $page, $user, setting, api) {
+angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, UserSetting, $utils, $page, $user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -1782,7 +1777,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.profile').controller('$ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, utils, $page, $user, setting) {
+angular.module('core.profile').controller('$ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $utils, $page, $user, setting) {
     var vm = this;
     vm.companySession = companySession;
     vm.companyCurrent = companyCurrent;
@@ -2242,7 +2237,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
 })
 'use strict';
 /* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
-angular.module('core.utils').factory('utils', /*@ngInject*/ function($q) {
+angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     var vm = this;
     return {
         isImg: isImg,      
@@ -2887,12 +2882,12 @@ angular.module('menu.module').filter('nospace', /*@ngInject*/ function() {
 });
 'use strict';
 /* global moment, confirm */
-angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, $user, $Profile, setting, api) {
+angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, $utils, $page, $user, $Profile, setting, api) {
     var vm = this;
     //
     // Estados Brasileiros
     //
-    vm.states = utils.brStates();
+    vm.states = $utils.brStates();
     //
     // Tipos de CNH
     //

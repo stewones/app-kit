@@ -1,11 +1,11 @@
 'use strict';
 /* global moment, confirm */
-angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, $user, $Profile, setting, api) {
+angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, $utils, $page, $user, $Profile, setting, api) {
     var vm = this;
     //
     // Estados Brasileiros
     //
-    vm.states = utils.brStates();
+    vm.states = $utils.brStates();
     //
     // Tipos de CNH
     //

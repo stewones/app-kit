@@ -3,8 +3,8 @@
 describe('Utils Service', function() {
     var utils, rootScope;
     beforeEach(module('core.utils'));
-    beforeEach(inject(function($rootScope, _utils_) {
-        utils = _utils_;
+    beforeEach(inject(function($rootScope, _$utils_) {
+        utils = _$utils_;
         rootScope = $rootScope;
     }));
 
