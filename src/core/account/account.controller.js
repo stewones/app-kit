@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, account, $User, UserSetting, utils, $page, $user, setting, api) {
+angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, UserSetting, utils, $page, $user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -42,7 +42,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
 
     function bootstrap() {
         //instantiate new account
-        vm.account = account.set(new $Account({
+        vm.account = $account.set(new $Account({
             email: $user.instance.email,
             facebook: $user.instance.facebook,
             id: $user.instance.id,

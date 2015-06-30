@@ -671,6 +671,20 @@ md-list-item.md-3-line .md-list-item-text p {font-size: .75em; font-weight: norm
 }
 .logo-company h4 { font-size: 16px; margin: 5px 0 0 10px;letter-spacing: -1px; font-weight: normal; /*text-shadow: 1px 1px 1px rgba(50, 50, 50, 1)*/ }
 
+loader {
+    margin-bottom: 0px;
+    margin-top: -5px;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+}
+
+.page-loader {/* margin-bottom: 10px; margin-top: 3px;*/ opacity: 0;   transition:0.5s linear all; }
+.page-loader.show { opacity: 1 !important; transition:0.5s linear all; }
+.page-loader.no-auth {/* margin-bottom: 10px; margin-top: 3px !important;*/ }
+.page-loader md-progress-linear {/* margin-top: -9px; margin-bottom: -2px; height: 0px;*/ }
+.page-loader .md-container {height: 3px;/* background-color: red !important; */ }
+.page-loader .md-bar { /*background-color: yellow !important;*/ }
 menu-toggle div {
     text-transform: capitalize !important;
 }
@@ -760,20 +774,6 @@ height: 34px;
 }
 
 
-loader {
-    margin-bottom: 0px;
-    margin-top: -5px;
-    position: absolute;
-    z-index: 10;
-    width: 100%;
-}
-
-.page-loader {/* margin-bottom: 10px; margin-top: 3px;*/ opacity: 0;   transition:0.5s linear all; }
-.page-loader.show { opacity: 1 !important; transition:0.5s linear all; }
-.page-loader.no-auth {/* margin-bottom: 10px; margin-top: 3px !important;*/ }
-.page-loader md-progress-linear {/* margin-top: -9px; margin-bottom: -2px; height: 0px;*/ }
-.page-loader .md-container {height: 3px;/* background-color: red !important; */ }
-.page-loader .md-bar { /*background-color: yellow !important;*/ }
 md-content.main-wrapper {    background-color: transparent;}
 profile-form { margin-top: 20px; }
 profile-form button.save { display: block;  font-size: 26px;   margin-right: 32px;   text-transform: lowercase;   z-index: 30 !important; }

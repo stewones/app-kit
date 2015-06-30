@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
+angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, MenuProvider) {
     //
     // States & Routes
     //
@@ -8,8 +8,10 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
         url: '/account/',
         views: {
             'content': {
-                templateUrl: 'core/account/account.tpl.html',
-                controller: 'AccountCtrl as vm'
+                templateUrl: /*@ngInject*/ function() {
+                    return $accountProvider.templateUrl()
+                },
+                controller: '$AccountCtrl as vm'
             }
         },
         resolve: {

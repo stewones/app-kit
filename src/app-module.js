@@ -102,7 +102,7 @@ angular.module('app.kit', [
     'core.account'
 ]);
 'use strict';
-angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
+angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, MenuProvider) {
     //
     // States & Routes
     //
@@ -111,8 +111,10 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
         url: '/account/',
         views: {
             'content': {
-                templateUrl: 'core/account/account.tpl.html',
-                controller: 'AccountCtrl as vm'
+                templateUrl: /*@ngInject*/ function() {
+                    return $accountProvider.templateUrl()
+                },
+                controller: '$AccountCtrl as vm'
             }
         },
         resolve: {
@@ -155,7 +157,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, account, $User, UserSetting, utils, $page, $user, setting, api) {
+angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, UserSetting, utils, $page, $user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -198,7 +200,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
 
     function bootstrap() {
         //instantiate new account
-        vm.account = account.set(new $Account({
+        vm.account = $account.set(new $Account({
             email: $user.instance.email,
             facebook: $user.instance.facebook,
             id: $user.instance.id,
@@ -361,64 +363,144 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
     }
 })
 'use strict';
-/**
- * @ngdoc service
- * @name core.account.factory:$account
- * @description 
- * Factory para injeção
- * @return {object} com metodos para setar e destruir a instância da factory
- **/
-angular.module('core.account').factory('account', /*@ngInject*/ function() {
+angular.module('core.account').provider('$account',
     /**
      * @ngdoc object
-     * @name core.account.factory:$account#instance
-     * @propertyOf core.account.factory:$account
-     * @description 
-     * Instância de conta armazenada pelo {@link core.account.service:$Account serviço}
+     * @name core.account.$accountProvider
+     * @description
+     * 2 em 1 - provém configurações e a factory (ver $get) com estados/comportamentos de conta.
      **/
-    this.instance = {};
-    return {
+    /*@ngInject*/
+    function $accountProvider() {
+        /**
+         * @ngdoc object
+         * @name core.account.$accountProvider#instance
+         * @propertyOf core.account.$accountProvider
+         * @description 
+         * Instância de conta armazenada pelo {@link core.account.service:$Account serviço}
+         **/
+        this.instance = {};
+        /**
+         * @ngdoc object
+         * @name core.account.$accountProvider#_config
+         * @propertyOf core.account.$accountProvider
+         * @description 
+         * armazena configurações
+         **/
+        this._config = {};
+        /**
+         * @ngdoc object
+         * @name core.account.$accountProvider#_templateUrl
+         * @propertyOf core.account.$accountProvider
+         * @description 
+         * url do template para a rota
+         **/
+        this._templateUrl = 'core/account/account.tpl.html';
         /**
          * @ngdoc function
-         * @name core.account.factory:$account#set
-         * @methodOf core.account.factory:$account
+         * @name core.account.$accountProvider#$get
+         * @propertyOf core.account.$accountProvider
          * @description 
-         * Setar instância da conta
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
-         * var account = new $Account();
-         * $account.set(account);
-         * //now account instance can be injectable
-         * angular.module('myApp').controller('myCtrl',function($account){
-         * console.log($account.instance) //imprime objeto de instância da conta
+         * angular.module('myApp.module').controller('MyCtrl', function($account) {     
+         *      console.log($account.templateUrl);
+         *      //prints the current templateUrl
+         *      //ex.: "core/account/account.tpl.html"     
+         *      console.log($account.config('myOwnConfiguration'));
+         *      //prints the current config
+         *      //ex.: "{ configA: 54, configB: '=D' }"
          * })
          * </pre>
+         * @return {object} Retorna um objeto correspondente a uma Factory
          **/
-        set: function(data) {
-            this.instance = data;
-            return data;
-        },
-        /**
-         * @ngdoc function
-         * @name core.account.factory:$account#destroy
-         * @methodOf core.account.factory:$account
-         * @description 
-         * Apagar instância da conta
-         * @example
-         * <pre>
-         * var account = new $Account();
-         * $account.set(account);
-         * //now user instance can be injectable
-         * angular.module('myApp').controller('myCtrl',function($account){
-         * $account.instance.destroy() //apaga instância da conta
-         * })
-         * </pre>
-         **/
-        destroy: function() {
-            this.instance = {};
+        this.$get = this.get = function() {
+                return {
+                    config: this._config,
+                    templateUrl: this._templateUrl,
+                    /**
+                     * @ngdoc function
+                     * @name core.account.$accountProvider#set
+                     * @methodOf core.account.$accountProvider
+                     * @description 
+                     * Setar instância da conta
+                     * @example
+                     * <pre>
+                     * var account = new $Account();
+                     * $account.set(account);
+                     * //now account instance can be injectable
+                     * angular.module('myApp').controller('myCtrl',function($account){
+                     * console.log($account.instance) //imprime objeto de instância da conta
+                     * })
+                     * </pre>
+                     **/
+                    set: function(data) {
+                        this.instance = data;
+                        return data;
+                    },
+                    /**
+                     * @ngdoc function
+                     * @name core.account.$accountProvider#destroy
+                     * @methodOf core.account.$accountProvider
+                     * @description 
+                     * Apagar instância da conta
+                     * @example
+                     * <pre>
+                     * var account = new $Account();
+                     * $account.set(account);
+                     * //now account instance can be injectable
+                     * angular.module('myApp').controller('myCtrl',function($account){
+                     * $account.instance.destroy() //apaga instância da conta
+                     * })
+                     * </pre>
+                     **/
+                    destroy: function() {
+                        this.instance = {};
+                    }
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name core.account.$accountProvider#config
+             * @methodOf core.account.$accountProvider
+             * @description
+             * getter/setter para configurações
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($accountProvider) {     
+             *     $accountProvider.config('myOwnConfiguration', {
+             *          configA: 54,
+             *          configB: '=D'
+             *      })
+             * })
+             * </pre>
+             * @param {string} key chave
+             * @param {*} val valor   
+             **/
+        this.config = function(key, val) {
+                if (val) return this._config[key] = val;
+                else return this._config[key];
+            }
+            /**
+             * @ngdoc function
+             * @name core.account.$accountProvider#templateUrl
+             * @methodOf core.account.$accountProvider
+             * @description
+             * getter/setter para url do template
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($accountProvider) {     
+             *      $accountProvider.templateUrl('app/account/my-account.html')
+             * })
+             * </pre>
+             * @param {string} val url do template
+             **/
+        this.templateUrl = function(val) {
+            if (val) return this._templateUrl = val;
+            else return this._templateUrl;
         }
-    }
-})
+    });
 'use strict';
 angular.module('core.account').service('$Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
     /**
@@ -3883,10 +3965,10 @@ $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" clas
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state.current.name != \'app.profile\' && app.state.current.name != \'app.landing\'}\"></div></md-content></div>");
+$templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span>{{section | menuHuman }}</span></md-button>");
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-facepile ng-if=\"app.user.current(\'company\').facebook && (app.state.current.name!=\'app.home\' && app.state.current.name!=\'app.account\') && app.enviroment !== \'development\' && !app.iframe\" hide-sm=\"\" width=\"304\" url=\"https://www.facebook.com/{{app.user.current(\'company\').facebook}}\" facepile=\"true\" hide-cover=\"false\" ng-hide=\"app.state.current.name===\'app.pages\'\"></menu-facepile><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu.sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu.isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu.isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting.copyright }} © {{ app.year }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
-$templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" src=\"https://livejob.s3.amazonaws.com/livejob-white.png\"></a></div></div>");
 $templateCache.put("core/profile/form/profileForm-step1.tpl.html","<div layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><profile-form-positions options=\"company.positions\" selected=\"vm.profile.positions\"></profile-form-positions></div>");
 $templateCache.put("core/profile/form/profileForm-step2.tpl.html","<div layout=\"column\"><div class=\"fieldset\"><h5>Seus dados</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'firstName\')}\" flex=\"\"><label>Nome</label> <input name=\"firstName\" ng-model=\"vm.profile.firstName\" required=\"\" focus=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'cpf\')}\" flex=\"\"><label>CPF</label> <input name=\"cpf\" ng-model=\"vm.profile.doc.cpf\" ui-br-cpf-mask=\"\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'email\')}\" flex=\"\"><label>Email para contato</label> <input name=\"email\" ng-model=\"vm.profile.contact.email\" required=\"\"></md-input-container></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'lastName\')}\" flex=\"\"><label>Sobrenome</label> <input name=\"lastName\" ng-model=\"vm.profile.lastName\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'rg\')}\" flex=\"\"><label>RG</label> <input name=\"rg\" ng-model=\"vm.profile.doc.rg\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'birthday\')}\" flex=\"\"><label>Data de nascimento</label> <input name=\"birthday\" ng-model=\"vm.profile.doc.birthday\" mask=\"39/19/9999\" required=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Sua localização</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'cep\')}\"><label>CEP</label> <input name=\"cep\" ng-model=\"vm.profile.address.default.cep\" ng-change=\"vm.setAddrByCep()\" type=\"number\" ng-maxlength=\"8\" required=\"\"></md-input-container><md-input-container><label>Complemento</label> <input ng-model=\"vm.profile.address.default.comp\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'district\')}\"><label>Bairro</label> <input name=\"district\" ng-model=\"vm.profile.address.default.district\" required=\"\"></md-input-container><md-select required=\"\" placeholder=\"Estado\" class=\"state\" ng-model=\"vm.profile.address.default.state\" ng-class=\"{\'md-input-invalid\':!vm.profile.address.default.state}\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.states\">{{ opt.name }}</md-option></md-select></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'street\')}\"><label>Endereço</label> <input name=\"street\" ng-model=\"vm.profile.address.default.street\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'num\')}\"><label>Número</label> <input name=\"num\" ng-model=\"vm.profile.address.default.num\" type=\"number\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'city\')}\"><label>Cidade</label> <input name=\"city\" ng-model=\"vm.profile.address.default.city\" required=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Informações de contato</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'phone\')}\" flex=\"\"><label>Telefone fixo</label> <input name=\"phone\" ng-model=\"vm.profile.contact.phone\" ui-br-phone-number=\"\"></md-input-container></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'mobile\')}\" flex=\"\"><label>Telefone celular</label> <input name=\"mobile\" ng-model=\"vm.profile.contact.mobile\" required=\"\" ui-br-phone-number=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Informações adicionais</h5><div class=\"group m-bottom\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.gender}\"><label>Sexo</label><md-radio-group name=\"gender\" ng-model=\"vm.profile.gender\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"M\">M</md-radio-button><md-radio-button value=\"F\">F</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.relocating && vm.profile.relocating != false}\"><label>Poderia mudar de cidade?</label><md-radio-group ng-model=\"vm.profile.relocating\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner feedback\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.from}\"><label>Por onde conheceu {{vm.company.name}}?</label><md-select name=\"feedback\" flex=\"\" ng-model=\"vm.profile.from\" placeholder=\"Selecione\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.feedback\">{{ opt.label }}</md-option></md-select></div></div><div class=\"group m-bottom\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.working && vm.profile.working != false}\"><label>Está empregado atualmente?</label><md-radio-group name=\"working\" ng-model=\"vm.profile.working\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.doc.pne && vm.profile.doc.pne != false}\"><label>É portador de necessidades?</label><md-radio-group name=\"pne\" ng-model=\"vm.profile.doc.pne\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><label>Possui CNH?</label><live-chips items=\"vm.cnh\" placeholder=\"Selecione digitando A, B, C ou D\" model=\"vm.profile.doc.cnh\" hide-options=\"true\"></live-chips></div></div></div></div>");
