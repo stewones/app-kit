@@ -152,7 +152,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, UserSetting, $utils, $page, $user, setting, api) {
+angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, $utils, $page, $user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -201,7 +201,7 @@ angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function
             id: $user.instance.id,
             provider: $user.instance.provider,
             profile: $user.instance.profile,
-            role: (UserSetting.roleForCompany != 'user') ? $user.instance.profile.role : $user.instance.role
+            role: ($user.setting.roleForCompany != 'user') ? $user.instance.profile.role : $user.instance.role
         }));
         vm.accountPristine = angular.copy(vm.account);
         $timeout(function() {
@@ -870,7 +870,7 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
     }
 })
 'use strict';
-angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, UserSettingProvider, setting, api) {
+angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, setting, api) {
     //
     // States & Routes
     //    
@@ -955,8 +955,8 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
         loginSuccessStateRedirect: 'app.profile',
         loginSuccessRedirect: '/profile/'
     });
-    UserSettingProvider.set('logoutStateRedirect', 'app.home');
-    UserSettingProvider.set('roleForCompany', 'profile');
+    $userProvider.setting('logoutStateRedirect', 'app.home');
+    $userProvider.setting('roleForCompany', 'profile');
 });
 'use strict';
 /* global moment */
@@ -1931,80 +1931,100 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
     return Profile;
 })
 'use strict';
-/**
- * @ngdoc service
- * @name core.user.factory:$user
- * @description 
- * Factory para injeção
- * @return {object} com metodos para setar e destruir a instância da factory
- **/
-angular.module('core.user').factory('$user',
+angular.module('core.user').provider('$user',
+    /**
+     * @ngdoc object
+     * @name core.user.$userProvider
+     * @description
+     * 2 em 1 - provém configurações e a factory (ver $get) com estados/comportamentos de usuário.
+     **/
     /*@ngInject*/
-    function() {
+    function $userProvider() {
         /**
          * @ngdoc object
-         * @name core.user.factory:$user#instance
-         * @propertyOf core.user.factory:$user
+         * @name core.user.$userProvider#_instance
+         * @propertyOf core.user.$userProvider
          * @description 
          * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
          **/
-        this.instance = {};
-
-        return {
-            /**
-             * @ngdoc function
-             * @name core.user.factory:$user#set
-             * @methodOf core.user.factory:$user
-             * @description 
-             * Setar instância do usuário
-             * @example
-             * <pre>
-             * var user = new $User();
-             * $user.set(user);
-             * //now user instance can be injectable
-             * angular.module('myApp').controller('myCtrl',function($user){
-             * console.log($user.instance) //imprime objeto de instância do usuário
-             * })
-             * </pre>
-             **/
-            set: function(data) {
-                this.instance = data;
-                return data;
-            },
-            /**
-             * @ngdoc function
-             * @name core.user.factory:$user#destroy
-             * @methodOf core.user.factory:$user
-             * @description 
-             * Apagar instância do usuário
-             * @example
-             * <pre>
-             * var user = new $User();
-             * $user.set(user);
-             * //now user instance can be injectable
-             * angular.module('myApp').controller('myCtrl',function($user){
-             * $user.instance.destroy() //apaga instância do usuário
-             * })
-             * </pre>
-             **/
-            destroy: function() {
-                this.instance = {};
+        this._instance = {};
+        /**
+         * @ngdoc object
+         * @name core.user.$userProvider#_setting
+         * @propertyOf core.user.$userProvider
+         * @description 
+         * Armazena configurações
+         **/
+        this._setting = {};
+        /**
+         * @ngdoc function
+         * @name core.user.$userProvider#$get
+         * @propertyOf core.user.$userProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($user) {     
+         *      console.log($user.setting.roleForCompany);
+         *      //printa a regra para empresa
+         * })
+         * </pre>
+         * @return {object} objeto correspondente a uma Factory
+         **/
+        this.$get = this.get = function() {
+            return {
+                instance: this._instance,
+                setting: this._setting,
+                /**
+                 * @ngdoc function
+                 * @name core.user.$userProvider#set
+                 * @methodOf core.user.$userProvider
+                 * @description 
+                 * Setar instância do usuário
+                 * @example
+                 * <pre>
+                 * var user = new $User();
+                 * $user.set(user);
+                 * //now user instance can be injectable
+                 * angular.module('myApp').controller('myCtrl',function($user){
+                 * console.log($user.instance) //imprime objeto de instância do usuário
+                 * })
+                 * </pre>
+                 **/
+                set: function(data) {
+                    this._instance = data;
+                    return data;
+                },
+                /**
+                 * @ngdoc function
+                 * @name core.user.$userProvider#destroy
+                 * @methodOf core.user.$userProvider
+                 * @description 
+                 * Apagar instância do usuário
+                 * @example
+                 * <pre>
+                 * var user = new $User();
+                 * $user.set(user);
+                 * //now user instance can be injectable
+                 * angular.module('myApp').controller('myCtrl',function($user){
+                 * $user.instance.destroy() //apaga instância do usuário
+                 * })
+                 * </pre>
+                 **/
+                destroy: function() {
+                    this._instance = {};
+                }
             }
+        }
+        this.setting = function(key, val) {
+            if (key && val) return this._setting[key] = val;
+            else if (key) return this._setting[key];
+            else return this._setting;
         }
     })
 'use strict';
-angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
-    this.setting = {};
-    this.$get = this.get = function() {
-        return this.setting;
-    }
-    this.set = function(key, val) {
-        this.setting[key] = val;
-    }
-})
-'use strict';
 /* global window */
-angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, $menu, $page, setting) {
+angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, $user, $menu, $page, setting) {
     /**
      * @ngdoc service
      * @name core.user.service:$User
@@ -2063,7 +2083,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
             if (params._id) {
                 var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
                     roleForCompany = false;
-                if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+                if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
                 if (roleForCompany ? params[roleForCompany].role.length : params.role.length) {
                     this.current('company', getCompany(this));
                     this.current('companies', getCompanies(this));
@@ -2224,13 +2244,13 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
 
     function getCompanies(userInstance) {
         var roleForCompany = false;
-        if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+        if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
         return roleForCompany && userInstance[roleForCompany] ? userInstance[roleForCompany].role : userInstance.role;
     }
 
     function getCompany(userInstance) {
         var roleForCompany = false;
-        if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+        if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
         return roleForCompany ? userInstance[roleForCompany].role[0].company : userInstance.role[0].company;
     }
     return User;

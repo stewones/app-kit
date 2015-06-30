@@ -1,6 +1,6 @@
 'use strict';
 /* global window */
-angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, $menu, $page, setting) {
+angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, $user, $menu, $page, setting) {
     /**
      * @ngdoc service
      * @name core.user.service:$User
@@ -59,7 +59,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
             if (params._id) {
                 var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
                     roleForCompany = false;
-                if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+                if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
                 if (roleForCompany ? params[roleForCompany].role.length : params.role.length) {
                     this.current('company', getCompany(this));
                     this.current('companies', getCompanies(this));
@@ -220,13 +220,13 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
 
     function getCompanies(userInstance) {
         var roleForCompany = false;
-        if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+        if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
         return roleForCompany && userInstance[roleForCompany] ? userInstance[roleForCompany].role : userInstance.role;
     }
 
     function getCompany(userInstance) {
         var roleForCompany = false;
-        if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+        if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
         return roleForCompany ? userInstance[roleForCompany].role[0].company : userInstance.role[0].company;
     }
     return User;

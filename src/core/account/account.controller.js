@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, UserSetting, $utils, $page, $user, setting, api) {
+angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, $utils, $page, $user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -48,7 +48,7 @@ angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function
             id: $user.instance.id,
             provider: $user.instance.provider,
             profile: $user.instance.profile,
-            role: (UserSetting.roleForCompany != 'user') ? $user.instance.profile.role : $user.instance.role
+            role: ($user.setting.roleForCompany != 'user') ? $user.instance.profile.role : $user.instance.role
         }));
         vm.accountPristine = angular.copy(vm.account);
         $timeout(function() {

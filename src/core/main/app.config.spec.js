@@ -2,8 +2,8 @@
 describe('App Configuration', function() {
     var UserSetting;
     beforeEach(module('app.kit'));
-    beforeEach(inject(function(_UserSetting_) {
-        UserSetting = _UserSetting_;
+    beforeEach(inject(function(_$user_) {
+        UserSetting = _$user.setting_;
     }));
     it('have to set correct roleForCompany', function() {
         expect(UserSetting.roleForCompany).toEqual('profile');
