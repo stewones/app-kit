@@ -1,6 +1,6 @@
 'use strict';
 /* global moment, confirm */
-angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, Profile, setting, api) {
+angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, $Profile, setting, api) {
     var vm = this;
     //
     // Estados Brasileiros
@@ -152,7 +152,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
         //
         // Profile corrente
         //
-        vm.profile = new Profile(params);
+        vm.profile = new $Profile(params);
         vm.profile.company = user.instance.current('company')._id; //vincular empresa no perfil atual
         //
         // Empresa corrente

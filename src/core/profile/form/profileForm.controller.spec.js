@@ -11,7 +11,7 @@ describe('Component <profile/form/profileForm> controller', function() {
         api,
         layout;
     beforeEach(module('core.profile'));
-    beforeEach(inject(function($injector, $rootScope, $controller, _$auth_, _$User_, _user_, _layout_, _Profile_, _setting_, _api_) {
+    beforeEach(inject(function($injector, $rootScope, $controller, _$auth_, _$User_, _user_, _layout_, _$Profile_, _setting_, _api_) {
         layout = _layout_;
         user = _user_;
         User = _$User_;
@@ -31,7 +31,7 @@ describe('Component <profile/form/profileForm> controller', function() {
             $scope: $scope,
             $auth: _$auth_,
             user: user,
-            Profile: _Profile_,
+            Profile: _$Profile_,
             setting: _setting_,
             api: api
         });
