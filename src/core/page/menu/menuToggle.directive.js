@@ -1,5 +1,5 @@
 'use strict';
-angular.module('menu.module').directive('menuToggle', /*@ngInject*/ function() {
+angular.module('core.menu').directive('menuToggle', /*@ngInject*/ function() {
     return {
         scope: {
             section: '='

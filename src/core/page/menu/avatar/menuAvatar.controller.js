@@ -1,5 +1,5 @@
 'use strict';
-angular.module('menu.module').controller('MenuAvatarCtrl', /*@ngInject*/ function($rootScope, $scope) {
+angular.module('core.menu').controller('MenuAvatarCtrl', /*@ngInject*/ function($rootScope, $scope) {
     var vm = this;
     vm.picture = '';
     if ($scope.gender === 'female') $scope.gender = 'f';

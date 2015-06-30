@@ -1,5 +1,5 @@
 'use strict';
-angular.module('menu.module').directive('menuLink', /*@ngInject*/ function() {
+angular.module('core.menu').directive('menuLink', /*@ngInject*/ function() {
     return {
         scope: {
             section: '='

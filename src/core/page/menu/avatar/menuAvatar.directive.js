@@ -1,5 +1,5 @@
 'use strict';
-angular.module('menu.module').directive('menuAvatar', /*@ngInject*/ function() {
+angular.module('core.menu').directive('menuAvatar', /*@ngInject*/ function() {
     return {
         scope: {          
             firstName: '=',

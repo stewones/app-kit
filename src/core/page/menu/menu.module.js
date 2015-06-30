@@ -1,2 +1,2 @@
 'use strict';
-angular.module('menu.module', ['ui.router', 'truncate']);
+angular.module('core.menu', ['ui.router', 'truncate']);

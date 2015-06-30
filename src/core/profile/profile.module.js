@@ -2,7 +2,7 @@
 angular.module('core.profile', [
     'core.utils',
     'core.user',
-    'menu.module',
+    'core.menu',
     'ui.router',
     'vAccordion',
     'angularMoment',

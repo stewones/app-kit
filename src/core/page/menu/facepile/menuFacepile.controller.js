@@ -1,2 +1,2 @@
 'use strict';
-angular.module('menu.module').controller('MenuFacepileCtrl', /*@ngInject*/ function() {});
+angular.module('core.menu').controller('MenuFacepileCtrl', /*@ngInject*/ function() {});

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('menu.module').filter('menuHuman', /*@ngInject*/ function menuHuman() {
+angular.module('core.menu').filter('menuHuman', /*@ngInject*/ function menuHuman() {
     return function(doc) {
         if (!doc) return;
         if (doc.type === 'directive') {

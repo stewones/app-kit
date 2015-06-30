@@ -1,2 +1,2 @@
 'use strict';
-angular.module('menu.module').config( /*@ngInject*/ function() {})
+angular.module('core.menu').config( /*@ngInject*/ function() {})

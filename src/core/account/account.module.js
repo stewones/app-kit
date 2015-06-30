@@ -2,7 +2,7 @@
 angular.module('core.account', [
     'core.utils',
     'core.user',
-    'menu.module',
+    'core.menu',
     'ui.router',
     'vAccordion',
     'angularMoment',
