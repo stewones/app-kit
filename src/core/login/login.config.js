@@ -9,7 +9,7 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
         views: {
             'content': {
                 templateUrl: /*@ngInject*/ function() {
-                    return $loginProvider._templateUrl
+                    return $loginProvider.templateUrl()
                 },
                 controller: '$LoginCtrl as vm'
             }

@@ -1,6 +1,26 @@
 'use strict';
 /* global moment */
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, lodash, $window, $rootScope, $scope, $state, $location, $mdSidenav, $mdBottomSheet, $mdToast, $timeout, $auth, $page, Profile, User, user, account, enviroment, menu, $login) {
+/**
+ * @ngdoc object
+ * @name app.kit.controller:$AppCtrl
+ * @description 
+ * Controlador da aplicação
+ * @requires setting
+ * @requires environment
+ * @requires $rootScope
+ * @requires $scope
+ * @requires $state
+ * @requires $location
+ * @requires $mdSidenav
+ * @requires $timeout
+ * @requires $auth
+ * @requires page.module.factory:$page
+ * @requires user.module.service:$User
+ * @requires user.module.factory:$user
+ * @requires login.module.$loginProvider
+ * @requires page.module.factory:$menu
+ **/
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, User, user, enviroment, menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //

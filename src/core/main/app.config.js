@@ -8,17 +8,17 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
         views: {
             'app': {
                 templateUrl: /*@ngInject*/ function() {
-                    return $appProvider._layoutUrl
+                    return $appProvider.layoutUrl();
                 },
             },
             'toolbar@app': {
                 templateUrl: /*@ngInject*/ function() {
-                    return $appProvider._toolbarUrl
+                    return $appProvider.toolbarUrl();
                 }
             },
             'sidenav@app': {
                 templateUrl: /*@ngInject*/ function() {
-                    return $appProvider._sidenavUrl
+                    return $appProvider.sidenavUrl();
                 }
             }
         }

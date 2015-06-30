@@ -48,11 +48,11 @@
             * getter que vira factory pelo angular para se tornar injetável em toda aplicação
             * @example
             * <pre>
-            * angular.module('myApp.module').controller('MyCtrl', function($layout) {     
-            *      console.log($layout.layoutUrl);
-            *      //prints the current layoutUrl
+            * angular.module('myApp.module').controller('MyCtrl', function($app) {     
+            *      console.log($app.layoutUrl);
+            *      //prints the default layoutUrl
             *      //ex.: "core/page/layout/layout.tpl.html"     
-            *      console.log($layout.config('myOwnConfiguration'));
+            *      console.log($app.config('myOwnConfiguration'));
             *      //prints the current config
             *      //ex.: "{ configA: 54, configB: '=D' }"
             * })
@@ -72,7 +72,7 @@
                 * @name app.kit.$appProvider#config
                 * @methodOf app.kit.$appProvider
                 * @description
-                * setter para configurações
+                * getter/setter para configurações
                 * @example
                 * <pre>
                 * angular.module('myApp.module').config(function($appProvider) {     
@@ -94,7 +94,7 @@
                 * @name app.kit.$appProvider#layoutUrl
                 * @methodOf app.kit.$appProvider
                 * @description
-                * setter para url do layout
+                * getter/setter para url do layout
                 * @example
                 * <pre>
                 * angular.module('myApp.module').config(function($appProvider) {     
@@ -112,7 +112,7 @@
                 * @name app.kit.$appProvider#toolbarUrl
                 * @methodOf app.kit.$appProvider
                 * @description
-                * setter para url do toolbar
+                * getter/setter para url do toolbar
                 * @example
                 * <pre>
                 * angular.module('myApp.module').config(function($appProvider) {     
@@ -130,7 +130,7 @@
                 * @name app.kit.$appProvider#sidenavUrl
                 * @methodOf app.kit.$appProvider
                 * @description
-                * setter para url do sidenav
+                * getter/setter para url do sidenav
                 * @example
                 * <pre>
                 * angular.module('myApp.module').config(function($appProvider) {     

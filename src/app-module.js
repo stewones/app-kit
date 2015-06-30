@@ -445,7 +445,7 @@ angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $u
         views: {
             'content': {
                 templateUrl: /*@ngInject*/ function() {
-                    return $loginProvider._templateUrl
+                    return $loginProvider.templateUrl()
                 },
                 controller: '$LoginCtrl as vm'
             }
@@ -708,17 +708,17 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
         views: {
             'app': {
                 templateUrl: /*@ngInject*/ function() {
-                    return $appProvider._layoutUrl
+                    return $appProvider.layoutUrl();
                 },
             },
             'toolbar@app': {
                 templateUrl: /*@ngInject*/ function() {
-                    return $appProvider._toolbarUrl
+                    return $appProvider.toolbarUrl();
                 }
             },
             'sidenav@app': {
                 templateUrl: /*@ngInject*/ function() {
-                    return $appProvider._sidenavUrl
+                    return $appProvider.sidenavUrl();
                 }
             }
         }
@@ -789,7 +789,27 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
 });
 'use strict';
 /* global moment */
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, lodash, $window, $rootScope, $scope, $state, $location, $mdSidenav, $mdBottomSheet, $mdToast, $timeout, $auth, $page, Profile, User, user, account, enviroment, menu, $login) {
+/**
+ * @ngdoc object
+ * @name app.kit.controller:$AppCtrl
+ * @description 
+ * Controlador da aplicação
+ * @requires setting
+ * @requires environment
+ * @requires $rootScope
+ * @requires $scope
+ * @requires $state
+ * @requires $location
+ * @requires $mdSidenav
+ * @requires $timeout
+ * @requires $auth
+ * @requires page.module.factory:$page
+ * @requires user.module.service:$User
+ * @requires user.module.factory:$user
+ * @requires login.module.$loginProvider
+ * @requires page.module.factory:$menu
+ **/
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, User, user, enviroment, menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -1117,11 +1137,11 @@ angular.module("ngLocale", [], ["$provide",
             * getter que vira factory pelo angular para se tornar injetável em toda aplicação
             * @example
             * <pre>
-            * angular.module('myApp.module').controller('MyCtrl', function($layout) {     
-            *      console.log($layout.layoutUrl);
-            *      //prints the current layoutUrl
+            * angular.module('myApp.module').controller('MyCtrl', function($app) {     
+            *      console.log($app.layoutUrl);
+            *      //prints the default layoutUrl
             *      //ex.: "core/page/layout/layout.tpl.html"     
-            *      console.log($layout.config('myOwnConfiguration'));
+            *      console.log($app.config('myOwnConfiguration'));
             *      //prints the current config
             *      //ex.: "{ configA: 54, configB: '=D' }"
             * })
@@ -1141,7 +1161,7 @@ angular.module("ngLocale", [], ["$provide",
                 * @name app.kit.$appProvider#config
                 * @methodOf app.kit.$appProvider
                 * @description
-                * setter para configurações
+                * getter/setter para configurações
                 * @example
                 * <pre>
                 * angular.module('myApp.module').config(function($appProvider) {     
@@ -1163,7 +1183,7 @@ angular.module("ngLocale", [], ["$provide",
                 * @name app.kit.$appProvider#layoutUrl
                 * @methodOf app.kit.$appProvider
                 * @description
-                * setter para url do layout
+                * getter/setter para url do layout
                 * @example
                 * <pre>
                 * angular.module('myApp.module').config(function($appProvider) {     
@@ -1181,7 +1201,7 @@ angular.module("ngLocale", [], ["$provide",
                 * @name app.kit.$appProvider#toolbarUrl
                 * @methodOf app.kit.$appProvider
                 * @description
-                * setter para url do toolbar
+                * getter/setter para url do toolbar
                 * @example
                 * <pre>
                 * angular.module('myApp.module').config(function($appProvider) {     
@@ -1199,7 +1219,7 @@ angular.module("ngLocale", [], ["$provide",
                 * @name app.kit.$appProvider#sidenavUrl
                 * @methodOf app.kit.$appProvider
                 * @description
-                * setter para url do sidenav
+                * getter/setter para url do sidenav
                 * @example
                 * <pre>
                 * angular.module('myApp.module').config(function($appProvider) {     
@@ -3608,9 +3628,9 @@ $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding a
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/profile/profile.tpl.html","<md-content class=\"main-wrapper md-padding\" layout=\"column\" flex=\"\"><profile-form company=\"app.user.current(\'company\')\" ng-if=\"vm.companyCurrent\"></profile-form></md-content>");
 $templateCache.put("core/account/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");
-$templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
 $templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
