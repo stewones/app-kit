@@ -2,12 +2,10 @@
 angular.module('core.menu').provider('$menu',
     /**
      * @ngdoc object
-     * @name core.account.$accountProvider
+     * @name core.menu.$menuProvider
      * @description
-     * 2 em 1 - provém configurações e a factory (ver $get) com estados/comportamentos de conta.
+     * 2 em 1 - provém configurações e a factory (ver $get) com estados/comportamentos de menu.
      **/
-    /*@ngInject*/
-
     /*@ngInject*/
     function $menuProvider() {
         this.mainMenu = [];
