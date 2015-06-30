@@ -1,2 +1,2 @@
 'use strict';
-angular.module('user.module', ['ui.router','satellizer','app.setting','app.env','menu.module','page.module']);
+angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','page.module']);

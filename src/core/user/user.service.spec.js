@@ -1,7 +1,7 @@
 'use strict';
 describe('User', function() {
     var User;
-    beforeEach(module('user.module'));
+    beforeEach(module('core.user'));
     beforeEach(inject(function(_User_) {
         User = _User_;
     }));

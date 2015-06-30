@@ -15,8 +15,8 @@
  * @requires $timeout
  * @requires $auth
  * @requires page.module.factory:$page
- * @requires user.module.service:$User
- * @requires user.module.factory:$user
+ * @requires core.user.service:$User
+ * @requires core.user.factory:$user
  * @requires core.login.$loginProvider
  * @requires page.module.factory:$menu
  **/

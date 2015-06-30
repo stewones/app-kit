@@ -11,7 +11,7 @@ angular.module('app.kit', [
     'angulartics.google.analytics',
     'page.module',
     'core.login',
-    'user.module',
+    'core.user',
     'profile.module',
     'account.module'
 ]);

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('user.module').provider('UserSetting', /*@ngInject*/ function() {
+angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
     this.setting = {};
     this.$get = this.get = function() {
         return this.setting;

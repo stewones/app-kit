@@ -1,7 +1,7 @@
 'use strict';
 angular.module('account.module', [
     'utils.module',
-    'user.module',
+    'core.user',
     'menu.module',
     'ui.router',
     'vAccordion',
@@ -43,7 +43,7 @@ angular.module('page.module', [
 'use strict';
 angular.module('profile.module', [
     'utils.module',
-    'user.module',
+    'core.user',
     'menu.module',
     'ui.router',
     'vAccordion',
@@ -55,7 +55,7 @@ angular.module('profile.module', [
     'satellizer'
 ])
 'use strict';
-angular.module('user.module', ['ui.router','satellizer','app.setting','app.env','menu.module','page.module']);
+angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','page.module']);
 'use strict';
 angular.module('facebook.login', [
     'facebook',
@@ -83,7 +83,7 @@ angular.module('app.kit', [
     'angulartics.google.analytics',
     'page.module',
     'core.login',
-    'user.module',
+    'core.user',
     'profile.module',
     'account.module'
 ]);
@@ -435,6 +435,270 @@ angular.module('account.module').service('Account', /*@ngInject*/ function($http
     return Account;
 })
 'use strict';
+angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
+    //
+    // States & Routes
+    //
+    $stateProvider.state('app.login', {
+        protected: false,
+        url: '/login/',
+        views: {
+            'content': {
+                templateUrl: /*@ngInject*/ function() {
+                    return $loginProvider.templateUrl()
+                },
+                controller: '$LoginCtrl as vm'
+            }
+        },
+        resolve: {
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
+            }
+        }
+    }).state('app.logout', {
+        protected: false,
+        url: '/logout/',
+        views: {
+            'content': {
+                controller: '$LogoutCtrl as vm'
+            }
+        }
+    }).state('app.signup', {
+        protected: false,
+        url: '/signup/',
+        views: {
+            'content': {
+                templateUrl: 'core/login/register/register.tpl.html',
+                controller: /*@ngInject*/ function($page, setting) {
+                    $page.title(setting.name + setting.titleSeparator + 'Cadastro');
+                }
+            },
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
+            }
+        }
+    }).state('app.login-lost', {
+        protected: false,
+        url: '/login/lost/',
+        views: {
+            'content': {
+                templateUrl: 'core/login/register/lost.tpl.html',
+                controller: '$LostCtrl as vm'
+            }
+        },
+        authed: /*@ngInject*/ function($auth, $location, $login) {
+            if ($auth.isAuthenticated()) {
+                $location.path($login.config.auth.loginSuccessRedirect);
+            }
+        }
+    });
+    $locationProvider.html5Mode(true);
+})
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginCtrl
+ * @requires core.login.$loginProvider
+ * @requires page.module.factory:$page
+ * @requires setting
+ * @requires api
+ **/
+'use strict';
+angular.module('core.login').controller('$LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, $login, $page, setting, api) {
+    $page.title(setting.name + setting.titleSeparator + 'Login');
+    $page.description('Entre para o ' + setting.name);
+    $page.load.done();
+    var vm = this;
+    vm.config = $login.config;
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:login
+ * @restrict EA
+ * @description 
+ * Diretiva "wrapper" pro template de login
+ * @element div
+ **/
+angular.module('core.login').directive('login', /*@ngInject*/ function() {
+    return {
+        scope: {},
+        templateUrl: 'core/login/login.tpl.html',
+        controller: '$LoginCtrl',
+        controllerAs: 'vm',
+        restrict: 'EA'
+    }
+});
+'use strict';
+angular.module('core.login').provider('$login',
+    /**
+     * @ngdoc object
+     * @name core.login.$loginProvider
+     **/
+    /*@ngInject*/
+    function $loginProvider() {
+        /**
+         * @ngdoc object
+         * @name core.login.$loginProvider#_config
+         * @propertyOf core.login.$loginProvider
+         * @description 
+         * armazena configurações
+         **/
+        this._config = {};
+        /**
+         * @ngdoc object
+         * @name core.login.$loginProvider#_templateUrl
+         * @propertyOf core.login.$loginProvider
+         * @description 
+         * url do template para a rota
+         **/
+        this._templateUrl = 'core/login/login.tpl.html';
+        /**
+         * @ngdoc function
+         * @name core.login.$loginProvider#$get
+         * @propertyOf core.login.$loginProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($login) {     
+         *      console.log($login.templateUrl);
+         *      //prints the current templateUrl of `core.login`
+         *      //ex.: "core/login/login.tpl.html"     
+         *      console.log($login.config('myOwnConfiguration'));
+         *      //prints the current config
+         *      //ex.: "{ configA: 54, configB: '=D' }"
+         * })
+         * </pre>
+         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e templateUrl
+         **/
+        this.$get = this.get = function() {
+                return {
+                    config: this._config,
+                    templateUrl: this._templateUrl
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name core.login.$loginProvider#config
+             * @methodOf core.login.$loginProvider
+             * @description
+             * setter para configurações
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($loginProvider) {     
+             *     $loginProvider.config('myOwnConfiguration', {
+             *          configA: 54,
+             *          configB: '=D'
+             *      })
+             * })
+             * </pre>
+             * @param {string} key chave
+             * @param {*} val valor   
+             **/
+        this.config = function(key, val) {
+                if (val) return this._config[key] = val;
+                else return this._config[key];
+            }
+            /**
+             * @ngdoc function
+             * @name core.login.$loginProvider#templateUrl
+             * @methodOf core.login.$loginProvider
+             * @description
+             * setter para url do template
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($loginProvider) {     
+             *      $loginProvider.templateUrl('app/login/my-login.html')
+             * })
+             * </pre>
+             * @param {string} val url do template
+             **/
+        this.templateUrl = function(val) {
+            if (val) return this._templateUrl = val;
+            else return this._templateUrl;
+        }
+    });
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LogoutCtrl
+ * @description 
+ * Destruir sessão
+ * @requires core.login.$user
+ **/
+angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
+    user.instance.destroy();
+})
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LostCtrl
+ * @requires page.module.factory:$page
+ * @requires setting
+ * @requires api
+ **/
+angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($state, $auth, $http, $mdToast, $location, $page, setting, api) {
+    $page.title(setting.name + setting.titleSeparator + 'Mudar senha');
+    $page.description('Entre para o ' + setting.name);
+    $page.load.done();
+    var vm = this;
+    vm.lost = lost;
+    vm.change = change;
+    //lost password step2
+    var userHash = $location.hash();
+    if (userHash) vm.userHash = userHash;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LostCtrl#change
+     * @methodOf core.login.controller:$LostCtrl
+     * @description 
+     * Alterar senha
+     * @param {string} pw senha
+     **/
+    function change(pw) {
+        $page.load.init();
+        var onSuccess = function(data) {
+            $page.load.done();
+            $state.transitionTo('app.login');
+            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
+        }
+        var onError = function(data) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
+        }
+        $http.put(api.url + "/api/users/" + userHash + '/newPassword', {
+            password: pw
+        }).success(onSuccess).error(onError);
+    }
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LostCtrl#lost
+     * @methodOf core.login.controller:$LostCtrl
+     * @description 
+     * Link para alteração de senha
+     * @param {string} email email
+     **/
+    function lost(email) {
+        $page.load.init();
+        var onSuccess = function(data) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
+        }
+        var onError = function(data) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
+        }
+        $http.post(api.url + "/api/users/lost", {
+            email: email
+        }).success(onSuccess).error(onError);
+    }
+})
+'use strict';
 angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, UserSettingProvider, setting, api) {
     //
     // States & Routes
@@ -540,8 +804,8 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
  * @requires $timeout
  * @requires $auth
  * @requires page.module.factory:$page
- * @requires user.module.service:$User
- * @requires user.module.factory:$user
+ * @requires core.user.service:$User
+ * @requires core.user.factory:$user
  * @requires core.login.$loginProvider
  * @requires page.module.factory:$menu
  **/
@@ -1002,270 +1266,6 @@ angular.module("app.setting", []).constant("setting", {
     ogTag: "app-kit"
 });
 'use strict';
-angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
-    //
-    // States & Routes
-    //
-    $stateProvider.state('app.login', {
-        protected: false,
-        url: '/login/',
-        views: {
-            'content': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $loginProvider.templateUrl()
-                },
-                controller: '$LoginCtrl as vm'
-            }
-        },
-        resolve: {
-            authed: /*@ngInject*/ function($auth, $location, $login) {
-                if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
-                }
-            }
-        }
-    }).state('app.logout', {
-        protected: false,
-        url: '/logout/',
-        views: {
-            'content': {
-                controller: '$LogoutCtrl as vm'
-            }
-        }
-    }).state('app.signup', {
-        protected: false,
-        url: '/signup/',
-        views: {
-            'content': {
-                templateUrl: 'core/login/register/register.tpl.html',
-                controller: /*@ngInject*/ function($page, setting) {
-                    $page.title(setting.name + setting.titleSeparator + 'Cadastro');
-                }
-            },
-            authed: /*@ngInject*/ function($auth, $location, $login) {
-                if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
-                }
-            }
-        }
-    }).state('app.login-lost', {
-        protected: false,
-        url: '/login/lost/',
-        views: {
-            'content': {
-                templateUrl: 'core/login/register/lost.tpl.html',
-                controller: '$LostCtrl as vm'
-            }
-        },
-        authed: /*@ngInject*/ function($auth, $location, $login) {
-            if ($auth.isAuthenticated()) {
-                $location.path($login.config.auth.loginSuccessRedirect);
-            }
-        }
-    });
-    $locationProvider.html5Mode(true);
-})
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginCtrl
- * @requires core.login.$loginProvider
- * @requires page.module.factory:$page
- * @requires setting
- * @requires api
- **/
-'use strict';
-angular.module('core.login').controller('$LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, $login, $page, setting, api) {
-    $page.title(setting.name + setting.titleSeparator + 'Login');
-    $page.description('Entre para o ' + setting.name);
-    $page.load.done();
-    var vm = this;
-    vm.config = $login.config;
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:login
- * @restrict EA
- * @description 
- * Diretiva "wrapper" pro template de login
- * @element div
- **/
-angular.module('core.login').directive('login', /*@ngInject*/ function() {
-    return {
-        scope: {},
-        templateUrl: 'core/login/login.tpl.html',
-        controller: '$LoginCtrl',
-        controllerAs: 'vm',
-        restrict: 'EA'
-    }
-});
-'use strict';
-angular.module('core.login').provider('$login',
-    /**
-     * @ngdoc object
-     * @name core.login.$loginProvider
-     **/
-    /*@ngInject*/
-    function $loginProvider() {
-        /**
-         * @ngdoc object
-         * @name core.login.$loginProvider#_config
-         * @propertyOf core.login.$loginProvider
-         * @description 
-         * armazena configurações
-         **/
-        this._config = {};
-        /**
-         * @ngdoc object
-         * @name core.login.$loginProvider#_templateUrl
-         * @propertyOf core.login.$loginProvider
-         * @description 
-         * url do template para a rota
-         **/
-        this._templateUrl = 'core/login/login.tpl.html';
-        /**
-         * @ngdoc function
-         * @name core.login.$loginProvider#$get
-         * @propertyOf core.login.$loginProvider
-         * @description 
-         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
-         * @example
-         * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($login) {     
-         *      console.log($login.templateUrl);
-         *      //prints the current templateUrl of `core.login`
-         *      //ex.: "core/login/login.tpl.html"     
-         *      console.log($login.config('myOwnConfiguration'));
-         *      //prints the current config
-         *      //ex.: "{ configA: 54, configB: '=D' }"
-         * })
-         * </pre>
-         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e templateUrl
-         **/
-        this.$get = this.get = function() {
-                return {
-                    config: this._config,
-                    templateUrl: this._templateUrl
-                }
-            }
-            /**
-             * @ngdoc function
-             * @name core.login.$loginProvider#config
-             * @methodOf core.login.$loginProvider
-             * @description
-             * setter para configurações
-             * @example
-             * <pre>
-             * angular.module('myApp.module').config(function($loginProvider) {     
-             *     $loginProvider.config('myOwnConfiguration', {
-             *          configA: 54,
-             *          configB: '=D'
-             *      })
-             * })
-             * </pre>
-             * @param {string} key chave
-             * @param {*} val valor   
-             **/
-        this.config = function(key, val) {
-                if (val) return this._config[key] = val;
-                else return this._config[key];
-            }
-            /**
-             * @ngdoc function
-             * @name core.login.$loginProvider#templateUrl
-             * @methodOf core.login.$loginProvider
-             * @description
-             * setter para url do template
-             * @example
-             * <pre>
-             * angular.module('myApp.module').config(function($loginProvider) {     
-             *      $loginProvider.templateUrl('app/login/my-login.html')
-             * })
-             * </pre>
-             * @param {string} val url do template
-             **/
-        this.templateUrl = function(val) {
-            if (val) return this._templateUrl = val;
-            else return this._templateUrl;
-        }
-    });
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LogoutCtrl
- * @description 
- * Destruir sessão
- * @requires core.login.$user
- **/
-angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
-    user.instance.destroy();
-})
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LostCtrl
- * @requires page.module.factory:$page
- * @requires setting
- * @requires api
- **/
-angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($state, $auth, $http, $mdToast, $location, $page, setting, api) {
-    $page.title(setting.name + setting.titleSeparator + 'Mudar senha');
-    $page.description('Entre para o ' + setting.name);
-    $page.load.done();
-    var vm = this;
-    vm.lost = lost;
-    vm.change = change;
-    //lost password step2
-    var userHash = $location.hash();
-    if (userHash) vm.userHash = userHash;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LostCtrl#change
-     * @methodOf core.login.controller:$LostCtrl
-     * @description 
-     * Alterar senha
-     * @param {string} pw senha
-     **/
-    function change(pw) {
-        $page.load.init();
-        var onSuccess = function(data) {
-            $page.load.done();
-            $state.transitionTo('app.login');
-            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
-        }
-        var onError = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
-        }
-        $http.put(api.url + "/api/users/" + userHash + '/newPassword', {
-            password: pw
-        }).success(onSuccess).error(onError);
-    }
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LostCtrl#lost
-     * @methodOf core.login.controller:$LostCtrl
-     * @description 
-     * Link para alteração de senha
-     * @param {string} email email
-     **/
-    function lost(email) {
-        $page.load.init();
-        var onSuccess = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
-        }
-        var onError = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
-        }
-        $http.post(api.url + "/api/users/lost", {
-            email: email
-        }).success(onSuccess).error(onError);
-    }
-})
-'use strict';
 /*global window*/
 angular.module('page.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     //
@@ -1707,7 +1707,7 @@ angular.module('profile.module').service('Profile', /*@ngInject*/ function($http
     return Profile;
 })
 'use strict';
-angular.module('user.module').factory('user', /*@ngInject*/ function() {
+angular.module('core.user').factory('user', /*@ngInject*/ function() {
     this.instance = {};
     return {
         set: function(data) {
@@ -1720,7 +1720,7 @@ angular.module('user.module').factory('user', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('user.module').provider('UserSetting', /*@ngInject*/ function() {
+angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
     this.setting = {};
     this.$get = this.get = function() {
         return this.setting;
@@ -1733,11 +1733,11 @@ angular.module('user.module').provider('UserSetting', /*@ngInject*/ function() {
 /* global window */
 /**
  * @ngdoc service
- * @name user.module.User
+ * @name core.user.User
  * @description 
  * Comportamentos de usuário
  **/
-angular.module('user.module').service('User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
+angular.module('core.user').service('User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
     var User = function(params, alert, message) {
             params = params ? params : {};
             this.currentData = {};
@@ -2056,6 +2056,68 @@ angular.module('account.module').directive('optOut', /*@ngInject*/ function() {
     }
 })
 'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires core.user.factory:$user
+ **/
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
+    var vm = this;
+    vm.login = login;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
+    function login(logon) {
+        $page.load.init();
+        var onSuccess = function(result) {
+            $page.load.done();
+            user.instance.init(result.data.user, true);
+        }
+        var onError = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+        }
+        $auth.login({
+            email: logon.email,
+            password: logon.password
+        }).then(onSuccess, onError);
+    }
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ **/
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            config: '=',
+            user: '='
+        },
+        restrict: 'EA',
+        templateUrl: "core/login/form/loginForm.tpl.html",
+        controller: '$LoginFormCtrl',
+        controllerAs: 'vm',
+        link: function() {}
+    }
+});
+'use strict';
 angular.module('facebook.login').config(function(FacebookProvider, setting) {
     FacebookProvider.init({
         version: 'v2.3',
@@ -2151,68 +2213,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
         me().then(onSuccess, onFail);
     }
 })
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginFormCtrl
- * @description 
- * Controlador do componente
- * @requires $scope
- * @requires $auth
- * @requires $mdToast
- * @requires user.module.factory:$user
- **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
-    var vm = this;
-    vm.login = login;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LoginFormCtrl#login
-     * @propertyOf core.login.controller:$LoginFormCtrl
-     * @description 
-     * Controlador do componente de login
-     * @param {string} logon objeto contendo as credenciais email e password
-     **/
-    function login(logon) {
-        $page.load.init();
-        var onSuccess = function(result) {
-            $page.load.done();
-            user.instance.init(result.data.user, true);
-        }
-        var onError = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
-        }
-        $auth.login({
-            email: logon.email,
-            password: logon.password
-        }).then(onSuccess, onError);
-    }
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:loginForm
- * @restrict EA
- * @description 
- * Componente para o formulário de login
- * @element div
- * @param {object} config objeto de configurações do módulo login
- * @param {object} user objeto instância do usuário
- **/
-angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            config: '=',
-            user: '='
-        },
-        restrict: 'EA',
-        templateUrl: "core/login/form/loginForm.tpl.html",
-        controller: '$LoginFormCtrl',
-        controllerAs: 'vm',
-        link: function() {}
-    }
-});
 'use strict';
 /* global gapi */
 angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, user, setting, api) {

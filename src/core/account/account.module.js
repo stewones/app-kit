@@ -1,7 +1,7 @@
 'use strict';
 angular.module('account.module', [
     'utils.module',
-    'user.module',
+    'core.user',
     'menu.module',
     'ui.router',
     'vAccordion',

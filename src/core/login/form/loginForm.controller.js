@@ -7,7 +7,7 @@
  * @requires $scope
  * @requires $auth
  * @requires $mdToast
- * @requires user.module.factory:$user
+ * @requires core.user.factory:$user
  **/
 angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
     var vm = this;
