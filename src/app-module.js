@@ -1556,7 +1556,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
         views: {
             'content': {
                 templateUrl: 'core/profile/profile.tpl.html',
-                controller: 'ProfileCtrl as vm'
+                controller: '$ProfileCtrl as vm'
             }
         },
         resolve: {
@@ -1620,7 +1620,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.profile').controller('ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, utils, $page, user, setting) {
+angular.module('core.profile').controller('$ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, utils, $page, user, setting) {
     var vm = this;
     vm.companySession = companySession;
     vm.companyCurrent = companyCurrent;
@@ -1648,7 +1648,7 @@ angular.module('core.profile').controller('ProfileCtrl', /*@ngInject*/ function(
 angular.module('core.profile').directive('profile', /*@ngInject*/ function() {
     return {
         templateUrl: "core/profile/profile.tpl.html",
-        controller: 'ProfileCtrl',
+        controller: '$ProfileCtrl',
         controllerAs: 'vm'
     }
 })

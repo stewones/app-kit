@@ -9,7 +9,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
         views: {
             'content': {
                 templateUrl: 'core/profile/profile.tpl.html',
-                controller: 'ProfileCtrl as vm'
+                controller: '$ProfileCtrl as vm'
             }
         },
         resolve: {

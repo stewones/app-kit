@@ -2,7 +2,7 @@
 angular.module('core.profile').directive('profile', /*@ngInject*/ function() {
     return {
         templateUrl: "core/profile/profile.tpl.html",
-        controller: 'ProfileCtrl',
+        controller: '$ProfileCtrl',
         controllerAs: 'vm'
     }
 })
