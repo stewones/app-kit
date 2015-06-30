@@ -2,8 +2,8 @@
 describe('User', function() {
     var User;
     beforeEach(module('core.user'));
-    beforeEach(inject(function(_User_) {
-        User = _User_;
+    beforeEach(inject(function(_$User_) {
+        User = _$User_;
     }));
     describe('Constructor', function() {
         it('define current data and session data', function() {

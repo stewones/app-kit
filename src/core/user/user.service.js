@@ -2,11 +2,11 @@
 /* global window */
 /**
  * @ngdoc service
- * @name core.user.User
+ * @name core.user.$User
  * @description 
  * Comportamentos de usuário
  **/
-angular.module('core.user').service('User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
+angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
     var User = function(params, alert, message) {
             params = params ? params : {};
             this.currentData = {};

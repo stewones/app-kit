@@ -41,8 +41,6 @@ angular.module('core.page', [
     'directives.inputMatch'
 ]);
 'use strict';
-angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','core.page']);
-'use strict';
 angular.module('core.profile', [
     'core.utils',
     'core.user',
@@ -56,6 +54,8 @@ angular.module('core.profile', [
     'angularMoment',
     'satellizer'
 ])
+'use strict';
+angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','core.page']);
 'use strict';
 /*
  * App Helpers
@@ -155,7 +155,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, User, UserSetting, utils, $page, user, setting, api) {
+angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, $User, UserSetting, utils, $page, user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -240,7 +240,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                 var _profile = response;
                 delete _profile.user;
                 user.instance.profile = _profile; //atualizar profile
-                user.set(new User(user.instance)); //re-instanciar usuario
+                user.set(new $User(user.instance)); //re-instanciar usuario
                 bootstrap(); //re-instanciar profile
                 $page.toast('Dados atualizados');
                 $page.load.done();
@@ -271,7 +271,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                 if (!user.instance.current('companies').length || !user.instance.current('companies')[0].company || !user.instance.current('companies')[0].company._id) {
                     user.instance.current('company', {}); //zerar empresa atual se nao existir mais nenhuma
                 }
-                user.set(new User(user.instance)); //re-instanciar usuario
+                user.set(new $User(user.instance)); //re-instanciar usuario
                 bootstrap();
                 $page.toast('empresa desconectada');
                 $page.load.done();
@@ -449,270 +449,6 @@ angular.module('core.account').service('Account', /*@ngInject*/ function($http, 
     return Account;
 })
 'use strict';
-angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
-    //
-    // States & Routes
-    //
-    $stateProvider.state('app.login', {
-        protected: false,
-        url: '/login/',
-        views: {
-            'content': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $loginProvider.templateUrl()
-                },
-                controller: '$LoginCtrl as vm'
-            }
-        },
-        resolve: {
-            authed: /*@ngInject*/ function($auth, $location, $login) {
-                if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
-                }
-            }
-        }
-    }).state('app.logout', {
-        protected: false,
-        url: '/logout/',
-        views: {
-            'content': {
-                controller: '$LogoutCtrl as vm'
-            }
-        }
-    }).state('app.signup', {
-        protected: false,
-        url: '/signup/',
-        views: {
-            'content': {
-                templateUrl: 'core/login/register/register.tpl.html',
-                controller: /*@ngInject*/ function($page, setting) {
-                    $page.title(setting.name + setting.titleSeparator + 'Cadastro');
-                }
-            },
-            authed: /*@ngInject*/ function($auth, $location, $login) {
-                if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
-                }
-            }
-        }
-    }).state('app.login-lost', {
-        protected: false,
-        url: '/login/lost/',
-        views: {
-            'content': {
-                templateUrl: 'core/login/register/lost.tpl.html',
-                controller: '$LostCtrl as vm'
-            }
-        },
-        authed: /*@ngInject*/ function($auth, $location, $login) {
-            if ($auth.isAuthenticated()) {
-                $location.path($login.config.auth.loginSuccessRedirect);
-            }
-        }
-    });
-    $locationProvider.html5Mode(true);
-})
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginCtrl
- * @requires core.login.$loginProvider
- * @requires core.page.factory:$page
- * @requires setting
- * @requires api
- **/
-'use strict';
-angular.module('core.login').controller('$LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, $login, $page, setting, api) {
-    $page.title(setting.name + setting.titleSeparator + 'Login');
-    $page.description('Entre para o ' + setting.name);
-    $page.load.done();
-    var vm = this;
-    vm.config = $login.config;
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:login
- * @restrict EA
- * @description 
- * Diretiva "wrapper" pro template de login
- * @element div
- **/
-angular.module('core.login').directive('login', /*@ngInject*/ function() {
-    return {
-        scope: {},
-        templateUrl: 'core/login/login.tpl.html',
-        controller: '$LoginCtrl',
-        controllerAs: 'vm',
-        restrict: 'EA'
-    }
-});
-'use strict';
-angular.module('core.login').provider('$login',
-    /**
-     * @ngdoc object
-     * @name core.login.$loginProvider
-     **/
-    /*@ngInject*/
-    function $loginProvider() {
-        /**
-         * @ngdoc object
-         * @name core.login.$loginProvider#_config
-         * @propertyOf core.login.$loginProvider
-         * @description 
-         * armazena configurações
-         **/
-        this._config = {};
-        /**
-         * @ngdoc object
-         * @name core.login.$loginProvider#_templateUrl
-         * @propertyOf core.login.$loginProvider
-         * @description 
-         * url do template para a rota
-         **/
-        this._templateUrl = 'core/login/login.tpl.html';
-        /**
-         * @ngdoc function
-         * @name core.login.$loginProvider#$get
-         * @propertyOf core.login.$loginProvider
-         * @description 
-         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
-         * @example
-         * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($login) {     
-         *      console.log($login.templateUrl);
-         *      //prints the current templateUrl of `core.login`
-         *      //ex.: "core/login/login.tpl.html"     
-         *      console.log($login.config('myOwnConfiguration'));
-         *      //prints the current config
-         *      //ex.: "{ configA: 54, configB: '=D' }"
-         * })
-         * </pre>
-         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e templateUrl
-         **/
-        this.$get = this.get = function() {
-                return {
-                    config: this._config,
-                    templateUrl: this._templateUrl
-                }
-            }
-            /**
-             * @ngdoc function
-             * @name core.login.$loginProvider#config
-             * @methodOf core.login.$loginProvider
-             * @description
-             * setter para configurações
-             * @example
-             * <pre>
-             * angular.module('myApp.module').config(function($loginProvider) {     
-             *     $loginProvider.config('myOwnConfiguration', {
-             *          configA: 54,
-             *          configB: '=D'
-             *      })
-             * })
-             * </pre>
-             * @param {string} key chave
-             * @param {*} val valor   
-             **/
-        this.config = function(key, val) {
-                if (val) return this._config[key] = val;
-                else return this._config[key];
-            }
-            /**
-             * @ngdoc function
-             * @name core.login.$loginProvider#templateUrl
-             * @methodOf core.login.$loginProvider
-             * @description
-             * setter para url do template
-             * @example
-             * <pre>
-             * angular.module('myApp.module').config(function($loginProvider) {     
-             *      $loginProvider.templateUrl('app/login/my-login.html')
-             * })
-             * </pre>
-             * @param {string} val url do template
-             **/
-        this.templateUrl = function(val) {
-            if (val) return this._templateUrl = val;
-            else return this._templateUrl;
-        }
-    });
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LogoutCtrl
- * @description 
- * Destruir sessão
- * @requires core.login.$user
- **/
-angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
-    user.instance.destroy();
-})
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LostCtrl
- * @requires core.page.factory:$page
- * @requires setting
- * @requires api
- **/
-angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($state, $auth, $http, $mdToast, $location, $page, setting, api) {
-    $page.title(setting.name + setting.titleSeparator + 'Mudar senha');
-    $page.description('Entre para o ' + setting.name);
-    $page.load.done();
-    var vm = this;
-    vm.lost = lost;
-    vm.change = change;
-    //lost password step2
-    var userHash = $location.hash();
-    if (userHash) vm.userHash = userHash;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LostCtrl#change
-     * @methodOf core.login.controller:$LostCtrl
-     * @description 
-     * Alterar senha
-     * @param {string} pw senha
-     **/
-    function change(pw) {
-        $page.load.init();
-        var onSuccess = function(data) {
-            $page.load.done();
-            $state.transitionTo('app.login');
-            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
-        }
-        var onError = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
-        }
-        $http.put(api.url + "/api/users/" + userHash + '/newPassword', {
-            password: pw
-        }).success(onSuccess).error(onError);
-    }
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LostCtrl#lost
-     * @methodOf core.login.controller:$LostCtrl
-     * @description 
-     * Link para alteração de senha
-     * @param {string} email email
-     **/
-    function lost(email) {
-        $page.load.init();
-        var onSuccess = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
-        }
-        var onError = function(data) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
-        }
-        $http.post(api.url + "/api/users/lost", {
-            email: email
-        }).success(onSuccess).error(onError);
-    }
-})
-'use strict';
 angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, UserSettingProvider, setting, api) {
     //
     // States & Routes
@@ -823,7 +559,7 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, User, user, enviroment, menu, $login) {
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, user, enviroment, menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -880,7 +616,7 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         //nonWww2www();
         //http2https(); //@bug - bug com _escaped_fragment_
         if (withUser) {
-            var newUser = new User();
+            var newUser = new $User();
             user.set(newUser);
         }
         vm.user = user.instance;
@@ -1280,6 +1016,270 @@ angular.module("app.setting", []).constant("setting", {
     ogTag: "app-kit"
 });
 'use strict';
+angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
+    //
+    // States & Routes
+    //
+    $stateProvider.state('app.login', {
+        protected: false,
+        url: '/login/',
+        views: {
+            'content': {
+                templateUrl: /*@ngInject*/ function() {
+                    return $loginProvider.templateUrl()
+                },
+                controller: '$LoginCtrl as vm'
+            }
+        },
+        resolve: {
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
+            }
+        }
+    }).state('app.logout', {
+        protected: false,
+        url: '/logout/',
+        views: {
+            'content': {
+                controller: '$LogoutCtrl as vm'
+            }
+        }
+    }).state('app.signup', {
+        protected: false,
+        url: '/signup/',
+        views: {
+            'content': {
+                templateUrl: 'core/login/register/register.tpl.html',
+                controller: /*@ngInject*/ function($page, setting) {
+                    $page.title(setting.name + setting.titleSeparator + 'Cadastro');
+                }
+            },
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
+            }
+        }
+    }).state('app.login-lost', {
+        protected: false,
+        url: '/login/lost/',
+        views: {
+            'content': {
+                templateUrl: 'core/login/register/lost.tpl.html',
+                controller: '$LostCtrl as vm'
+            }
+        },
+        authed: /*@ngInject*/ function($auth, $location, $login) {
+            if ($auth.isAuthenticated()) {
+                $location.path($login.config.auth.loginSuccessRedirect);
+            }
+        }
+    });
+    $locationProvider.html5Mode(true);
+})
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginCtrl
+ * @requires core.login.$loginProvider
+ * @requires core.page.factory:$page
+ * @requires setting
+ * @requires api
+ **/
+'use strict';
+angular.module('core.login').controller('$LoginCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $location, $login, $page, setting, api) {
+    $page.title(setting.name + setting.titleSeparator + 'Login');
+    $page.description('Entre para o ' + setting.name);
+    $page.load.done();
+    var vm = this;
+    vm.config = $login.config;
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:login
+ * @restrict EA
+ * @description 
+ * Diretiva "wrapper" pro template de login
+ * @element div
+ **/
+angular.module('core.login').directive('login', /*@ngInject*/ function() {
+    return {
+        scope: {},
+        templateUrl: 'core/login/login.tpl.html',
+        controller: '$LoginCtrl',
+        controllerAs: 'vm',
+        restrict: 'EA'
+    }
+});
+'use strict';
+angular.module('core.login').provider('$login',
+    /**
+     * @ngdoc object
+     * @name core.login.$loginProvider
+     **/
+    /*@ngInject*/
+    function $loginProvider() {
+        /**
+         * @ngdoc object
+         * @name core.login.$loginProvider#_config
+         * @propertyOf core.login.$loginProvider
+         * @description 
+         * armazena configurações
+         **/
+        this._config = {};
+        /**
+         * @ngdoc object
+         * @name core.login.$loginProvider#_templateUrl
+         * @propertyOf core.login.$loginProvider
+         * @description 
+         * url do template para a rota
+         **/
+        this._templateUrl = 'core/login/login.tpl.html';
+        /**
+         * @ngdoc function
+         * @name core.login.$loginProvider#$get
+         * @propertyOf core.login.$loginProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($login) {     
+         *      console.log($login.templateUrl);
+         *      //prints the current templateUrl of `core.login`
+         *      //ex.: "core/login/login.tpl.html"     
+         *      console.log($login.config('myOwnConfiguration'));
+         *      //prints the current config
+         *      //ex.: "{ configA: 54, configB: '=D' }"
+         * })
+         * </pre>
+         * @return {object} Retorna um objeto contendo valores das propriedades. ex: config e templateUrl
+         **/
+        this.$get = this.get = function() {
+                return {
+                    config: this._config,
+                    templateUrl: this._templateUrl
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name core.login.$loginProvider#config
+             * @methodOf core.login.$loginProvider
+             * @description
+             * setter para configurações
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($loginProvider) {     
+             *     $loginProvider.config('myOwnConfiguration', {
+             *          configA: 54,
+             *          configB: '=D'
+             *      })
+             * })
+             * </pre>
+             * @param {string} key chave
+             * @param {*} val valor   
+             **/
+        this.config = function(key, val) {
+                if (val) return this._config[key] = val;
+                else return this._config[key];
+            }
+            /**
+             * @ngdoc function
+             * @name core.login.$loginProvider#templateUrl
+             * @methodOf core.login.$loginProvider
+             * @description
+             * setter para url do template
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($loginProvider) {     
+             *      $loginProvider.templateUrl('app/login/my-login.html')
+             * })
+             * </pre>
+             * @param {string} val url do template
+             **/
+        this.templateUrl = function(val) {
+            if (val) return this._templateUrl = val;
+            else return this._templateUrl;
+        }
+    });
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LogoutCtrl
+ * @description 
+ * Destruir sessão
+ * @requires core.login.$user
+ **/
+angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
+    user.instance.destroy();
+})
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LostCtrl
+ * @requires core.page.factory:$page
+ * @requires setting
+ * @requires api
+ **/
+angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($state, $auth, $http, $mdToast, $location, $page, setting, api) {
+    $page.title(setting.name + setting.titleSeparator + 'Mudar senha');
+    $page.description('Entre para o ' + setting.name);
+    $page.load.done();
+    var vm = this;
+    vm.lost = lost;
+    vm.change = change;
+    //lost password step2
+    var userHash = $location.hash();
+    if (userHash) vm.userHash = userHash;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LostCtrl#change
+     * @methodOf core.login.controller:$LostCtrl
+     * @description 
+     * Alterar senha
+     * @param {string} pw senha
+     **/
+    function change(pw) {
+        $page.load.init();
+        var onSuccess = function(data) {
+            $page.load.done();
+            $state.transitionTo('app.login');
+            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
+        }
+        var onError = function(data) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
+        }
+        $http.put(api.url + "/api/users/" + userHash + '/newPassword', {
+            password: pw
+        }).success(onSuccess).error(onError);
+    }
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LostCtrl#lost
+     * @methodOf core.login.controller:$LostCtrl
+     * @description 
+     * Link para alteração de senha
+     * @param {string} email email
+     **/
+    function lost(email) {
+        $page.load.init();
+        var onSuccess = function(data) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(data.success).position('bottom right').hideDelay(3000))
+        }
+        var onError = function(data) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(data.error).position('bottom right').hideDelay(3000))
+        }
+        $http.post(api.url + "/api/users/lost", {
+            email: email
+        }).success(onSuccess).error(onError);
+    }
+})
+'use strict';
 /*global window*/
 angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     //
@@ -1546,203 +1546,6 @@ angular.module('core.page').factory('$page', /*@ngInject*/ function($mdToast) {
     }
 })
 'use strict';
-angular.module('core.user').factory('user', /*@ngInject*/ function() {
-    this.instance = {};
-    return {
-        set: function(data) {
-            this.instance = data;
-            return data;
-        },
-        destroy: function() {
-            this.instance = {};
-        }
-    }
-})
-'use strict';
-angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
-    this.setting = {};
-    this.$get = this.get = function() {
-        return this.setting;
-    }
-    this.set = function(key, val) {
-        this.setting[key] = val;
-    }
-})
-'use strict';
-/* global window */
-/**
- * @ngdoc service
- * @name core.user.User
- * @description 
- * Comportamentos de usuário
- **/
-angular.module('core.user').service('User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
-    var User = function(params, alert, message) {
-            params = params ? params : {};
-            this.currentData = {};
-            this.sessionData = {};
-            this.init(params, alert, message);
-        }
-        //
-        // Bootstrap User
-        //
-    User.prototype.init = function(params, alert, message) {
-            //set params
-            if (typeof params === 'object') {
-                for (var k in params) {
-                    if (params.hasOwnProperty(k)) {
-                        this[k] = params[k];
-                    }
-                }
-            }
-            if (params._id) {
-                var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
-                    roleForCompany = false;
-                if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
-                if (roleForCompany ? params[roleForCompany].role.length : params.role.length) {
-                    this.current('company', getCompany(this));
-                    this.current('companies', getCompanies(this));
-                }
-                if (!message) message = 'Olá ' + params.profile.firstName + ', você entrou. Bem vind' + gender + ' de volta.';
-                if (alert) $page.toast(message, 10000);
-                if (this.session('company') && this.session('company')._id) {
-                    this.current('company', this.filterCompany(this.session('company')._id));
-                }
-                setStorageUser(params);
-            } else {
-                params = getStorageUser();
-                if (params) return this.init(params);
-            }
-            return false;
-        }
-        //
-        // magic getter and setter for current data and session data configs
-        //
-    User.prototype.current = function(key, val, remove) {
-        if (key && val) {
-            if (!this.currentData) this.currentData = {};
-            this.currentData[key] = val;
-        } else if (key) {
-            return this.currentData && this.currentData[key] ? this.currentData[key] : false;
-        }
-        return this.currentData;
-    }
-    User.prototype.session = function(key, val) {
-            if (key && val) {
-                if (!this.sessionData) this.sessionData = {};
-                this.sessionData[key] = val;
-                setStorageSession(this.sessionData);
-            } else if (key) {
-                this.sessionData = getStorageSession();
-                return this.sessionData && this.sessionData[key] ? this.sessionData[key] : false;
-            }
-            this.sessionData = getStorageSession();
-            return this.sessionData;
-        }
-        //
-        // filter user companies by _id
-        //
-    User.prototype.filterCompany = function(_id) {
-            var result = false,
-                companies = getCompanies(this);
-            if (companies && companies.length) {
-                companies.forEach(function(row) {
-                    if (row.company._id === _id) {
-                        result = row.company;
-                        return;
-                    }
-                });
-            }
-            return result;
-        }
-        //checar se ta authenticado e setar token na rota
-    User.prototype.isAuthed = function() {
-        if ($state.current.protected) {
-            //setar token no header do http se o state for protegido
-            if (token()) $http.defaults.headers.common['token'] = token();
-            if (!$auth.isAuthenticated()) {
-                $state.go("app.login");
-                return false;
-            }
-            $timeout(function() {
-                menu.api().close();
-            })
-            return true;
-        }
-        return false;
-    }
-    User.prototype.destroy = function(alert) {
-        $auth.logout();
-        $auth.removeToken();
-        removeStorageSession();
-        removeStorageUser();
-        // if (UserSetting.logoutStateRedirect)
-        // $state.go(UserSetting.logoutStateRedirect);
-        $page.load.done();
-        if (alert) $page.toast('Você saiu', 3000);
-    }
-    User.prototype.getWorkPosition = function(companyid) {
-        var result = false,
-            companies = getCompanies(this);
-        if (companies.length) {
-            companies.forEach(function(row) {
-                if (row.company._id === companyid) {
-                    result = row.position;
-                    return;
-                }
-            });
-        }
-        return result;
-    }
-    User.prototype.profileUpdate = function(profile) {
-        this.profile = profile;
-        setStorageUser(this);
-    }
-    User.prototype.getCompany = getCompany;
-    User.prototype.getCompanies = getCompanies;
-
-    function token() {
-        return $auth.getToken();
-    }
-
-    function getStorageUser() {
-        return JSON.parse(window.localStorage.getItem(setting.slug + '.user'));
-    }
-
-    function setStorageUser(user) {
-        return window.localStorage.setItem(setting.slug + '.user', JSON.stringify(user));
-    }
-
-    function removeStorageUser() {
-        window.localStorage.removeItem(setting.slug + '.user');
-    }
-
-    function getStorageSession() {
-        return JSON.parse(window.localStorage.getItem(setting.slug + '.session'));
-    }
-
-    function setStorageSession(session) {
-        return window.localStorage.setItem(setting.slug + '.session', JSON.stringify(session));
-    }
-
-    function removeStorageSession() {
-        window.localStorage.removeItem(setting.slug + '.session');
-    }
-
-    function getCompanies(userInstance) {
-        var roleForCompany = false;
-        if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
-        return roleForCompany && userInstance[roleForCompany] ? userInstance[roleForCompany].role : userInstance.role;
-    }
-
-    function getCompany(userInstance) {
-        var roleForCompany = false;
-        if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
-        return roleForCompany ? userInstance[roleForCompany].role[0].company : userInstance.role[0].company;
-    }
-    return User;
-})
-'use strict';
 angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
     //
     // States & Routes
@@ -1916,6 +1719,203 @@ angular.module('core.profile').service('Profile', /*@ngInject*/ function($http, 
         return result.length ? result : [];
     }
     return Profile;
+})
+'use strict';
+angular.module('core.user').factory('user', /*@ngInject*/ function() {
+    this.instance = {};
+    return {
+        set: function(data) {
+            this.instance = data;
+            return data;
+        },
+        destroy: function() {
+            this.instance = {};
+        }
+    }
+})
+'use strict';
+angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
+    this.setting = {};
+    this.$get = this.get = function() {
+        return this.setting;
+    }
+    this.set = function(key, val) {
+        this.setting[key] = val;
+    }
+})
+'use strict';
+/* global window */
+/**
+ * @ngdoc service
+ * @name core.user.$User
+ * @description 
+ * Comportamentos de usuário
+ **/
+angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
+    var User = function(params, alert, message) {
+            params = params ? params : {};
+            this.currentData = {};
+            this.sessionData = {};
+            this.init(params, alert, message);
+        }
+        //
+        // Bootstrap User
+        //
+    User.prototype.init = function(params, alert, message) {
+            //set params
+            if (typeof params === 'object') {
+                for (var k in params) {
+                    if (params.hasOwnProperty(k)) {
+                        this[k] = params[k];
+                    }
+                }
+            }
+            if (params._id) {
+                var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
+                    roleForCompany = false;
+                if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+                if (roleForCompany ? params[roleForCompany].role.length : params.role.length) {
+                    this.current('company', getCompany(this));
+                    this.current('companies', getCompanies(this));
+                }
+                if (!message) message = 'Olá ' + params.profile.firstName + ', você entrou. Bem vind' + gender + ' de volta.';
+                if (alert) $page.toast(message, 10000);
+                if (this.session('company') && this.session('company')._id) {
+                    this.current('company', this.filterCompany(this.session('company')._id));
+                }
+                setStorageUser(params);
+            } else {
+                params = getStorageUser();
+                if (params) return this.init(params);
+            }
+            return false;
+        }
+        //
+        // magic getter and setter for current data and session data configs
+        //
+    User.prototype.current = function(key, val, remove) {
+        if (key && val) {
+            if (!this.currentData) this.currentData = {};
+            this.currentData[key] = val;
+        } else if (key) {
+            return this.currentData && this.currentData[key] ? this.currentData[key] : false;
+        }
+        return this.currentData;
+    }
+    User.prototype.session = function(key, val) {
+            if (key && val) {
+                if (!this.sessionData) this.sessionData = {};
+                this.sessionData[key] = val;
+                setStorageSession(this.sessionData);
+            } else if (key) {
+                this.sessionData = getStorageSession();
+                return this.sessionData && this.sessionData[key] ? this.sessionData[key] : false;
+            }
+            this.sessionData = getStorageSession();
+            return this.sessionData;
+        }
+        //
+        // filter user companies by _id
+        //
+    User.prototype.filterCompany = function(_id) {
+            var result = false,
+                companies = getCompanies(this);
+            if (companies && companies.length) {
+                companies.forEach(function(row) {
+                    if (row.company._id === _id) {
+                        result = row.company;
+                        return;
+                    }
+                });
+            }
+            return result;
+        }
+        //checar se ta authenticado e setar token na rota
+    User.prototype.isAuthed = function() {
+        if ($state.current.protected) {
+            //setar token no header do http se o state for protegido
+            if (token()) $http.defaults.headers.common['token'] = token();
+            if (!$auth.isAuthenticated()) {
+                $state.go("app.login");
+                return false;
+            }
+            $timeout(function() {
+                menu.api().close();
+            })
+            return true;
+        }
+        return false;
+    }
+    User.prototype.destroy = function(alert) {
+        $auth.logout();
+        $auth.removeToken();
+        removeStorageSession();
+        removeStorageUser();
+        // if (UserSetting.logoutStateRedirect)
+        // $state.go(UserSetting.logoutStateRedirect);
+        $page.load.done();
+        if (alert) $page.toast('Você saiu', 3000);
+    }
+    User.prototype.getWorkPosition = function(companyid) {
+        var result = false,
+            companies = getCompanies(this);
+        if (companies.length) {
+            companies.forEach(function(row) {
+                if (row.company._id === companyid) {
+                    result = row.position;
+                    return;
+                }
+            });
+        }
+        return result;
+    }
+    User.prototype.profileUpdate = function(profile) {
+        this.profile = profile;
+        setStorageUser(this);
+    }
+    User.prototype.getCompany = getCompany;
+    User.prototype.getCompanies = getCompanies;
+
+    function token() {
+        return $auth.getToken();
+    }
+
+    function getStorageUser() {
+        return JSON.parse(window.localStorage.getItem(setting.slug + '.user'));
+    }
+
+    function setStorageUser(user) {
+        return window.localStorage.setItem(setting.slug + '.user', JSON.stringify(user));
+    }
+
+    function removeStorageUser() {
+        window.localStorage.removeItem(setting.slug + '.user');
+    }
+
+    function getStorageSession() {
+        return JSON.parse(window.localStorage.getItem(setting.slug + '.session'));
+    }
+
+    function setStorageSession(session) {
+        return window.localStorage.setItem(setting.slug + '.session', JSON.stringify(session));
+    }
+
+    function removeStorageSession() {
+        window.localStorage.removeItem(setting.slug + '.session');
+    }
+
+    function getCompanies(userInstance) {
+        var roleForCompany = false;
+        if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+        return roleForCompany && userInstance[roleForCompany] ? userInstance[roleForCompany].role : userInstance.role;
+    }
+
+    function getCompany(userInstance) {
+        var roleForCompany = false;
+        if (UserSetting.roleForCompany != 'user') roleForCompany = UserSetting.roleForCompany;
+        return roleForCompany ? userInstance[roleForCompany].role[0].company : userInstance.role[0].company;
+    }
+    return User;
 })
 'use strict';
 /* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
@@ -2159,68 +2159,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
     }
 })
 'use strict';
-/* global gapi */
-angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, user, setting, api) {
-    var vm = this;
-    vm.clientId = setting.google.clientId;
-    vm.language = setting.google.language;
-    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
-        // Send login to server or save into cookie
-        gapi.client.load('plus', 'v1', apiClientLoaded);
-    });
-    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
-        // @todo Auth failure or signout detected
-    });
-
-    function apiClientLoaded() {
-        gapi.client.plus.people.get({
-            userId: 'me'
-        })
-            .execute(handleResponse);
-    }
-
-    function handleResponse(glUser) {
-        login(glUser);
-    }
-
-    function login(glUser) {
-        $page.load.init();
-        var onSuccess = function(response) {
-            $page.load.done();
-            var msg = false;
-            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
-            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
-            $auth.setToken(response.data.token);
-            user.instance.init(response.data.user, true, msg);
-        }
-        var onFail = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple()
-                .content(result.data ? result.data : 'server away')
-                .position('bottom right')
-                .hideDelay(3000))
-        }
-        $http.post(api.url + '/auth/google', {
-            provider: 'google',
-            id: glUser.id,
-            firstName: glUser.name.givenName,
-            lastName: glUser.name.familyName,
-            email: glUser.emails[0].value,
-            gender: glUser.gender
-        })
-            .then(onSuccess, onFail);
-    }
-
-})
-'use strict';
-angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/login/google/googleLogin.tpl.html",
-        controller: 'GoogleLoginCtrl',
-        controllerAs: 'google'
-    }
-})
-'use strict';
 /**
  * @ngdoc object
  * @name core.login.controller:$LoginFormCtrl
@@ -2282,6 +2220,68 @@ angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
         link: function() {}
     }
 });
+'use strict';
+/* global gapi */
+angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, user, setting, api) {
+    var vm = this;
+    vm.clientId = setting.google.clientId;
+    vm.language = setting.google.language;
+    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
+        // Send login to server or save into cookie
+        gapi.client.load('plus', 'v1', apiClientLoaded);
+    });
+    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
+        // @todo Auth failure or signout detected
+    });
+
+    function apiClientLoaded() {
+        gapi.client.plus.people.get({
+            userId: 'me'
+        })
+            .execute(handleResponse);
+    }
+
+    function handleResponse(glUser) {
+        login(glUser);
+    }
+
+    function login(glUser) {
+        $page.load.init();
+        var onSuccess = function(response) {
+            $page.load.done();
+            var msg = false;
+            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
+            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+            $auth.setToken(response.data.token);
+            user.instance.init(response.data.user, true, msg);
+        }
+        var onFail = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple()
+                .content(result.data ? result.data : 'server away')
+                .position('bottom right')
+                .hideDelay(3000))
+        }
+        $http.post(api.url + '/auth/google', {
+            provider: 'google',
+            id: glUser.id,
+            firstName: glUser.name.givenName,
+            lastName: glUser.name.familyName,
+            email: glUser.emails[0].value,
+            gender: glUser.gender
+        })
+            .then(onSuccess, onFail);
+    }
+
+})
+'use strict';
+angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/login/google/googleLogin.tpl.html",
+        controller: 'GoogleLoginCtrl',
+        controllerAs: 'google'
+    }
+})
 'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user, $page, setting) {
     $scope.register = register;

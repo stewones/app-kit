@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, User, UserSetting, utils, $page, user, setting, api) {
+angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, $User, UserSetting, utils, $page, user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -84,7 +84,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                 var _profile = response;
                 delete _profile.user;
                 user.instance.profile = _profile; //atualizar profile
-                user.set(new User(user.instance)); //re-instanciar usuario
+                user.set(new $User(user.instance)); //re-instanciar usuario
                 bootstrap(); //re-instanciar profile
                 $page.toast('Dados atualizados');
                 $page.load.done();
@@ -115,7 +115,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                 if (!user.instance.current('companies').length || !user.instance.current('companies')[0].company || !user.instance.current('companies')[0].company._id) {
                     user.instance.current('company', {}); //zerar empresa atual se nao existir mais nenhuma
                 }
-                user.set(new User(user.instance)); //re-instanciar usuario
+                user.set(new $User(user.instance)); //re-instanciar usuario
                 bootstrap();
                 $page.toast('empresa desconectada');
                 $page.load.done();
