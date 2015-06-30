@@ -1,5 +1,5 @@
 'use strict';
-angular.module('profile.module').controller('ProfileFormPositionsCtrl', function() {
+angular.module('core.profile').controller('ProfileFormPositionsCtrl', function() {
     var vm = this;
     vm.exists = function(item, list) {
         return list.indexOf(item) > -1;

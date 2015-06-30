@@ -1,5 +1,5 @@
 'use strict';
-angular.module('account.module', [
+angular.module('core.account', [
     'core.utils',
     'core.user',
     'menu.module',

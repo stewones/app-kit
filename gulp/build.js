@@ -107,7 +107,7 @@ gulp.task('build-docs', [], function() {
         //scripts: ['../app.min.js'],
         html5Mode: true,
         startPage: '/api',
-        title: "app kit api",
+        title: "api doc",
         //image: "path/to/my/image.png",
         //imageLink: "http://my-domain.com",
         titleLink: "/api"

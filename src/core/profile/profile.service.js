@@ -1,5 +1,5 @@
 'use strict';
-angular.module('profile.module').service('Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
+angular.module('core.profile').service('Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
 
     var Profile = function(params) {
         params = params ? params : {};

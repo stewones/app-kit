@@ -1,4 +1,11 @@
 'use strict';
+/**
+ * @ngdoc overview
+ * @name app.kit
+ * @description
+ * Kit para criação de aplicações frontend com angular 1.x
+ * Serviços dos módulos com namespace "core" são identificados pelo prefixo $
+ **/
 angular.module('app.kit', [
     'app.setting',
     'app.env',
@@ -12,6 +19,6 @@ angular.module('app.kit', [
     'core.page',
     'core.login',
     'core.user',
-    'profile.module',
-    'account.module'
+    'core.profile',
+    'core.account'
 ]);

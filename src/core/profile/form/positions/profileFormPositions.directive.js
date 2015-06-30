@@ -1,5 +1,5 @@
 'use strict';
-angular.module('profile.module').directive('profileFormPositions', /*@ngInject*/ function() {
+angular.module('core.profile').directive('profileFormPositions', /*@ngInject*/ function() {
     return {
         scope: {
             options: '=',

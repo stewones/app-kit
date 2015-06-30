@@ -1,5 +1,5 @@
 'use strict';
-angular.module('account.module').service('Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
+angular.module('core.account').service('Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
     var Account = function(params) {
         params = params ? params : {};
         if (typeof params === 'object') {

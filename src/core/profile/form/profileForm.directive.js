@@ -1,5 +1,5 @@
 'use strict';
-angular.module('profile.module').directive('profileForm', /*@ngInject*/ function() {
+angular.module('core.profile').directive('profileForm', /*@ngInject*/ function() {
     return {
         scope: {
             company: '=',

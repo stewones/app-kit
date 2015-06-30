@@ -1,5 +1,5 @@
 'use strict';
-angular.module('account.module', [
+angular.module('core.account', [
     'core.utils',
     'core.user',
     'menu.module',
@@ -41,7 +41,9 @@ angular.module('core.page', [
     'directives.inputMatch'
 ]);
 'use strict';
-angular.module('profile.module', [
+angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','core.page']);
+'use strict';
+angular.module('core.profile', [
     'core.utils',
     'core.user',
     'menu.module',
@@ -55,7 +57,12 @@ angular.module('profile.module', [
     'satellizer'
 ])
 'use strict';
-angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','core.page']);
+/*
+ * App Helpers
+ * @author Stewan P. <hi@stpa.co>
+ *
+ */
+angular.module('core.utils', ['core.page', 'angularMoment']);
 'use strict';
 angular.module('facebook.login', [
     'facebook',
@@ -71,6 +78,13 @@ angular.module('google.login', [
 'use strict';
 angular.module('menu.module', ['ui.router', 'truncate']);
 'use strict';
+/**
+ * @ngdoc overview
+ * @name app.kit
+ * @description
+ * Kit para criação de aplicações frontend com angular 1.x
+ * Serviços dos módulos com namespace "core" são identificados pelo prefixo $
+ **/
 angular.module('app.kit', [
     'app.setting',
     'app.env',
@@ -84,11 +98,11 @@ angular.module('app.kit', [
     'core.page',
     'core.login',
     'core.user',
-    'profile.module',
-    'account.module'
+    'core.profile',
+    'core.account'
 ]);
 'use strict';
-angular.module('account.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
+angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
     //
     // States & Routes
     //
@@ -141,7 +155,7 @@ angular.module('account.module').config( /*@ngInject*/ function($stateProvider, 
     // });
 });
 'use strict';
-angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, User, UserSetting, utils, $page, user, setting, api) {
+angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, User, UserSetting, utils, $page, user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -347,7 +361,7 @@ angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ functio
     }
 })
 'use strict';
-angular.module('account.module').factory('account', /*@ngInject*/ function() {
+angular.module('core.account').factory('account', /*@ngInject*/ function() {
     this.instance = {};
     return {
         set: function(data) {
@@ -357,7 +371,7 @@ angular.module('account.module').factory('account', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('account.module').service('Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
+angular.module('core.account').service('Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
     var Account = function(params) {
         params = params ? params : {};
         if (typeof params === 'object') {
@@ -1532,181 +1546,6 @@ angular.module('core.page').factory('$page', /*@ngInject*/ function($mdToast) {
     }
 })
 'use strict';
-angular.module('profile.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
-    //
-    // States & Routes
-    //
-    $stateProvider.state('app.profile', {
-        protected: true,
-        url: '/profile/',
-        views: {
-            'content': {
-                templateUrl: 'core/profile/profile.tpl.html',
-                controller: 'ProfileCtrl as vm'
-            }
-        },
-        resolve: {
-            authed: /*@ngInject*/ function($auth, $location) {
-                if (!$auth.isAuthenticated()) {
-                    $location.path('/login/');
-                    return false;
-                } else {
-                    return true;
-                }
-            },
-            companySession: /*@ngInject*/ function($state, user) {
-                var userInstance = user.instance.session('company');
-                if (userInstance && userInstance.ref) {
-                    $state.go('app.landing', {
-                        ref: userInstance.ref
-                    });
-                    return true;
-                }
-                return false;
-            },
-            companyCurrent: /*@ngInject*/ function($location, $timeout, user, layout) {
-                if (!user.instance.current('company') || !user.instance.current('company')._id) {
-                    $page.toast('Acesse o LiveJob de alguma empresa para criar conexões', 10000);
-                    $timeout(function() {
-                        $location.path('/');
-                    }, 1000)
-                    return false;
-                }
-                return true;
-            },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, menu) {
-                if ($auth.isAuthenticated()) {
-                    $timeout(function() {
-                        menu.api().close();
-                    }, 500)
-                }
-            }
-        }
-    });
-    //$urlRouterProvider.otherwise('/login');
-    $locationProvider.html5Mode(true);
-    //
-    // Set Menu
-    //
-    MenuProvider.set({
-        name: 'Perfil',
-        type: 'link',
-        icon: 'fa fa-street-view',
-        url: '/profile/',
-        state: 'app.profile'
-    });
-    //
-    // Set Toolbar Menu
-    //
-    // MenuProvider.setToolbarMenu({
-    //     id: 'filtros',
-    //     name: 'Filtros',
-    //     type: 'action',
-    //     icon: 'fa fa-sliders'
-    // });
-});
-'use strict';
-angular.module('profile.module').controller('ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, utils, $page, user, setting) {
-    var vm = this;
-    vm.companySession = companySession;
-    vm.companyCurrent = companyCurrent;
-    //
-    // SEO
-    //
-    $page.title(setting.title);
-    $page.description(setting.description);
-    //
-    // Events
-    //
-    $rootScope.$on('CompanyIdUpdated', function() {});
-    //
-    // Watchers
-    //
-    //
-    // Bootstrap
-    //
-    //
-    bootstrap();
-
-    function bootstrap() {}
-})
-'use strict';
-angular.module('profile.module').directive('profile', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/profile/profile.tpl.html",
-        controller: 'ProfileCtrl',
-        controllerAs: 'vm'
-    }
-})
-'use strict';
-angular.module('profile.module').service('Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
-
-    var Profile = function(params) {
-        params = params ? params : {};
-        if (typeof params === 'object') {
-            for (var k in params) {
-                if (params.hasOwnProperty(k)) {
-                    this[k] = params[k];
-                }
-            }
-        }
-        this.id = params._id ? params._id : false;
-        this.role = params.role ? params.role : [];
-
-        this.active = params.active ? params.active : false;
-        this.created = params.created ? params.created : moment().format();
-        this.positions = params.role ? getWorkPosition(params.role) : [];
-
-        // if (this.xp && this.xp.companies.length) {
-        //     this.xp.companies.forEach(function(row, i) {
-        //         if (row.start)
-        //             this.xp.companies[i].start = moment(row.start, 'YYYY-MM-DD').format('DD/MM/YYYY');
-        //         if (row.end)
-        //             this.xp.companies[i].end = moment(row.end, 'YYYY-MM-DD').format('DD/MM/YYYY');
-        //     }.bind(this))
-        // }
-
-        if (this.education && this.education.courses.length) {
-            this.education.courses.forEach(function(row, i) {
-                if (row.name)
-                    this.education.courses[i].name = string(row.name).decodeHTMLEntities();
-            }.bind(this))
-        }
-
-        // if (this.doc) {
-        //     this.doc.birthday = params.doc && params.doc.birthday ? moment(params.doc.birthday.replace('T00:00:00.000Z', '')).format('DD/MM/YYYY') : '';
-        // }
-
-
-
-    }
-    Profile.prototype.save = function(cbSuccess, cbError) {
-        $page.load.init();
-        if (this.busy) return;
-        this.busy = true;
-        var url = api.url + '/api/profiles';
-        $http.put(url + '/' + this.id, this).success(function(response) {
-            $page.load.done();
-            this.busy = false;
-            $page.toast('Seu perfil foi atualizado, ' + response.firstName + '.');
-            if (cbSuccess)
-                return cbSuccess(response);
-        }.bind(this)).error(function(response) {
-            $page.load.done();
-            this.busy = false;
-            $page.toast('Problema ao atualizar perfil');
-            if (cbError)
-                return cbError(response);
-        }.bind(this));
-    }
-
-    function getWorkPosition() {
-        var result = user.instance.getWorkPosition(user.instance.current('company')._id);
-        return result.length ? result : [];
-    }
-    return Profile;
-})
-'use strict';
 angular.module('core.user').factory('user', /*@ngInject*/ function() {
     this.instance = {};
     return {
@@ -1904,12 +1743,180 @@ angular.module('core.user').service('User', /*@ngInject*/ function($state, $http
     return User;
 })
 'use strict';
-/*
- * App Helpers
- * @author Stewan P. <hi@stpa.co>
- *
- */
-angular.module('core.utils', ['core.page', 'angularMoment']);
+angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
+    //
+    // States & Routes
+    //
+    $stateProvider.state('app.profile', {
+        protected: true,
+        url: '/profile/',
+        views: {
+            'content': {
+                templateUrl: 'core/profile/profile.tpl.html',
+                controller: 'ProfileCtrl as vm'
+            }
+        },
+        resolve: {
+            authed: /*@ngInject*/ function($auth, $location) {
+                if (!$auth.isAuthenticated()) {
+                    $location.path('/login/');
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            companySession: /*@ngInject*/ function($state, user) {
+                var userInstance = user.instance.session('company');
+                if (userInstance && userInstance.ref) {
+                    $state.go('app.landing', {
+                        ref: userInstance.ref
+                    });
+                    return true;
+                }
+                return false;
+            },
+            companyCurrent: /*@ngInject*/ function($location, $timeout, user, layout) {
+                if (!user.instance.current('company') || !user.instance.current('company')._id) {
+                    $page.toast('Acesse o LiveJob de alguma empresa para criar conexões', 10000);
+                    $timeout(function() {
+                        $location.path('/');
+                    }, 1000)
+                    return false;
+                }
+                return true;
+            },
+            closeMenu: /*@ngInject*/ function($timeout, $auth, menu) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        menu.api().close();
+                    }, 500)
+                }
+            }
+        }
+    });
+    //$urlRouterProvider.otherwise('/login');
+    $locationProvider.html5Mode(true);
+    //
+    // Set Menu
+    //
+    MenuProvider.set({
+        name: 'Perfil',
+        type: 'link',
+        icon: 'fa fa-street-view',
+        url: '/profile/',
+        state: 'app.profile'
+    });
+    //
+    // Set Toolbar Menu
+    //
+    // MenuProvider.setToolbarMenu({
+    //     id: 'filtros',
+    //     name: 'Filtros',
+    //     type: 'action',
+    //     icon: 'fa fa-sliders'
+    // });
+});
+'use strict';
+angular.module('core.profile').controller('ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, utils, $page, user, setting) {
+    var vm = this;
+    vm.companySession = companySession;
+    vm.companyCurrent = companyCurrent;
+    //
+    // SEO
+    //
+    $page.title(setting.title);
+    $page.description(setting.description);
+    //
+    // Events
+    //
+    $rootScope.$on('CompanyIdUpdated', function() {});
+    //
+    // Watchers
+    //
+    //
+    // Bootstrap
+    //
+    //
+    bootstrap();
+
+    function bootstrap() {}
+})
+'use strict';
+angular.module('core.profile').directive('profile', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/profile/profile.tpl.html",
+        controller: 'ProfileCtrl',
+        controllerAs: 'vm'
+    }
+})
+'use strict';
+angular.module('core.profile').service('Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
+
+    var Profile = function(params) {
+        params = params ? params : {};
+        if (typeof params === 'object') {
+            for (var k in params) {
+                if (params.hasOwnProperty(k)) {
+                    this[k] = params[k];
+                }
+            }
+        }
+        this.id = params._id ? params._id : false;
+        this.role = params.role ? params.role : [];
+
+        this.active = params.active ? params.active : false;
+        this.created = params.created ? params.created : moment().format();
+        this.positions = params.role ? getWorkPosition(params.role) : [];
+
+        // if (this.xp && this.xp.companies.length) {
+        //     this.xp.companies.forEach(function(row, i) {
+        //         if (row.start)
+        //             this.xp.companies[i].start = moment(row.start, 'YYYY-MM-DD').format('DD/MM/YYYY');
+        //         if (row.end)
+        //             this.xp.companies[i].end = moment(row.end, 'YYYY-MM-DD').format('DD/MM/YYYY');
+        //     }.bind(this))
+        // }
+
+        if (this.education && this.education.courses.length) {
+            this.education.courses.forEach(function(row, i) {
+                if (row.name)
+                    this.education.courses[i].name = string(row.name).decodeHTMLEntities();
+            }.bind(this))
+        }
+
+        // if (this.doc) {
+        //     this.doc.birthday = params.doc && params.doc.birthday ? moment(params.doc.birthday.replace('T00:00:00.000Z', '')).format('DD/MM/YYYY') : '';
+        // }
+
+
+
+    }
+    Profile.prototype.save = function(cbSuccess, cbError) {
+        $page.load.init();
+        if (this.busy) return;
+        this.busy = true;
+        var url = api.url + '/api/profiles';
+        $http.put(url + '/' + this.id, this).success(function(response) {
+            $page.load.done();
+            this.busy = false;
+            $page.toast('Seu perfil foi atualizado, ' + response.firstName + '.');
+            if (cbSuccess)
+                return cbSuccess(response);
+        }.bind(this)).error(function(response) {
+            $page.load.done();
+            this.busy = false;
+            $page.toast('Problema ao atualizar perfil');
+            if (cbError)
+                return cbError(response);
+        }.bind(this));
+    }
+
+    function getWorkPosition() {
+        var result = user.instance.getWorkPosition(user.instance.current('company')._id);
+        return result.length ? result : [];
+    }
+    return Profile;
+})
 'use strict';
 /* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
 angular.module('core.utils').factory('utils', /*@ngInject*/ function($q) {
@@ -2023,7 +2030,7 @@ angular.module('core.utils').factory('utils', /*@ngInject*/ function($q) {
     }
 })
 'use strict';
-angular.module('account.module').controller('OptOutCtrl', /*@ngInject*/ function($scope, $location, $mdDialog) {
+angular.module('core.account').controller('OptOutCtrl', /*@ngInject*/ function($scope, $location, $mdDialog) {
     $scope.callAction = function(ev) {
         var confirm = $mdDialog.confirm().parent(angular.element(document.body)).title($scope.alertTitle).content($scope.alertInfo).ariaLabel($scope.alertTitle).ok($scope.alertOk).cancel($scope.alertCancel).targetEvent(ev);
         $mdDialog.show(confirm).then(function() {
@@ -2032,7 +2039,7 @@ angular.module('account.module').controller('OptOutCtrl', /*@ngInject*/ function
     }
 });
 'use strict';
-angular.module('account.module').directive('optOut', /*@ngInject*/ function() {
+angular.module('core.account').directive('optOut', /*@ngInject*/ function() {
     return {
         scope: {
             putLocation: '=',
@@ -2152,68 +2159,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
     }
 })
 'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginFormCtrl
- * @description 
- * Controlador do componente
- * @requires $scope
- * @requires $auth
- * @requires $mdToast
- * @requires core.user.factory:$user
- **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
-    var vm = this;
-    vm.login = login;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LoginFormCtrl#login
-     * @propertyOf core.login.controller:$LoginFormCtrl
-     * @description 
-     * Controlador do componente de login
-     * @param {string} logon objeto contendo as credenciais email e password
-     **/
-    function login(logon) {
-        $page.load.init();
-        var onSuccess = function(result) {
-            $page.load.done();
-            user.instance.init(result.data.user, true);
-        }
-        var onError = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
-        }
-        $auth.login({
-            email: logon.email,
-            password: logon.password
-        }).then(onSuccess, onError);
-    }
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:loginForm
- * @restrict EA
- * @description 
- * Componente para o formulário de login
- * @element div
- * @param {object} config objeto de configurações do módulo login
- * @param {object} user objeto instância do usuário
- **/
-angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            config: '=',
-            user: '='
-        },
-        restrict: 'EA',
-        templateUrl: "core/login/form/loginForm.tpl.html",
-        controller: '$LoginFormCtrl',
-        controllerAs: 'vm',
-        link: function() {}
-    }
-});
-'use strict';
 /* global gapi */
 angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, user, setting, api) {
     var vm = this;
@@ -2275,6 +2220,68 @@ angular.module('google.login').directive('googleLogin', /*@ngInject*/ function()
         controllerAs: 'google'
     }
 })
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires core.user.factory:$user
+ **/
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
+    var vm = this;
+    vm.login = login;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
+    function login(logon) {
+        $page.load.init();
+        var onSuccess = function(result) {
+            $page.load.done();
+            user.instance.init(result.data.user, true);
+        }
+        var onError = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+        }
+        $auth.login({
+            email: logon.email,
+            password: logon.password
+        }).then(onSuccess, onError);
+    }
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ **/
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            config: '=',
+            user: '='
+        },
+        restrict: 'EA',
+        templateUrl: "core/login/form/loginForm.tpl.html",
+        controller: '$LoginFormCtrl',
+        controllerAs: 'vm',
+        link: function() {}
+    }
+});
 'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user, $page, setting) {
     $scope.register = register;
@@ -2557,7 +2564,7 @@ angular.module('menu.module').filter('nospace', /*@ngInject*/ function() {
 });
 'use strict';
 /* global moment, confirm */
-angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, Profile, setting, api) {
+angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, Profile, setting, api) {
     var vm = this;
     //
     // Estados Brasileiros
@@ -2875,7 +2882,7 @@ angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ fun
     }
 })
 'use strict';
-angular.module('profile.module').directive('profileForm', /*@ngInject*/ function() {
+angular.module('core.profile').directive('profileForm', /*@ngInject*/ function() {
     return {
         scope: {
             company: '=',
@@ -3356,7 +3363,7 @@ angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
     }
 });
 'use strict';
-angular.module('profile.module').controller('ProfileFormPositionsCtrl', function() {
+angular.module('core.profile').controller('ProfileFormPositionsCtrl', function() {
     var vm = this;
     vm.exists = function(item, list) {
         return list.indexOf(item) > -1;
@@ -3370,7 +3377,7 @@ angular.module('profile.module').controller('ProfileFormPositionsCtrl', function
 
 })
 'use strict';
-angular.module('profile.module').directive('profileFormPositions', /*@ngInject*/ function() {
+angular.module('core.profile').directive('profileFormPositions', /*@ngInject*/ function() {
     return {
         scope: {
             options: '=',

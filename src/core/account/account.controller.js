@@ -1,5 +1,5 @@
 'use strict';
-angular.module('account.module').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, User, UserSetting, utils, $page, user, setting, api) {
+angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, User, UserSetting, utils, $page, user, setting, api) {
     var vm = this;
     //
     // SEO

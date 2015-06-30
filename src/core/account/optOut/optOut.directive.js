@@ -1,5 +1,5 @@
 'use strict';
-angular.module('account.module').directive('optOut', /*@ngInject*/ function() {
+angular.module('core.account').directive('optOut', /*@ngInject*/ function() {
     return {
         scope: {
             putLocation: '=',

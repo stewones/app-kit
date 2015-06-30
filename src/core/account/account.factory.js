@@ -1,5 +1,5 @@
 'use strict';
-angular.module('account.module').factory('account', /*@ngInject*/ function() {
+angular.module('core.account').factory('account', /*@ngInject*/ function() {
     this.instance = {};
     return {
         set: function(data) {

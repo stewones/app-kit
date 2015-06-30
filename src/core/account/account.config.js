@@ -1,5 +1,5 @@
 'use strict';
-angular.module('account.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
+angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
     //
     // States & Routes
     //

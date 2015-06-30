@@ -1,6 +1,6 @@
 'use strict';
 /* global moment, confirm */
-angular.module('profile.module').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, Profile, setting, api) {
+angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, Profile, setting, api) {
     var vm = this;
     //
     // Estados Brasileiros
