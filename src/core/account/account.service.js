@@ -1,41 +1,66 @@
 'use strict';
-/**
- * @ngdoc service
- * @name core.profile.$Account
- * @description 
- * Comportamentos e estados de perfil do usuário
- **/
 angular.module('core.account').service('$Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
+    /**
+     * @ngdoc service
+     * @name core.account.$Account
+     * @description 
+     * Comportamentos e estados de conta do usuário
+     * @param {object} params Propriedades da instância
+     **/
     var Account = function(params) {
-        params = params ? params : {};
-        if (typeof params === 'object') {
-            for (var k in params) {
-                if (params.hasOwnProperty(k)) {
-                    this[k] = params[k];
+            params = params ? params : {};
+            if (typeof params === 'object') {
+                for (var k in params) {
+                    if (params.hasOwnProperty(k)) {
+                        this[k] = params[k];
+                    }
                 }
             }
+            /**
+             * @ngdoc object
+             * @name core.account.$Account#password
+             * @propertyOf core.account.$Account
+             * @description 
+             * destinado a confirmação da conta
+             **/
+            this.password = '';
+            /**
+             * @ngdoc object
+             * @name core.account.$Account#_password
+             * @propertyOf core.account.$Account
+             * @description 
+             * destinado a mudança de password
+             **/
+            this._password = 'lolggiziafkbase';
+            /**
+             * @ngdoc object
+             * @name core.account.$Account#__password
+             * @propertyOf core.account.$Account
+             * @description 
+             * destinado a confirmação da mudança de password
+             **/
+            this.__password = 'lolggiziafkbase';
         }
-        this.password = ''; //destinado a confirmação da conta
-        this._password = 'lolggiziafkbase'; //destinado a mudança de password
-        this.__password = 'lolggiziafkbase'; //confirmação da mudança de password
-    }
-    Account.prototype.save = function(cbSuccess, cbError) {
-        if (this.busy) return;
-        this.busy = true;
-        $page.load.init();
-        var url = api.url + '/api/accounts';
-        $http.put(url + '/' + this.id, this).success(function(response) {
-            $page.load.done();
-            this.busy = false;
-            $page.toast(response.firstName + ', sua conta foi atualizada.');
-            if (cbSuccess) return cbSuccess(response);
-        }.bind(this)).error(function(response) {
-            $page.load.done();
-            this.busy = false;
-            $page.toast('Problema ao atualizar conta');
-            if (cbError) return cbError(response);
-        }.bind(this));
-    }
+        /**
+         * @ngdoc function
+         * @name core.account.$Account:confirm
+         * @methodOf core.account.$Account
+         * @description
+         * Confirmação de identidade da conta
+         * @example
+         * <pre>
+         * var account = new $Account();
+         * account.confirm(onSuccessConfirm, onFailConfirm);
+         * function onSuccessConfirm(response) {
+         *   //do stuff on success
+         * }
+         * function onFailConfirm(response) {
+         *   //do stuff on error
+         * } 
+         * </pre> 
+         * @param {function} cbSuccess callback de sucesso
+         * @param {function} cbError callback de erro
+         */
     Account.prototype.confirm = function(cbSuccess, cbError) {
         if (this.busy) return;
         this.busy = true;

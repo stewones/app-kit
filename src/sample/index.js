@@ -3,9 +3,9 @@
      * Sample app
      */
     'use strict';
-    angular.module('esgrupo.app', ['app.kit']).controller('LoginCtrl', [LoginCtrl]).config(['$loginProvider', '$appProvider', '$stateProvider', TestConfig]);
+    angular.module('esgrupo.app', ['app.kit']).controller('LoginCtrl', ['$Profile', LoginCtrl]).config(['$loginProvider', '$appProvider', '$stateProvider', TestConfig]);
 
-    function LoginCtrl() {
+    function LoginCtrl($Profile) {
         var vm = this;
         vm.hello = '"As pessoas não sabem o que querem, até mostrarmos a elas."';
     }

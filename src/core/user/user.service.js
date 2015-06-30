@@ -1,21 +1,52 @@
 'use strict';
 /* global window */
-/**
- * @ngdoc service
- * @name core.user.$User
- * @description 
- * Comportamentos de usuário
- **/
 angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
+    /**
+     * @ngdoc service
+     * @name core.user.$User
+     * @description 
+     * Comportamentos de usuário
+     * @param {object} params propriedades da instância
+     * @param {bool} alert aviso de boas vindas
+     * @param {string} message mensagem do aviso
+     **/
     var User = function(params, alert, message) {
+            /**
+             * @ngdoc object
+             * @name core.user.$User#params
+             * @propertyOf core.user.$User
+             * @description 
+             * Propriedades da instância
+             **/
             params = params ? params : {};
+            /**
+             * @ngdoc object
+             * @name core.user.$User#currentData
+             * @propertyOf core.user.$User
+             * @description 
+             * Armazena dados customizados na instância do usuário
+             **/
             this.currentData = {};
+            /**
+             * @ngdoc object
+             * @name core.user.$User#sessionData
+             * @propertyOf core.user.$User
+             * @description 
+             * Armazena dados customizados no localStorage do usuário
+             **/
             this.sessionData = {};
             this.init(params, alert, message);
         }
-        //
-        // Bootstrap User
-        //
+        /**
+         * @ngdoc function
+         * @name core.user.$User:init
+         * @methodOf core.user.$User
+         * @description
+         * Inicialização
+         * @param {object} params propriedades da instância
+         * @param {bool} alert aviso de boas vindas
+         * @param {string} message mensagem do aviso
+         */
     User.prototype.init = function(params, alert, message) {
             //set params
             if (typeof params === 'object') {
@@ -45,10 +76,22 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
             }
             return false;
         }
-        //
-        // magic getter and setter for current data and session data configs
-        //
-    User.prototype.current = function(key, val, remove) {
+        /**
+         * @ngdoc function
+         * @name core.user.$User:current
+         * @methodOf core.user.$User
+         * @description
+         * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário
+         * @example
+         * <pre>
+         * var user = new $User();
+         * user.current('company',{_id: 123456, name: 'CocaCola'})
+         * console.log(user.current('company')) //prints {_id: 123456, name: 'CocaCola'}
+         * </pre>
+         * @param {string} key chave
+         * @param {*} val valor
+         */
+    User.prototype.current = function(key, val) {
         if (key && val) {
             if (!this.currentData) this.currentData = {};
             this.currentData[key] = val;

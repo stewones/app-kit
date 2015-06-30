@@ -82,7 +82,7 @@ angular.module('menu.module', ['ui.router', 'truncate']);
  * @ngdoc overview
  * @name app.kit
  * @description
- * Kit para criação de aplicações frontend com angular 1.x
+ * Kit para criação de aplicações frontend com angular 1.x <br />
  * Serviços dos módulos com namespace "core" são identificados pelo prefixo $
  **/
 angular.module('app.kit', [
@@ -371,43 +371,68 @@ angular.module('core.account').factory('account', /*@ngInject*/ function() {
     }
 })
 'use strict';
-/**
- * @ngdoc service
- * @name core.profile.$Account
- * @description 
- * Comportamentos e estados de perfil do usuário
- **/
 angular.module('core.account').service('$Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
+    /**
+     * @ngdoc service
+     * @name core.account.$Account
+     * @description 
+     * Comportamentos e estados de conta do usuário
+     * @param {object} params Propriedades da instância
+     **/
     var Account = function(params) {
-        params = params ? params : {};
-        if (typeof params === 'object') {
-            for (var k in params) {
-                if (params.hasOwnProperty(k)) {
-                    this[k] = params[k];
+            params = params ? params : {};
+            if (typeof params === 'object') {
+                for (var k in params) {
+                    if (params.hasOwnProperty(k)) {
+                        this[k] = params[k];
+                    }
                 }
             }
+            /**
+             * @ngdoc object
+             * @name core.account.$Account#password
+             * @propertyOf core.account.$Account
+             * @description 
+             * destinado a confirmação da conta
+             **/
+            this.password = '';
+            /**
+             * @ngdoc object
+             * @name core.account.$Account#_password
+             * @propertyOf core.account.$Account
+             * @description 
+             * destinado a mudança de password
+             **/
+            this._password = 'lolggiziafkbase';
+            /**
+             * @ngdoc object
+             * @name core.account.$Account#__password
+             * @propertyOf core.account.$Account
+             * @description 
+             * destinado a confirmação da mudança de password
+             **/
+            this.__password = 'lolggiziafkbase';
         }
-        this.password = ''; //destinado a confirmação da conta
-        this._password = 'lolggiziafkbase'; //destinado a mudança de password
-        this.__password = 'lolggiziafkbase'; //confirmação da mudança de password
-    }
-    Account.prototype.save = function(cbSuccess, cbError) {
-        if (this.busy) return;
-        this.busy = true;
-        $page.load.init();
-        var url = api.url + '/api/accounts';
-        $http.put(url + '/' + this.id, this).success(function(response) {
-            $page.load.done();
-            this.busy = false;
-            $page.toast(response.firstName + ', sua conta foi atualizada.');
-            if (cbSuccess) return cbSuccess(response);
-        }.bind(this)).error(function(response) {
-            $page.load.done();
-            this.busy = false;
-            $page.toast('Problema ao atualizar conta');
-            if (cbError) return cbError(response);
-        }.bind(this));
-    }
+        /**
+         * @ngdoc function
+         * @name core.account.$Account:confirm
+         * @methodOf core.account.$Account
+         * @description
+         * Confirmação de identidade da conta
+         * @example
+         * <pre>
+         * var account = new $Account();
+         * account.confirm(onSuccessConfirm, onFailConfirm);
+         * function onSuccessConfirm(response) {
+         *   //do stuff on success
+         * }
+         * function onFailConfirm(response) {
+         *   //do stuff on error
+         * } 
+         * </pre> 
+         * @param {function} cbSuccess callback de sucesso
+         * @param {function} cbError callback de erro
+         */
     Account.prototype.confirm = function(cbSuccess, cbError) {
         if (this.busy) return;
         this.busy = true;
@@ -1659,69 +1684,120 @@ angular.module('core.profile').directive('profile', /*@ngInject*/ function() {
     }
 })
 'use strict';
-/**
- * @ngdoc service
- * @name core.profile.$Profile
- * @description 
- * Comportamentos e estados de perfil do usuário
- **/
 angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
+    /**
+     * @ngdoc service
+     * @name core.profile.$Profile
+     * @description 
+     * Comportamentos e estados de perfil do usuário
+     * @param {object} params Propriedades da instância
+     **/
     var Profile = function(params) {
-        params = params ? params : {};
-        if (typeof params === 'object') {
-            for (var k in params) {
-                if (params.hasOwnProperty(k)) {
-                    this[k] = params[k];
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#params
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Propriedades da instância
+             **/
+            params = params ? params : {};
+            if (typeof params === 'object') {
+                for (var k in params) {
+                    if (params.hasOwnProperty(k)) {
+                        this[k] = params[k];
+                    }
                 }
             }
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#id
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Id do perfil
+             **/
+            this.id = params._id ? params._id : false;
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#role
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Regra de apresentação
+             **/
+            this.role = params.role ? params.role : [];
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#active
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Status do perfil
+             **/
+            this.active = params.active ? params.active : false;
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#created
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Data de criação
+             **/
+            this.created = params.created ? params.created : moment().format();
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#positions
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Posições de trabalho (@todo migrar para aplicações filhas)
+             **/
+            this.positions = params.role ? getWorkPosition(params.role) : [];
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#education
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Educação (@todo migrar para aplicações filhas)
+             **/
+            if (this.education && this.education.courses.length) {
+                this.education.courses.forEach(function(row, i) {
+                    if (row.name)
+                        this.education.courses[i].name = string(row.name).decodeHTMLEntities();
+                }.bind(this))
+            }
         }
-        this.id = params._id ? params._id : false;
-        this.role = params.role ? params.role : [];
-
-        this.active = params.active ? params.active : false;
-        this.created = params.created ? params.created : moment().format();
-        this.positions = params.role ? getWorkPosition(params.role) : [];
-
-        // if (this.xp && this.xp.companies.length) {
-        //     this.xp.companies.forEach(function(row, i) {
-        //         if (row.start)
-        //             this.xp.companies[i].start = moment(row.start, 'YYYY-MM-DD').format('DD/MM/YYYY');
-        //         if (row.end)
-        //             this.xp.companies[i].end = moment(row.end, 'YYYY-MM-DD').format('DD/MM/YYYY');
-        //     }.bind(this))
-        // }
-
-        if (this.education && this.education.courses.length) {
-            this.education.courses.forEach(function(row, i) {
-                if (row.name)
-                    this.education.courses[i].name = string(row.name).decodeHTMLEntities();
-            }.bind(this))
-        }
-
-        // if (this.doc) {
-        //     this.doc.birthday = params.doc && params.doc.birthday ? moment(params.doc.birthday.replace('T00:00:00.000Z', '')).format('DD/MM/YYYY') : '';
-        // }
-    }
+        /**
+         * @ngdoc function
+         * @name core.profile.$Profile:save
+         * @methodOf core.profile.$Profile
+         * @description
+         * Salvar perfil
+         * @param {function} cbSuccess callback de sucesso
+         * @param {function} cbError callback de erro
+         */
     Profile.prototype.save = function(cbSuccess, cbError) {
-        $page.load.init();
-        if (this.busy) return;
-        this.busy = true;
-        var url = api.url + '/api/profiles';
-        $http.put(url + '/' + this.id, this).success(function(response) {
-            $page.load.done();
-            this.busy = false;
-            $page.toast('Seu perfil foi atualizado, ' + response.firstName + '.');
-            if (cbSuccess)
-                return cbSuccess(response);
-        }.bind(this)).error(function(response) {
-            $page.load.done();
-            this.busy = false;
-            $page.toast('Problema ao atualizar perfil');
-            if (cbError)
-                return cbError(response);
-        }.bind(this));
-    }
-
+            $page.load.init();
+            if (this.busy) return;
+            this.busy = true;
+            var url = api.url + '/api/profiles';
+            $http.put(url + '/' + this.id, this).success(function(response) {
+                $page.load.done();
+                this.busy = false;
+                $page.toast('Seu perfil foi atualizado, ' + response.firstName + '.');
+                if (cbSuccess)
+                    return cbSuccess(response);
+            }.bind(this)).error(function(response) {
+                $page.load.done();
+                this.busy = false;
+                $page.toast('Problema ao atualizar perfil');
+                if (cbError)
+                    return cbError(response);
+            }.bind(this));
+        }
+        /**
+         * @ngdoc function
+         * @name core.profile.$Profile:getWorkPosition
+         * @methodOf core.profile.$Profile
+         * @description
+         * Obter a lista de cargos (@todo migrar para aplicações filhas)
+         * @return {array} lista de cargos desejados
+         */
     function getWorkPosition() {
         var result = user.instance.getWorkPosition(user.instance.current('company')._id);
         return result.length ? result : [];
@@ -1753,22 +1829,53 @@ angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
 })
 'use strict';
 /* global window */
-/**
- * @ngdoc service
- * @name core.user.$User
- * @description 
- * Comportamentos de usuário
- **/
 angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
+    /**
+     * @ngdoc service
+     * @name core.user.$User
+     * @description 
+     * Comportamentos de usuário
+     * @param {object} params propriedades da instância
+     * @param {bool} alert aviso de boas vindas
+     * @param {string} message mensagem do aviso
+     **/
     var User = function(params, alert, message) {
+            /**
+             * @ngdoc object
+             * @name core.user.$User#params
+             * @propertyOf core.user.$User
+             * @description 
+             * Propriedades da instância
+             **/
             params = params ? params : {};
+            /**
+             * @ngdoc object
+             * @name core.user.$User#currentData
+             * @propertyOf core.user.$User
+             * @description 
+             * Armazena dados customizados na instância do usuário
+             **/
             this.currentData = {};
+            /**
+             * @ngdoc object
+             * @name core.user.$User#sessionData
+             * @propertyOf core.user.$User
+             * @description 
+             * Armazena dados customizados no localStorage do usuário
+             **/
             this.sessionData = {};
             this.init(params, alert, message);
         }
-        //
-        // Bootstrap User
-        //
+        /**
+         * @ngdoc function
+         * @name core.user.$User:init
+         * @methodOf core.user.$User
+         * @description
+         * Inicialização
+         * @param {object} params propriedades da instância
+         * @param {bool} alert aviso de boas vindas
+         * @param {string} message mensagem do aviso
+         */
     User.prototype.init = function(params, alert, message) {
             //set params
             if (typeof params === 'object') {
@@ -1798,10 +1905,22 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
             }
             return false;
         }
-        //
-        // magic getter and setter for current data and session data configs
-        //
-    User.prototype.current = function(key, val, remove) {
+        /**
+         * @ngdoc function
+         * @name core.user.$User:current
+         * @methodOf core.user.$User
+         * @description
+         * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário
+         * @example
+         * <pre>
+         * var user = new $User();
+         * user.current('company',{_id: 123456, name: 'CocaCola'})
+         * console.log(user.current('company')) //prints {_id: 123456, name: 'CocaCola'}
+         * </pre>
+         * @param {string} key chave
+         * @param {*} val valor
+         */
+    User.prototype.current = function(key, val) {
         if (key && val) {
             if (!this.currentData) this.currentData = {};
             this.currentData[key] = val;
