@@ -155,7 +155,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, Account, account, $User, UserSetting, utils, $page, user, setting, api) {
+angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, account, $User, UserSetting, utils, $page, user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -198,7 +198,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
 
     function bootstrap() {
         //instantiate new account
-        vm.account = account.set(new Account({
+        vm.account = account.set(new $Account({
             email: user.instance.email,
             facebook: user.instance.facebook,
             id: user.instance.id,
@@ -371,7 +371,13 @@ angular.module('core.account').factory('account', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.account').service('Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
+/**
+ * @ngdoc service
+ * @name core.profile.$Account
+ * @description 
+ * Comportamentos e estados de perfil do usuário
+ **/
+angular.module('core.account').service('$Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
     var Account = function(params) {
         params = params ? params : {};
         if (typeof params === 'object') {
@@ -1653,8 +1659,13 @@ angular.module('core.profile').directive('profile', /*@ngInject*/ function() {
     }
 })
 'use strict';
+/**
+ * @ngdoc service
+ * @name core.profile.$Profile
+ * @description 
+ * Comportamentos e estados de perfil do usuário
+ **/
 angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
-
     var Profile = function(params) {
         params = params ? params : {};
         if (typeof params === 'object') {
@@ -1690,9 +1701,6 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
         // if (this.doc) {
         //     this.doc.birthday = params.doc && params.doc.birthday ? moment(params.doc.birthday.replace('T00:00:00.000Z', '')).format('DD/MM/YYYY') : '';
         // }
-
-
-
     }
     Profile.prototype.save = function(cbSuccess, cbError) {
         $page.load.init();

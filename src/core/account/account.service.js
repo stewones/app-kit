@@ -1,5 +1,11 @@
 'use strict';
-angular.module('core.account').service('Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
+/**
+ * @ngdoc service
+ * @name core.profile.$Account
+ * @description 
+ * Comportamentos e estados de perfil do usuário
+ **/
+angular.module('core.account').service('$Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
     var Account = function(params) {
         params = params ? params : {};
         if (typeof params === 'object') {

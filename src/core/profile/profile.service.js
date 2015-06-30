@@ -1,6 +1,11 @@
 'use strict';
+/**
+ * @ngdoc service
+ * @name core.profile.$Profile
+ * @description 
+ * Comportamentos e estados de perfil do usuário
+ **/
 angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
-
     var Profile = function(params) {
         params = params ? params : {};
         if (typeof params === 'object') {
@@ -36,9 +41,6 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
         // if (this.doc) {
         //     this.doc.birthday = params.doc && params.doc.birthday ? moment(params.doc.birthday.replace('T00:00:00.000Z', '')).format('DD/MM/YYYY') : '';
         // }
-
-
-
     }
     Profile.prototype.save = function(cbSuccess, cbError) {
         $page.load.init();
