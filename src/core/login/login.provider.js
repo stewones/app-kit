@@ -1,38 +1,38 @@
 'use strict';
-angular.module('login.module').provider('$login',
+angular.module('core.login').provider('$login',
     /**
      * @ngdoc object
-     * @name login.module.$loginProvider
+     * @name core.login.$loginProvider
      **/
     /*@ngInject*/
     function $loginProvider() {
         /**
          * @ngdoc object
-         * @name login.module.$loginProvider#_config
-         * @propertyOf login.module.$loginProvider
+         * @name core.login.$loginProvider#_config
+         * @propertyOf core.login.$loginProvider
          * @description 
          * armazena configurações
          **/
         this._config = {};
         /**
          * @ngdoc object
-         * @name login.module.$loginProvider#_templateUrl
-         * @propertyOf login.module.$loginProvider
+         * @name core.login.$loginProvider#_templateUrl
+         * @propertyOf core.login.$loginProvider
          * @description 
          * url do template para a rota
          **/
         this._templateUrl = 'core/login/login.tpl.html';
         /**
          * @ngdoc function
-         * @name login.module.$loginProvider#$get
-         * @propertyOf login.module.$loginProvider
+         * @name core.login.$loginProvider#$get
+         * @propertyOf core.login.$loginProvider
          * @description 
          * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
          * angular.module('myApp.module').controller('MyCtrl', function($login) {     
          *      console.log($login.templateUrl);
-         *      //prints the current templateUrl of `login.module`
+         *      //prints the current templateUrl of `core.login`
          *      //ex.: "core/login/login.tpl.html"     
          *      console.log($login.config('myOwnConfiguration'));
          *      //prints the current config
@@ -49,8 +49,8 @@ angular.module('login.module').provider('$login',
             }
             /**
              * @ngdoc function
-             * @name login.module.$loginProvider#config
-             * @methodOf login.module.$loginProvider
+             * @name core.login.$loginProvider#config
+             * @methodOf core.login.$loginProvider
              * @description
              * setter para configurações
              * @example
@@ -71,8 +71,8 @@ angular.module('login.module').provider('$login',
             }
             /**
              * @ngdoc function
-             * @name login.module.$loginProvider#templateUrl
-             * @methodOf login.module.$loginProvider
+             * @name core.login.$loginProvider#templateUrl
+             * @methodOf core.login.$loginProvider
              * @description
              * setter para url do template
              * @example

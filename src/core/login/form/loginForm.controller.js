@@ -1,7 +1,7 @@
 'use strict';
 /**
  * @ngdoc object
- * @name login.module.controller:$LoginFormCtrl
+ * @name core.login.controller:$LoginFormCtrl
  * @description 
  * Controlador do componente
  * @requires $scope
@@ -9,13 +9,13 @@
  * @requires $mdToast
  * @requires user.module.factory:$user
  **/
-angular.module('login.module').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
     var vm = this;
     vm.login = login;
     /**
      * @ngdoc function
-     * @name login.module.controller:$LoginFormCtrl#login
-     * @propertyOf login.module.controller:$LoginFormCtrl
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
      * @description 
      * Controlador do componente de login
      * @param {string} logon objeto contendo as credenciais email e password

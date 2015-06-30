@@ -10,7 +10,7 @@ angular.module('app.kit', [
     'angulartics',
     'angulartics.google.analytics',
     'page.module',
-    'login.module',
+    'core.login',
     'user.module',
     'profile.module',
     'account.module'

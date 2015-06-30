@@ -1,5 +1,5 @@
 'use strict';
-angular.module('login.module').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user, $page, setting) {
+angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user, $page, setting) {
     $scope.register = register;
     $scope.sign = {};
 

@@ -1,12 +1,12 @@
 'use strict';
 /**
  * @ngdoc object
- * @name login.module.controller:$LostCtrl
+ * @name core.login.controller:$LostCtrl
  * @requires page.module.factory:$page
  * @requires setting
  * @requires api
  **/
-angular.module('login.module').controller('$LostCtrl', /*@ngInject*/ function($state, $auth, $http, $mdToast, $location, $page, setting, api) {
+angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($state, $auth, $http, $mdToast, $location, $page, setting, api) {
     $page.title(setting.name + setting.titleSeparator + 'Mudar senha');
     $page.description('Entre para o ' + setting.name);
     $page.load.done();
@@ -18,8 +18,8 @@ angular.module('login.module').controller('$LostCtrl', /*@ngInject*/ function($s
     if (userHash) vm.userHash = userHash;
     /**
      * @ngdoc function
-     * @name login.module.controller:$LostCtrl#change
-     * @methodOf login.module.controller:$LostCtrl
+     * @name core.login.controller:$LostCtrl#change
+     * @methodOf core.login.controller:$LostCtrl
      * @description 
      * Alterar senha
      * @param {string} pw senha
@@ -41,8 +41,8 @@ angular.module('login.module').controller('$LostCtrl', /*@ngInject*/ function($s
     }
     /**
      * @ngdoc function
-     * @name login.module.controller:$LostCtrl#lost
-     * @methodOf login.module.controller:$LostCtrl
+     * @name core.login.controller:$LostCtrl#lost
+     * @methodOf core.login.controller:$LostCtrl
      * @description 
      * Link para alteração de senha
      * @param {string} email email

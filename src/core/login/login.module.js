@@ -1,12 +1,12 @@
 'use strict';
 /**
     * @ngdoc overview
-    * @name login.module
+    * @name core.login
     * @requires app.env
     * @requires app.setting
     * @requires satellizer
 **/
-angular.module('login.module', [
+angular.module('core.login', [
     'app.env',
     'app.setting',
     'ui.router',

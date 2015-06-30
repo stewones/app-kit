@@ -1,5 +1,5 @@
 'use strict';
-angular.module('login.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
+angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
     // States & Routes
     //

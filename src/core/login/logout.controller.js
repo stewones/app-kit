@@ -1,11 +1,11 @@
 'use strict';
 /**
  * @ngdoc object
- * @name login.module.controller:$LogoutCtrl
+ * @name core.login.controller:$LogoutCtrl
  * @description 
  * Destruir sessão
- * @requires login.module.$user
+ * @requires core.login.$user
  **/
-angular.module('login.module').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
+angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
     user.instance.destroy();
 })

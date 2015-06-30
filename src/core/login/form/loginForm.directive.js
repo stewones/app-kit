@@ -1,7 +1,7 @@
 'use strict';
 /**
  * @ngdoc directive
- * @name login.module.directive:loginForm
+ * @name core.login.directive:loginForm
  * @restrict EA
  * @description 
  * Componente para o formulário de login
@@ -9,7 +9,7 @@
  * @param {object} config objeto de configurações do módulo login
  * @param {object} user objeto instância do usuário
  **/
-angular.module('login.module').directive('loginForm', /*@ngInject*/ function() {
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
     return {
         scope: {
             config: '=',
