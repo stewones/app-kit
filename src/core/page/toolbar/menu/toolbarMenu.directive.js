@@ -1,5 +1,5 @@
 'use strict';
-angular.module('page.module').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu(Menu) {
+angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu(Menu) {
     return {
         templateUrl: "core/page/toolbar/menu/toolbarMenu.tpl.html",
         scope: {

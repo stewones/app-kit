@@ -1,5 +1,5 @@
 'use strict';
-angular.module('page.module').controller('$PageCtrl', /*@ngInject*/ function($page, setting) {
+angular.module('core.page').controller('$PageCtrl', /*@ngInject*/ function($page, setting) {
     var vm = this;
     //
     // SEO

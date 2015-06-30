@@ -1,11 +1,11 @@
 'use strict';
 /**
  * @ngdoc service
- * @name page.module.factory:$page
+ * @name core.page.factory:$page
  * @description 
  * Comportamentos e estados da página
  **/
-angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) {
+angular.module('core.page').factory('$page', /*@ngInject*/ function($mdToast) {
     this._title = '';
     this._description = '';
     this._ogSiteName = '';
@@ -34,8 +34,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#title
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#title
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para meta tag título
      * @param {string} str título da página
@@ -47,8 +47,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#description
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#description
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para meta tag descrição
      * @param {string} value descrição da página    
@@ -59,8 +59,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#logo
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#logo
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para logo
      * @param {string} value caminho para logomarca    
@@ -72,8 +72,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
 
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#logoWhite
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#logoWhite
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para logo na versão branca com fundo transparente
      * @param {string} value caminho para logomarca    
@@ -84,8 +84,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogLocale
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogLocale
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph locale
      * @param {string} value locale    
@@ -96,8 +96,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogSiteName
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogSiteName
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph site name
      * @param {string} value site name    
@@ -108,8 +108,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogTitle
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogTitle
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph title
      * @param {string} value title    
@@ -120,8 +120,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogDescription
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogDescription
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph description
      * @param {string} value description    
@@ -132,8 +132,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogUrl
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogUrl
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph url
      * @param {string} value url    
@@ -144,8 +144,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogImage
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogImage
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph image
      * @param {string} value image    
@@ -156,8 +156,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogSection
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogSection
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph section
      * @param {string} value section    
@@ -168,8 +168,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogTag
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogTag
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph tag
      * @param {string} value tag    
@@ -180,8 +180,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#load
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#load
+     * @methodOf core.page.factory:$page
      * @description
      * inicia e termina o carregamento da página
      * @return {object} com metodos de inicialização (init) e finalização (done)
@@ -200,8 +200,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#toast
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#toast
+     * @methodOf core.page.factory:$page
      * @description
      * mostra uma mensagem de aviso
      * @param {string} msg mensagem

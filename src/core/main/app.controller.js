@@ -14,11 +14,11 @@
  * @requires $mdSidenav
  * @requires $timeout
  * @requires $auth
- * @requires page.module.factory:$page
+ * @requires core.page.factory:$page
  * @requires core.user.service:$User
  * @requires core.user.factory:$user
  * @requires core.login.$loginProvider
- * @requires page.module.factory:$menu
+ * @requires core.page.factory:$menu
  **/
 angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, User, user, enviroment, menu, $login) {
     var vm = this;

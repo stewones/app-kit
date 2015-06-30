@@ -3,7 +3,7 @@
  * @ngdoc object
  * @name core.login.controller:$LoginCtrl
  * @requires core.login.$loginProvider
- * @requires page.module.factory:$page
+ * @requires core.page.factory:$page
  * @requires setting
  * @requires api
  **/

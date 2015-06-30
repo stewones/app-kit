@@ -2,7 +2,7 @@
 /**
  * @ngdoc object
  * @name core.login.controller:$LostCtrl
- * @requires page.module.factory:$page
+ * @requires core.page.factory:$page
  * @requires setting
  * @requires api
  **/

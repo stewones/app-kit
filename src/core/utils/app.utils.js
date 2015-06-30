@@ -4,4 +4,4 @@
  * @author Stewan P. <hi@stpa.co>
  *
  */
-angular.module('core.utils', ['page.module', 'angularMoment']);
+angular.module('core.utils', ['core.page', 'angularMoment']);

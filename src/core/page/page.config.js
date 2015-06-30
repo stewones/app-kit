@@ -1,6 +1,6 @@
 'use strict';
 /*global window*/
-angular.module('page.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     //
     // States & Routes
     //

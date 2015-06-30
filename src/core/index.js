@@ -9,7 +9,7 @@ angular.module('app.kit', [
     'ngSanitize',
     'angulartics',
     'angulartics.google.analytics',
-    'page.module',
+    'core.page',
     'core.login',
     'core.user',
     'profile.module',

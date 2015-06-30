@@ -1,5 +1,5 @@
 'use strict';
-angular.module('page.module', [
+angular.module('core.page', [
 	'menu.module',
     'ui.router',
     'angularMoment',

@@ -28,7 +28,7 @@ angular.module('core.login', [
     'facebook.login'
 ]);
 'use strict';
-angular.module('page.module', [
+angular.module('core.page', [
 	'menu.module',
     'ui.router',
     'angularMoment',
@@ -55,7 +55,7 @@ angular.module('profile.module', [
     'satellizer'
 ])
 'use strict';
-angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','page.module']);
+angular.module('core.user', ['ui.router','satellizer','app.setting','app.env','menu.module','core.page']);
 'use strict';
 angular.module('facebook.login', [
     'facebook',
@@ -81,7 +81,7 @@ angular.module('app.kit', [
     'ngSanitize',
     'angulartics',
     'angulartics.google.analytics',
-    'page.module',
+    'core.page',
     'core.login',
     'core.user',
     'profile.module',
@@ -503,7 +503,7 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
  * @ngdoc object
  * @name core.login.controller:$LoginCtrl
  * @requires core.login.$loginProvider
- * @requires page.module.factory:$page
+ * @requires core.page.factory:$page
  * @requires setting
  * @requires api
  **/
@@ -638,7 +638,7 @@ angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function(us
 /**
  * @ngdoc object
  * @name core.login.controller:$LostCtrl
- * @requires page.module.factory:$page
+ * @requires core.page.factory:$page
  * @requires setting
  * @requires api
  **/
@@ -803,11 +803,11 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
  * @requires $mdSidenav
  * @requires $timeout
  * @requires $auth
- * @requires page.module.factory:$page
+ * @requires core.page.factory:$page
  * @requires core.user.service:$User
  * @requires core.user.factory:$user
  * @requires core.login.$loginProvider
- * @requires page.module.factory:$menu
+ * @requires core.page.factory:$menu
  **/
 angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, User, user, enviroment, menu, $login) {
     var vm = this;
@@ -1267,7 +1267,7 @@ angular.module("app.setting", []).constant("setting", {
 });
 'use strict';
 /*global window*/
-angular.module('page.module').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     //
     // States & Routes
     //
@@ -1294,7 +1294,7 @@ angular.module('page.module').config( /*@ngInject*/ function($stateProvider, $ur
     $locationProvider.html5Mode(true);
 })
 'use strict';
-angular.module('page.module').controller('$PageCtrl', /*@ngInject*/ function($page, setting) {
+angular.module('core.page').controller('$PageCtrl', /*@ngInject*/ function($page, setting) {
     var vm = this;
     //
     // SEO
@@ -1307,11 +1307,11 @@ angular.module('page.module').controller('$PageCtrl', /*@ngInject*/ function($pa
 'use strict';
 /**
  * @ngdoc service
- * @name page.module.factory:$page
+ * @name core.page.factory:$page
  * @description 
  * Comportamentos e estados da página
  **/
-angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) {
+angular.module('core.page').factory('$page', /*@ngInject*/ function($mdToast) {
     this._title = '';
     this._description = '';
     this._ogSiteName = '';
@@ -1340,8 +1340,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#title
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#title
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para meta tag título
      * @param {string} str título da página
@@ -1353,8 +1353,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#description
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#description
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para meta tag descrição
      * @param {string} value descrição da página    
@@ -1365,8 +1365,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#logo
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#logo
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para logo
      * @param {string} value caminho para logomarca    
@@ -1378,8 +1378,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
 
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#logoWhite
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#logoWhite
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para logo na versão branca com fundo transparente
      * @param {string} value caminho para logomarca    
@@ -1390,8 +1390,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogLocale
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogLocale
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph locale
      * @param {string} value locale    
@@ -1402,8 +1402,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogSiteName
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogSiteName
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph site name
      * @param {string} value site name    
@@ -1414,8 +1414,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogTitle
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogTitle
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph title
      * @param {string} value title    
@@ -1426,8 +1426,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogDescription
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogDescription
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph description
      * @param {string} value description    
@@ -1438,8 +1438,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogUrl
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogUrl
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph url
      * @param {string} value url    
@@ -1450,8 +1450,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogImage
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogImage
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph image
      * @param {string} value image    
@@ -1462,8 +1462,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogSection
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogSection
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph section
      * @param {string} value section    
@@ -1474,8 +1474,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#ogTag
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#ogTag
+     * @methodOf core.page.factory:$page
      * @description
      * getter/getter para open-graph tag
      * @param {string} value tag    
@@ -1486,8 +1486,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#load
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#load
+     * @methodOf core.page.factory:$page
      * @description
      * inicia e termina o carregamento da página
      * @return {object} com metodos de inicialização (init) e finalização (done)
@@ -1506,8 +1506,8 @@ angular.module('page.module').factory('$page', /*@ngInject*/ function($mdToast) 
     }
     /**
      * @ngdoc function
-     * @name page.module.factory:$page#toast
-     * @methodOf page.module.factory:$page
+     * @name core.page.factory:$page#toast
+     * @methodOf core.page.factory:$page
      * @description
      * mostra uma mensagem de aviso
      * @param {string} msg mensagem
@@ -1909,7 +1909,7 @@ angular.module('core.user').service('User', /*@ngInject*/ function($state, $http
  * @author Stewan P. <hi@stpa.co>
  *
  */
-angular.module('core.utils', ['page.module', 'angularMoment']);
+angular.module('core.utils', ['core.page', 'angularMoment']);
 'use strict';
 /* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
 angular.module('core.utils').factory('utils', /*@ngInject*/ function($q) {
@@ -2312,7 +2312,7 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
-angular.module('page.module').directive('loader', /*@ngInject*/ function() {
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
     return {
         templateUrl: "core/page/loader/loader.tpl.html",
     }
@@ -3336,7 +3336,7 @@ angular.module('menu.module').directive('menuFacepile', /*@ngInject*/ function()
     }
 });
 'use strict';
-angular.module('page.module').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu(Menu) {
+angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu(Menu) {
     return {
         templateUrl: "core/page/toolbar/menu/toolbarMenu.tpl.html",
         scope: {
@@ -3350,7 +3350,7 @@ angular.module('page.module').directive('toolbarMenu', /*@ngInject*/ function to
     }
 })
 'use strict';
-angular.module('page.module').directive('toolbarTitle', /*@ngInject*/ function() {
+angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
     return {
         templateUrl: "core/page/toolbar/title/toolbarTitle.tpl.html"
     }
