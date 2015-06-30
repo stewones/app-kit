@@ -2,9 +2,9 @@
 angular.module('core.account').service('$Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
     /**
      * @ngdoc service
-     * @name core.account.$Account
+     * @name core.account.service:$Account
      * @description 
-     * Comportamentos e estados de conta do usuário
+     * Model account
      * @param {object} params Propriedades da instância
      **/
     var Account = function(params) {
@@ -18,24 +18,24 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
             }
             /**
              * @ngdoc object
-             * @name core.account.$Account#password
-             * @propertyOf core.account.$Account
+             * @name core.account.service:$Account#password
+             * @propertyOf core.account.service:$Account
              * @description 
              * destinado a confirmação da conta
              **/
             this.password = '';
             /**
              * @ngdoc object
-             * @name core.account.$Account#_password
-             * @propertyOf core.account.$Account
+             * @name core.account.service:$Account#_password
+             * @propertyOf core.account.service:$Account
              * @description 
              * destinado a mudança de password
              **/
             this._password = 'lolggiziafkbase';
             /**
              * @ngdoc object
-             * @name core.account.$Account#__password
-             * @propertyOf core.account.$Account
+             * @name core.account.service:$Account#__password
+             * @propertyOf core.account.service:$Account
              * @description 
              * destinado a confirmação da mudança de password
              **/
@@ -43,8 +43,8 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
         }
         /**
          * @ngdoc function
-         * @name core.account.$Account:confirm
-         * @methodOf core.account.$Account
+         * @name core.account.service:$Account:confirm
+         * @methodOf core.account.service:$Account
          * @description
          * Confirmação de identidade da conta
          * @example
