@@ -8,24 +8,103 @@ angular.module('core.menu').provider('$menu',
      **/
     /*@ngInject*/
     function $menuProvider() {
+        /**
+         * @ngdoc object
+         * @name core.menu.$menuProvider#mainMenu
+         * @propertyOf core.menu.$menuProvider
+         * @description 
+         * Armazena o menu principal
+         **/
         this.mainMenu = [];
+        /**
+         * @ngdoc object
+         * @name core.menu.$menuProvider#toolbarMenu
+         * @propertyOf core.menu.$menuProvider
+         * @description 
+         * Armazena o menu para a toolbar
+         **/
         this.toolbarMenu = [];
-        this.$get = this.get = /*@ngInject*/ function($rootScope, $mdSidenav, $location) {
-            return {
-                main: this.mainMenu,
-                toolbar: this.toolbarMenu,
-                api: api
+        /**
+         * @ngdoc function
+         * @name core.menu.$menuProvider#$get
+         * @propertyOf core.menu.$menuProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($menu) {     
+         *      console.log($menu.main); //printa array contendo itens do menu principal     
+         *      $menu.api().close() //fecha o menu
+         * })
+         * </pre>
+         * @return {object} Retorna um objeto correspondente a uma Factory
+         **/
+        this.$get = this.get = function() {
+                return {
+                    main: this.mainMenu,
+                    toolbar: this.toolbarMenu,
+                    api: api
+                }
             }
-        }
+            /**
+             * @ngdoc function
+             * @name core.menu.$menuProvider#set
+             * @methodOf core.menu.$menuProvider
+             * @description
+             * Adicionar um novo menu
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($menuProvider) {     
+             *     $menuProvider.set({
+             *         name: 'Conta',
+             *         type: 'link',
+             *         icon: 'fa fa-at',
+             *         url: '/account/',
+             *         state: 'app.account'
+             *     });
+             * })
+             * </pre>
+             * @param {object} menu objeto contendo as propriedades do menu   
+             **/
         this.set = function(menu) {
-            this.mainMenu.push(menu);
-        }
+                this.mainMenu.push(menu);
+            }
+            /**
+             * @ngdoc function
+             * @name core.menu.$menuProvider#setToolbar
+             * @methodOf core.menu.$menuProvider
+             * @description
+             * Adicionar um novo menu no toolbar
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($menuProvider) {     
+             *     $menuProvider.setToolbar({
+             *         name: 'Conta',
+             *         type: 'link',
+             *         icon: 'fa fa-at',
+             *         url: '/account/',
+             *         state: 'app.account'
+             *     });
+             * })
+             * </pre>
+             * @param {object} menu objeto contendo as propriedades do menu   
+             **/
         this.setToolbar = function(menu) {
                 this.toolbarMenu.push(menu);
             }
-            //
-            // MENU API
-            //
+            /**
+             * @ngdoc function
+             * @name core.menu.$menuProvider#api
+             * @methodOf core.menu.$menuProvider
+             * @example
+             * <pre>
+             * angular.module('myApp.module').controller('MyCtrl', function($menu) {       
+             *      $menu.api().open() //abre o menu
+             *      $menu.api().close() //fecha o menu
+             * })
+             * </pre>
+             * @return {object} comportamentos do menu
+             **/
         function api() {
             return {
                 openedSection: false,
@@ -83,7 +162,7 @@ angular.module('core.menu').provider('$menu',
             }
         }
         //
-        // MENU SECTIONS
+        // MENU SECTIONS SAMPLE
         //
         /*function sampleMenu() {
                 return [
