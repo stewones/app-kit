@@ -2,7 +2,7 @@
 angular.module('app.kit', [
     'app.setting',
     'app.env',
-    'utils.module',
+    'core.utils',
     'ui.router',
     'ngAnimate',
     'ngTouch',

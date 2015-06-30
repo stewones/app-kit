@@ -2,7 +2,7 @@
 /* global jasmine, moment*/
 describe('Utils Service', function() {
     var utils, rootScope;
-    beforeEach(module('utils.module'));
+    beforeEach(module('core.utils'));
     beforeEach(inject(function($rootScope, _utils_) {
         utils = _utils_;
         rootScope = $rootScope;

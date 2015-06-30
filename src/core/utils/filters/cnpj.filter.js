@@ -1,7 +1,7 @@
 'use strict';
 /**
  * @ngdoc filter
- * @name utils.module.filter:cnpj
+ * @name core.utils.filter:cnpj
  * @description 
  * Filtro para adicionar máscara de CNPJ
  * @param {string} value CNPJ
@@ -10,7 +10,7 @@
  * {{some_text | cnpj}}
  * </pre>
  **/
-angular.module('utils.module').filter('cnpj', /*@ngInject*/ function() {
+angular.module('core.utils').filter('cnpj', /*@ngInject*/ function() {
     return function(input) {
         // regex créditos @ Matheus Biagini de Lima Dias
         var str = input + '';

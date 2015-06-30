@@ -3,7 +3,7 @@
  // Usage:
  // {{some_str | unsafe }}
  //
- angular.module('utils.module').filter('unsafe', /*@ngInject*/ function($sce) {
+ angular.module('core.utils').filter('unsafe', /*@ngInject*/ function($sce) {
      return function(value) {
          return $sce.trustAsHtml(value);
      };

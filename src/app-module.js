@@ -1,6 +1,6 @@
 'use strict';
 angular.module('account.module', [
-    'utils.module',
+    'core.utils',
     'core.user',
     'menu.module',
     'ui.router',
@@ -42,7 +42,7 @@ angular.module('page.module', [
 ]);
 'use strict';
 angular.module('profile.module', [
-    'utils.module',
+    'core.utils',
     'core.user',
     'menu.module',
     'ui.router',
@@ -74,7 +74,7 @@ angular.module('menu.module', ['ui.router', 'truncate']);
 angular.module('app.kit', [
     'app.setting',
     'app.env',
-    'utils.module',
+    'core.utils',
     'ui.router',
     'ngAnimate',
     'ngTouch',
@@ -1909,10 +1909,10 @@ angular.module('core.user').service('User', /*@ngInject*/ function($state, $http
  * @author Stewan P. <hi@stpa.co>
  *
  */
-angular.module('utils.module', ['page.module', 'angularMoment']);
+angular.module('core.utils', ['page.module', 'angularMoment']);
 'use strict';
 /* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
-angular.module('utils.module').factory('utils', /*@ngInject*/ function($q) {
+angular.module('core.utils').factory('utils', /*@ngInject*/ function($q) {
     var vm = this;
     return {
         isImg: isImg,      
@@ -2056,68 +2056,6 @@ angular.module('account.module').directive('optOut', /*@ngInject*/ function() {
     }
 })
 'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginFormCtrl
- * @description 
- * Controlador do componente
- * @requires $scope
- * @requires $auth
- * @requires $mdToast
- * @requires core.user.factory:$user
- **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
-    var vm = this;
-    vm.login = login;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LoginFormCtrl#login
-     * @propertyOf core.login.controller:$LoginFormCtrl
-     * @description 
-     * Controlador do componente de login
-     * @param {string} logon objeto contendo as credenciais email e password
-     **/
-    function login(logon) {
-        $page.load.init();
-        var onSuccess = function(result) {
-            $page.load.done();
-            user.instance.init(result.data.user, true);
-        }
-        var onError = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
-        }
-        $auth.login({
-            email: logon.email,
-            password: logon.password
-        }).then(onSuccess, onError);
-    }
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:loginForm
- * @restrict EA
- * @description 
- * Componente para o formulário de login
- * @element div
- * @param {object} config objeto de configurações do módulo login
- * @param {object} user objeto instância do usuário
- **/
-angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            config: '=',
-            user: '='
-        },
-        restrict: 'EA',
-        templateUrl: "core/login/form/loginForm.tpl.html",
-        controller: '$LoginFormCtrl',
-        controllerAs: 'vm',
-        link: function() {}
-    }
-});
-'use strict';
 angular.module('facebook.login').config(function(FacebookProvider, setting) {
     FacebookProvider.init({
         version: 'v2.3',
@@ -2213,6 +2151,68 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
         me().then(onSuccess, onFail);
     }
 })
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires core.user.factory:$user
+ **/
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
+    var vm = this;
+    vm.login = login;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
+    function login(logon) {
+        $page.load.init();
+        var onSuccess = function(result) {
+            $page.load.done();
+            user.instance.init(result.data.user, true);
+        }
+        var onError = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+        }
+        $auth.login({
+            email: logon.email,
+            password: logon.password
+        }).then(onSuccess, onError);
+    }
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ **/
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            config: '=',
+            user: '='
+        },
+        restrict: 'EA',
+        templateUrl: "core/login/form/loginForm.tpl.html",
+        controller: '$LoginFormCtrl',
+        controllerAs: 'vm',
+        link: function() {}
+    }
+});
 'use strict';
 /* global gapi */
 angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, user, setting, api) {
@@ -2890,7 +2890,7 @@ angular.module('profile.module').directive('profileForm', /*@ngInject*/ function
  /* global moment */
  /**
   * @ngdoc filter
-  * @name utils.module.filter:age
+  * @name core.utils.filter:age
   * @description 
   * Filtro para converter data (EN) para idade
   * @param {date} value data de nascimento
@@ -2899,7 +2899,7 @@ angular.module('profile.module').directive('profileForm', /*@ngInject*/ function
   * {{some_date | age}}
   * </pre>
   **/
- angular.module('utils.module').filter('age', /*@ngInject*/ function() {
+ angular.module('core.utils').filter('age', /*@ngInject*/ function() {
      return function(value) {
          if (!value) return '';
          return moment(value).fromNow(true);
@@ -2908,7 +2908,7 @@ angular.module('profile.module').directive('profileForm', /*@ngInject*/ function
 'use strict';
 /**
  * @ngdoc filter
- * @name utils.module.filter:cep
+ * @name core.utils.filter:cep
  * @description 
  * Filtro para adicionar máscara de CEP
  * @param {string} value código postal
@@ -2917,7 +2917,7 @@ angular.module('profile.module').directive('profileForm', /*@ngInject*/ function
  * {{some_text | cep}}
  * </pre>
  **/
-angular.module('utils.module').filter('cep', /*@ngInject*/ function() {
+angular.module('core.utils').filter('cep', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';
         str = str.replace(/\D/g, '');
@@ -2928,7 +2928,7 @@ angular.module('utils.module').filter('cep', /*@ngInject*/ function() {
 'use strict';
 /**
  * @ngdoc filter
- * @name utils.module.filter:cnpj
+ * @name core.utils.filter:cnpj
  * @description 
  * Filtro para adicionar máscara de CNPJ
  * @param {string} value CNPJ
@@ -2937,7 +2937,7 @@ angular.module('utils.module').filter('cep', /*@ngInject*/ function() {
  * {{some_text | cnpj}}
  * </pre>
  **/
-angular.module('utils.module').filter('cnpj', /*@ngInject*/ function() {
+angular.module('core.utils').filter('cnpj', /*@ngInject*/ function() {
     return function(input) {
         // regex créditos @ Matheus Biagini de Lima Dias
         var str = input + '';
@@ -2952,7 +2952,7 @@ angular.module('utils.module').filter('cnpj', /*@ngInject*/ function() {
 'use strict';
 /**
  * @ngdoc filter
- * @name utils.module.filter:cpf
+ * @name core.utils.filter:cpf
  * @description 
  * Filtro para adicionar máscara de CPF
  * @param {string} value CPF
@@ -2961,7 +2961,7 @@ angular.module('utils.module').filter('cnpj', /*@ngInject*/ function() {
  * {{some_text | cpf}}
  * </pre>
  **/
-angular.module('utils.module').filter('cpf', /*@ngInject*/ function() {
+angular.module('core.utils').filter('cpf', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';
         str = str.replace(/\D/g, '');
@@ -2974,7 +2974,7 @@ angular.module('utils.module').filter('cpf', /*@ngInject*/ function() {
 'use strict';
 /**
  * @ngdoc filter
- * @name utils.module.filter:cut
+ * @name core.utils.filter:cut
  * @description 
  * Filtro para cortar strings e adicionar "..."
  * @param {string} value palavra ou texto
@@ -2986,7 +2986,7 @@ angular.module('utils.module').filter('cpf', /*@ngInject*/ function() {
  * {{some_text | cut:true:100:' ...'}}
  * </pre>
  **/
-angular.module('utils.module').filter('cut', /*@ngInject*/ function() {
+angular.module('core.utils').filter('cut', /*@ngInject*/ function() {
     return function(value, wordwise, max, tail) {
         if (!value) return '';
         max = parseInt(max, 10);
@@ -3005,7 +3005,7 @@ angular.module('utils.module').filter('cut', /*@ngInject*/ function() {
 'use strict';
 /**
  * @ngdoc filter
- * @name utils.module.filter:phone
+ * @name core.utils.filter:phone
  * @description 
  * Adicionar máscara de telefone
  * @param {string} value telefone
@@ -3014,7 +3014,7 @@ angular.module('utils.module').filter('cut', /*@ngInject*/ function() {
  * {{some_text | phone}}
  * </pre>
  **/
-angular.module('utils.module').filter('phone', /*@ngInject*/ function() {
+angular.module('core.utils').filter('phone', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';
         str = str.replace(/\D/g, '');
@@ -3029,7 +3029,7 @@ angular.module('utils.module').filter('phone', /*@ngInject*/ function() {
  'use strict';
  /**
   * @ngdoc filter
-  * @name utils.module.filter:randomInteger
+  * @name core.utils.filter:randomInteger
   * @description 
   * Converter para um número random
   * @param {integer} value valor corrente
@@ -3040,7 +3040,7 @@ angular.module('utils.module').filter('phone', /*@ngInject*/ function() {
   * {{some_number | randomInteger:1:10}}
   * </pre>
   **/
- angular.module('utils.module').filter('randomInteger', /*@ngInject*/ function() {
+ angular.module('core.utils').filter('randomInteger', /*@ngInject*/ function() {
      return function(value, min, max) {
          return Math.floor(Math.random() * (max - min)) + min;
      }
@@ -3048,7 +3048,7 @@ angular.module('utils.module').filter('phone', /*@ngInject*/ function() {
 'use strict';
 /**
  * @ngdoc filter
- * @name utils.module.filter:real
+ * @name core.utils.filter:real
  * @description 
  * Adicionar mascára de moeda no formato real (BR)
  * @param {string} value valor
@@ -3058,7 +3058,7 @@ angular.module('utils.module').filter('phone', /*@ngInject*/ function() {
  * {{some_text | real:true}}
  * </pre>
  **/
-angular.module('utils.module').filter('real', /*@ngInject*/ function() {
+angular.module('core.utils').filter('real', /*@ngInject*/ function() {
     return function(input, prefix) {
         return prefix ? 'R$ ' : '' + formatReal(input);
     }
@@ -3099,7 +3099,7 @@ angular.module('utils.module').filter('real', /*@ngInject*/ function() {
 // Usage:
 // {{some_array | slice:start:end }}
 //
-angular.module('utils.module').filter('slice', /*@ngInject*/ function sliceFilter() {
+angular.module('core.utils').filter('slice', /*@ngInject*/ function sliceFilter() {
     return function(arr, start, end) {
         return arr.slice(start, end);
     };
@@ -3109,7 +3109,7 @@ angular.module('utils.module').filter('slice', /*@ngInject*/ function sliceFilte
 // Usage:
 // {{some_date | title }}
 //
-angular.module('utils.module').filter('title', /*@ngInject*/ function titleFilter() {
+angular.module('core.utils').filter('title', /*@ngInject*/ function titleFilter() {
     return function(input) {
         input = input || '';
         return input.replace(/\w\S*/g, function(txt) {
@@ -3131,7 +3131,7 @@ angular.module('utils.module').filter('title', /*@ngInject*/ function titleFilte
 // Usage:
 // {{months | toYears }}
 //
-angular.module('utils.module').filter('toYears', /*@ngInject*/ function() {
+angular.module('core.utils').filter('toYears', /*@ngInject*/ function() {
     return function(value) {
         if (!value) return '';
         var what = value,
@@ -3165,13 +3165,13 @@ angular.module('utils.module').filter('toYears', /*@ngInject*/ function() {
  // Usage:
  // {{some_str | unsafe }}
  //
- angular.module('utils.module').filter('unsafe', /*@ngInject*/ function($sce) {
+ angular.module('core.utils').filter('unsafe', /*@ngInject*/ function($sce) {
      return function(value) {
          return $sce.trustAsHtml(value);
      };
  })
 'use strict';
-angular.module('utils.module').factory('Fb', /*@ngInject*/ function(Facebook) {
+angular.module('core.utils').factory('Fb', /*@ngInject*/ function(Facebook) {
     return {
         getLikes: getLikes,
         getFriends: getFriends,
@@ -3244,7 +3244,7 @@ angular.module('utils.module').factory('Fb', /*@ngInject*/ function(Facebook) {
     }
 })
 'use strict';
-angular.module('utils.module').factory('HttpInterceptor', /*@ngInject*/ function($q, $rootScope) {
+angular.module('core.utils').factory('HttpInterceptor', /*@ngInject*/ function($q, $rootScope) {
     return {
         // optional method
         'request': function(config) {
@@ -3382,7 +3382,7 @@ angular.module('profile.module').directive('profileFormPositions', /*@ngInject*/
     }
 })
 'use strict';
-angular.module('utils.module').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope) {
+angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope) {
     var vm = this;
     vm.companyid = $scope.companyid;
     //external scope databind
@@ -3400,7 +3400,7 @@ angular.module('utils.module').controller('CompanyChooserCtrl', /*@ngInject*/ fu
     });
 });
 'use strict';
-angular.module('utils.module').directive('companyChooser', /*@ngInject*/ function() {
+angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function() {
     return {
         scope: {
             companyid: '=',
@@ -3437,7 +3437,7 @@ angular.module('utils.module').directive('companyChooser', /*@ngInject*/ functio
     }
 });
 'use strict';
-angular.module('utils.module').directive('focus', /*@ngInject*/ function() {
+angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
     return {
         scope: {
             focus: '=',
@@ -3458,7 +3458,7 @@ angular.module('utils.module').directive('focus', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('utils.module').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, layout) {
+angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, layout) {
     var vm = this;
     $scope.register = function() {
         vm.busy = true;
@@ -3475,7 +3475,7 @@ angular.module('utils.module').controller('LeadFormCtrl', /*@ngInject*/ function
     }
 });
 'use strict';
-angular.module('utils.module').directive('leadForm', /*@ngInject*/ function() {
+angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
     return {
         scope: {
             label: '@'
@@ -3487,7 +3487,7 @@ angular.module('utils.module').directive('leadForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('utils.module').controller('LiveChipsCtrl', /*@ngInject*/ function($scope, $rootScope) {
+angular.module('core.utils').controller('LiveChipsCtrl', /*@ngInject*/ function($scope, $rootScope) {
     var vm = this;
     vm.applyRole = applyRole;
     vm.selectedItem = '';
@@ -3559,7 +3559,7 @@ angular.module('utils.module').controller('LiveChipsCtrl', /*@ngInject*/ functio
     }
 });
 'use strict';
-angular.module('utils.module').directive('liveChips', /*@ngInject*/ function() {
+angular.module('core.utils').directive('liveChips', /*@ngInject*/ function() {
     return {
         scope: {
             items: '=',
@@ -3577,7 +3577,7 @@ angular.module('utils.module').directive('liveChips', /*@ngInject*/ function() {
 });
 'use strict';
 /* jshint undef: false, unused: false */
-angular.module('utils.module').directive('onScrollApplyOpacity', /*@ngInject*/ function() {
+angular.module('core.utils').directive('onScrollApplyOpacity', /*@ngInject*/ function() {
     //
     // Essa diretiva é um hack pra resolver um bug de scroll nos botões de ação que contem wrapper com margin-top negativa
     //
@@ -3595,7 +3595,7 @@ angular.module('utils.module').directive('onScrollApplyOpacity', /*@ngInject*/ f
     }
 })
 'use strict';
-angular.module('utils.module').directive('updateModelKeyEnter', /*@ngInject*/ function() {
+angular.module('core.utils').directive('updateModelKeyEnter', /*@ngInject*/ function() {
     return {
         restrict: 'A',
         require: 'ngModel',

@@ -1,7 +1,7 @@
 'use strict';
 /**
  * @ngdoc filter
- * @name utils.module.filter:cep
+ * @name core.utils.filter:cep
  * @description 
  * Filtro para adicionar máscara de CEP
  * @param {string} value código postal
@@ -10,7 +10,7 @@
  * {{some_text | cep}}
  * </pre>
  **/
-angular.module('utils.module').filter('cep', /*@ngInject*/ function() {
+angular.module('core.utils').filter('cep', /*@ngInject*/ function() {
     return function(input) {
         var str = input + '';
         str = str.replace(/\D/g, '');

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('utils.module').directive('companyChooser', /*@ngInject*/ function() {
+angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function() {
     return {
         scope: {
             companyid: '=',

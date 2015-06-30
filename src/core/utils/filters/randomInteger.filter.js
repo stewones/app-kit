@@ -1,7 +1,7 @@
  'use strict';
  /**
   * @ngdoc filter
-  * @name utils.module.filter:randomInteger
+  * @name core.utils.filter:randomInteger
   * @description 
   * Converter para um número random
   * @param {integer} value valor corrente
@@ -12,7 +12,7 @@
   * {{some_number | randomInteger:1:10}}
   * </pre>
   **/
- angular.module('utils.module').filter('randomInteger', /*@ngInject*/ function() {
+ angular.module('core.utils').filter('randomInteger', /*@ngInject*/ function() {
      return function(value, min, max) {
          return Math.floor(Math.random() * (max - min)) + min;
      }
