@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, MenuProvider) {
+angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, $menuProvider) {
     //
     // States & Routes
     //
@@ -22,10 +22,10 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
                     return true;
                 }
             },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, menu) {
+            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
-                        menu.api().close();
+                        $menu.api().close();
                     }, 500)
                 }
             }
@@ -36,7 +36,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     //
     // Set Menu
     //
-    MenuProvider.set({
+    $menuProvider.set({
         name: 'Conta',
         type: 'link',
         icon: 'fa fa-at',
@@ -46,7 +46,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     //
     // Set Toolbar Menu
     //
-    // MenuProvider.setToolbarMenu({
+    // $menuProvider.setToolbarMenu({
     //     id: 'filtros',
     //     name: 'Filtros',
     //     type: 'action',

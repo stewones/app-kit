@@ -97,7 +97,7 @@ angular.module('app.kit', [
     'core.account'
 ]);
 'use strict';
-angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, MenuProvider) {
+angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, $menuProvider) {
     //
     // States & Routes
     //
@@ -120,10 +120,10 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
                     return true;
                 }
             },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, menu) {
+            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
-                        menu.api().close();
+                        $menu.api().close();
                     }, 500)
                 }
             }
@@ -134,7 +134,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     //
     // Set Menu
     //
-    MenuProvider.set({
+    $menuProvider.set({
         name: 'Conta',
         type: 'link',
         icon: 'fa fa-at',
@@ -144,7 +144,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     //
     // Set Toolbar Menu
     //
-    // MenuProvider.setToolbarMenu({
+    // $menuProvider.setToolbarMenu({
     //     id: 'filtros',
     //     name: 'Filtros',
     //     type: 'action',
@@ -980,7 +980,7 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, menu, $login) {
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -1018,7 +1018,7 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
                 _id: company._id,
                 name: company.name
             });
-            menu.api().close();
+            $menu.api().close();
             bootstrap();
         }
     });
@@ -1047,7 +1047,7 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         vm.state = $state;
         vm.isAuthed = $auth.isAuthenticated;
         vm.logout = logout;
-        vm.menu = menu.api();
+        vm.$menu = $menu.api();
         vm.loginConfig = $login.config;
         vm.iframe = $location.hash() === 'iframe' ? true : false;
     }
@@ -1452,10 +1452,10 @@ angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlR
             }
         },
         resolve: {
-            closeMenu: /*@ngInject*/ function($timeout, $auth, menu) {
+            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
-                        menu.api().close();
+                        $menu.api().close();
                     }, 500)
                 }
             }
@@ -1703,7 +1703,7 @@ angular.module('core.page').factory('$page', /*@ngInject*/ function($mdToast) {
     }
 })
 'use strict';
-angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
+angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $menuProvider) {
     //
     // States & Routes
     //
@@ -1745,10 +1745,10 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
                 }
                 return true;
             },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, menu) {
+            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
-                        menu.api().close();
+                        $menu.api().close();
                     }, 500)
                 }
             }
@@ -1759,7 +1759,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
     //
     // Set Menu
     //
-    MenuProvider.set({
+    $menuProvider.set({
         name: 'Perfil',
         type: 'link',
         icon: 'fa fa-street-view',
@@ -1769,7 +1769,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
     //
     // Set Toolbar Menu
     //
-    // MenuProvider.setToolbarMenu({
+    // $menuProvider.setToolbarMenu({
     //     id: 'filtros',
     //     name: 'Filtros',
     //     type: 'action',
@@ -2004,7 +2004,7 @@ angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
 })
 'use strict';
 /* global window */
-angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
+angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, $menu, $page, setting) {
     /**
      * @ngdoc service
      * @name core.user.service:$User
@@ -2645,13 +2645,25 @@ angular.module('core.page').directive('loader', /*@ngInject*/ function() {
 'use strict';
 angular.module('menu.module').config( /*@ngInject*/ function() {})
 'use strict';
-angular.module('menu.module').factory('menu', /*@ngInject*/ function($rootScope, $mdSidenav, $location, Menu) {
-    return {
-        api: api
+angular.module('menu.module').provider('$menu', /*@ngInject*/ function MenuProvider() {
+    this.mainMenu = [];
+    this.toolbarMenu = [];
+    this.$get = this.get = /*@ngInject*/ function($rootScope, $mdSidenav, $location) {
+        return {
+            main: this.mainMenu,
+            toolbar: this.toolbarMenu,
+            api: api
+        }
     }
-    //
-    // MENU API
-    //
+    this.set = function(menu) {
+        this.mainMenu.push(menu);
+    }
+    this.setToolbar = function(menu) {
+            this.toolbarMenu.push(menu);
+        }
+        //
+        // MENU API
+        //
     function api() {
         return {
             openedSection: false,
@@ -2665,7 +2677,7 @@ angular.module('menu.module').factory('menu', /*@ngInject*/ function($rootScope,
                 $mdSidenav('left').close();
             },
             //sections: sampleMenu(),
-            sections: Menu.main,
+            sections: this.mainMenu,
             selectSection: function(section) {
                 this.openedSection = section;
             },
@@ -2799,23 +2811,6 @@ angular.module('menu.module').factory('menu', /*@ngInject*/ function($rootScope,
                 }
             ];
         }*/
-})
-'use strict';
-angular.module('menu.module').provider('Menu', /*@ngInject*/ function MenuProvider() {
-    this.mainMenu = [];
-    this.toolbarMenu = [];
-    this.$get = this.get = function() {
-        return {
-            main: this.mainMenu,
-            toolbar: this.toolbarMenu
-        }
-    }
-    this.set = function(menu) {
-        this.mainMenu.push(menu);
-    }
-    this.setToolbar = function(menu) {
-        this.toolbarMenu.push(menu);
-    }
 })
 'use strict';
 angular.module('menu.module').filter('menuHuman', /*@ngInject*/ function menuHuman() {
@@ -3661,7 +3656,7 @@ angular.module('menu.module').directive('menuFacepile', /*@ngInject*/ function()
     }
 });
 'use strict';
-angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu(Menu) {
+angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu($menu) {
     return {
         templateUrl: "core/page/toolbar/menu/toolbarMenu.tpl.html",
         scope: {
@@ -3670,7 +3665,7 @@ angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function tool
         controller: 'ToolbarMenuCtrl',
         controllerAs: 'vm',
         link: function(scope) {
-            scope.menu = Menu.toolbar;
+            scope.menu = $menu.toolbar;
         }
     }
 })
@@ -3704,6 +3699,27 @@ angular.module('core.profile').directive('profileFormPositions', /*@ngInject*/ f
         templateUrl: "core/profile/form/positions/profileFormPositions.tpl.html",
         controller: 'ProfileFormPositionsCtrl',
         controllerAs: 'vm'
+    }
+})
+'use strict';
+angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
+    return {
+        scope: {
+            focus: '=',
+            focusWhen: '='
+        },
+        restrict: 'A',
+        link: function(scope, elem) {
+            scope.$watch('focusWhen', function(nv, ov) {
+                if (nv != ov) {
+                    if (nv) {
+                        elem.focus();
+                    }
+                }
+            });
+            if (scope.focus)
+                elem.focus();
+        }
     }
 })
 'use strict';
@@ -3761,27 +3777,6 @@ angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function(
             // }
     }
 });
-'use strict';
-angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
-    return {
-        scope: {
-            focus: '=',
-            focusWhen: '='
-        },
-        restrict: 'A',
-        link: function(scope, elem) {
-            scope.$watch('focusWhen', function(nv, ov) {
-                if (nv != ov) {
-                    if (nv) {
-                        elem.focus();
-                    }
-                }
-            });
-            if (scope.focus)
-                elem.focus();
-        }
-    }
-})
 'use strict';
 angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, layout) {
     var vm = this;

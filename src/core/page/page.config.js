@@ -14,10 +14,10 @@ angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlR
             }
         },
         resolve: {
-            closeMenu: /*@ngInject*/ function($timeout, $auth, menu) {
+            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
-                        menu.api().close();
+                        $menu.api().close();
                     }, 500)
                 }
             }

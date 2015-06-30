@@ -1,6 +1,6 @@
 'use strict';
 /* global window */
-angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
+angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, $menu, $page, setting) {
     /**
      * @ngdoc service
      * @name core.user.service:$User

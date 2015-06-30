@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, MenuProvider) {
+angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $menuProvider) {
     //
     // States & Routes
     //
@@ -41,10 +41,10 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
                 }
                 return true;
             },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, menu) {
+            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
-                        menu.api().close();
+                        $menu.api().close();
                     }, 500)
                 }
             }
@@ -55,7 +55,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
     //
     // Set Menu
     //
-    MenuProvider.set({
+    $menuProvider.set({
         name: 'Perfil',
         type: 'link',
         icon: 'fa fa-street-view',
@@ -65,7 +65,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
     //
     // Set Toolbar Menu
     //
-    // MenuProvider.setToolbarMenu({
+    // $menuProvider.setToolbarMenu({
     //     id: 'filtros',
     //     name: 'Filtros',
     //     type: 'action',

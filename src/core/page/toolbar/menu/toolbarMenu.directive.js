@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu(Menu) {
+angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu($menu) {
     return {
         templateUrl: "core/page/toolbar/menu/toolbarMenu.tpl.html",
         scope: {
@@ -8,7 +8,7 @@ angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function tool
         controller: 'ToolbarMenuCtrl',
         controllerAs: 'vm',
         link: function(scope) {
-            scope.menu = Menu.toolbar;
+            scope.menu = $menu.toolbar;
         }
     }
 })
