@@ -1,4 +1,11 @@
-@import url(http://fonts.googleapis.com/css?family=Damion);
+/*
+FONTS
+*/
+@import url(https://fonts.googleapis.com/css?family=Mr+Dafoe);
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400,italic);
+@import url(https://fonts.googleapis.com/css?family=Material+Icons);
+@import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css);
+@import url(https://fonts.googleapis.com/css?family=Damion);
 
 img.logo-header { height: 48px; margin-top: 6px; }
 body, html {  overflow: hidden; overflow-y:hidden; overflow-x: hidden}
