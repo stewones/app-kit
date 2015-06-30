@@ -1,6 +1,6 @@
 'use strict';
 /* global gapi */
-angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, user, setting, api) {
+angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
     var vm = this;
     vm.clientId = setting.google.clientId;
     vm.language = setting.google.language;
@@ -31,7 +31,7 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
             var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
             if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
             $auth.setToken(response.data.token);
-            user.instance.init(response.data.user, true, msg);
+            $user.instance.init(response.data.user, true, msg);
         }
         var onFail = function(result) {
             $page.load.done();

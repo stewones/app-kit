@@ -1,6 +1,6 @@
 'use strict';
 /* global moment, confirm */
-angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, $Profile, setting, api) {
+angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, $user, $Profile, setting, api) {
     var vm = this;
     //
     // Estados Brasileiros
@@ -40,7 +40,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
         name: 'Cargos',
         slug: 'positions',
         title: "<i class='fa fa-heartbeat'></i> Área de Interesse",
-        subtitle: "Escolha em quais cargos você se encaixa em <strong>" + user.instance.current('company').name + "</strong>",
+        subtitle: "Escolha em quais cargos você se encaixa em <strong>" + $user.instance.current('company').name + "</strong>",
         template: "core/profile/form/profileForm-step1.tpl.html"
     }, {
         name: 'Dados Pessoais',
@@ -76,7 +76,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
         var url = api.url + '/api/configs/education';
         var onSuccess = function(education) {
             vm.education = education;
-            user.instance.current('education', education);
+            $user.instance.current('education', education);
             $timeout(function() {
                 vm.educationLoading = false;
             }, 1000);
@@ -87,20 +87,20 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
                 vm.educationLoading = false;
             }, 1000);
         }
-        if (!user.instance.current('education')) {
+        if (!$user.instance.current('education')) {
             vm.educationLoading = true;
             $http.post(url, {
-                company: user.instance.current().company._id
+                company: $user.instance.current().company._id
             }).success(onSuccess).error(onFail);
         } else {
-            vm.education = user.instance.current('education');
+            vm.education = $user.instance.current('education');
         }
     }
     //
     // Events
     //
     $rootScope.$on('CompanyIdUpdated', function() {
-        bootstrap(user.instance.profile);
+        bootstrap($user.instance.profile);
         // $timeout(function() {
         $scope.tabCurrent = 0;
         // }, 2000)
@@ -143,21 +143,21 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
     //
     // Bootstrap
     //
-    bootstrap(user.instance.profile);
+    bootstrap($user.instance.profile);
 
     function bootstrap(params) {
         if (!$auth.isAuthenticated()) return;
         //update tab with company name
-        $scope.tabs[0].subtitle = "Escolha em quais cargos você se encaixa em <strong>" + user.instance.current('company').name + "</strong>";
+        $scope.tabs[0].subtitle = "Escolha em quais cargos você se encaixa em <strong>" + $user.instance.current('company').name + "</strong>";
         //
         // Profile corrente
         //
         vm.profile = new $Profile(params);
-        vm.profile.company = user.instance.current('company')._id; //vincular empresa no perfil atual
+        vm.profile.company = $user.instance.current('company')._id; //vincular empresa no perfil atual
         //
         // Empresa corrente
         //
-        vm.company = user.instance.current('company');
+        vm.company = $user.instance.current('company');
         //
         // Feedback
         //
@@ -169,7 +169,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
             label: "Anúncios"
         }, {
             value: "companySite",
-            label: "Site " + user.instance.current('company').name
+            label: "Site " + $user.instance.current('company').name
         }, {
             value: "google",
             label: "Google"
@@ -197,8 +197,8 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
 
     function save() {
         vm.profile.save(function(response) {
-            user.instance.profileUpdate(response);
-            user.instance.current('companies', response.role);
+            $user.instance.profileUpdate(response);
+            $user.instance.current('companies', response.role);
             bootstrap(response);
             $timeout(function() {
                 vm.forms.profile.$dirty = false;
@@ -230,7 +230,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
 
     function hasFormErrorToast() {
         if (hasFormInvalid() && $scope.tabCurrent !== 0) {
-            $page.toast(user.instance.profile.firstName + ', verifique todos os campos e corrija os erros.', 10000);
+            $page.toast($user.instance.profile.firstName + ', verifique todos os campos e corrija os erros.', 10000);
         }
     }
 

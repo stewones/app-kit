@@ -155,7 +155,7 @@ angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, account, $User, UserSetting, utils, $page, user, setting, api) {
+angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, account, $User, UserSetting, utils, $page, $user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -192,19 +192,19 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
     vm.optOutInfo = optOutInfo;
     vm.optOutPutLocation = api.url + '/api/profiles/opt-out';
     vm.optOutPutParams = {
-        company: user.instance.current('company')._id
+        company: $user.instance.current('company')._id
     };
     bootstrap();
 
     function bootstrap() {
         //instantiate new account
         vm.account = account.set(new $Account({
-            email: user.instance.email,
-            facebook: user.instance.facebook,
-            id: user.instance.id,
-            provider: user.instance.provider,
-            profile: user.instance.profile,
-            role: (UserSetting.roleForCompany != 'user') ? user.instance.profile.role : user.instance.role
+            email: $user.instance.email,
+            facebook: $user.instance.facebook,
+            id: $user.instance.id,
+            provider: $user.instance.provider,
+            profile: $user.instance.profile,
+            role: (UserSetting.roleForCompany != 'user') ? $user.instance.profile.role : $user.instance.role
         }));
         vm.accountPristine = angular.copy(vm.account);
         $timeout(function() {
@@ -229,7 +229,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
         confirmAccount(function() {
             $page.load.init();
             //company unlink
-            $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/updateInfo', {
+            $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/updateInfo', {
                 firstName: vm.account.profile.firstName, //nome do perfil
                 lastName: vm.account.profile.lastName, //sobrenome do perfil
                 email: vm.account.email, //email da conta e nao do perfil (email do perfil será usado para contatos profissionais)
@@ -239,8 +239,8 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                 var _user = response.user;
                 var _profile = response;
                 delete _profile.user;
-                user.instance.profile = _profile; //atualizar profile
-                user.set(new $User(user.instance)); //re-instanciar usuario
+                $user.instance.profile = _profile; //atualizar profile
+                $user.set(new $User($user.instance)); //re-instanciar usuario
                 bootstrap(); //re-instanciar profile
                 $page.toast('Dados atualizados');
                 $page.load.done();
@@ -258,7 +258,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
         confirmAccount(function() {
             $page.load.init();
             //company unlink
-            $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/unlinkCompany', {
+            $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/unlinkCompany', {
                 cid: id
             }).success(onSuccessUnlink).error(onFailUnlink);
             //handle unlink success
@@ -266,12 +266,12 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                 var _user = response.user;
                 var _profile = response;
                 delete _profile.user;
-                user.instance.profile = _profile; //atualizar profile
-                user.instance.current('companies', _profile.role); //re-setar empresas atuais
-                if (!user.instance.current('companies').length || !user.instance.current('companies')[0].company || !user.instance.current('companies')[0].company._id) {
-                    user.instance.current('company', {}); //zerar empresa atual se nao existir mais nenhuma
+                $user.instance.profile = _profile; //atualizar profile
+                $user.instance.current('companies', _profile.role); //re-setar empresas atuais
+                if (!$user.instance.current('companies').length || !$user.instance.current('companies')[0].company || !$user.instance.current('companies')[0].company._id) {
+                    $user.instance.current('company', {}); //zerar empresa atual se nao existir mais nenhuma
                 }
-                user.set(new $User(user.instance)); //re-instanciar usuario
+                $user.set(new $User($user.instance)); //re-instanciar usuario
                 bootstrap();
                 $page.toast('empresa desconectada');
                 $page.load.done();
@@ -287,7 +287,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
     function savePassword() {
         confirmAccount(function() {
             $page.load.init();
-            $http.put(api.url + '/api/profiles/' + user.instance.id + '/updatePassword', {
+            $http.put(api.url + '/api/profiles/' + $user.instance.id + '/updatePassword', {
                 pw: vm.account._password,
             }).success(onSuccessUpdatePassword).error(onFailUpdatePassword);
 
@@ -306,8 +306,8 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
 
     function deactivateAccount(ev) {
         $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, $location, user, account, api) {
-                $scope.user = user.instance;
+            controller: /*@ngInject*/ function($scope, $mdDialog, $location, $user, account, api) {
+                $scope.user = $user.instance;
                 $scope.account = account.instance;
                 $scope.gender = (account.instance.profile && account.instance.profile.gender === 'F') ? 'a' : 'o';
                 $scope.hide = function() {
@@ -320,13 +320,13 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                     confirmAccount(function() {
                         $page.load.init();
                         //company unlink
-                        $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/deactivateAccount').success(onSuccessDeactivate).error(onFailDeactivate);
+                        $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/deactivateAccount').success(onSuccessDeactivate).error(onFailDeactivate);
                         //handle unlink success
                         function onSuccessDeactivate(response) {
                             $page.toast('Sua conta foi cancelada, você será desconectado em 5 segundos...');
                             $page.load.done();
                             $timeout(function() {
-                                user.instance.destroy();
+                                $user.instance.destroy();
                                 $location.path('/');
                             }, 5000);
                         }
@@ -438,7 +438,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
         this.busy = true;
         var vm = this;
         $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, user, account, api) {
+            controller: /*@ngInject*/ function($scope, $mdDialog, $user, account, api) {
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
@@ -465,7 +465,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
                         if (cbError) return cbError(response);
                     }.bind(this));
                 };
-                $scope.user = user.instance;
+                $scope.user = $user.instance;
                 $scope.account = account.instance;
             },
             templateUrl: 'core/account/confirm.tpl.html',
@@ -677,7 +677,7 @@ angular.module('core.login').provider('$login',
  * @requires core.login.$user
  **/
 angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
-    user.instance.destroy();
+    $user.instance.destroy();
 })
 'use strict';
 /**
@@ -854,7 +854,7 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, user, enviroment, menu, $login) {
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -886,9 +886,9 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
     $rootScope.$on('CompanyIdUpdated', function(e, nv, ov) {
         if (nv != ov) {
             //quando alterar company, atualizar factory  
-            var company = user.instance.filterCompany(nv);
-            user.instance.current('company', company);
-            user.instance.session('company', {
+            var company = $user.instance.filterCompany(nv);
+            $user.instance.current('company', company);
+            $user.instance.session('company', {
                 _id: company._id,
                 name: company.name
             });
@@ -900,7 +900,7 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         bootstrap();
     });
     $rootScope.$on('Unauthorized', function() {
-        user.instance.destroy();
+        $user.instance.destroy();
     });
     //
     // BOOTSTRAP
@@ -912,9 +912,9 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         //http2https(); //@bug - bug com _escaped_fragment_
         if (withUser) {
             var newUser = new $User();
-            user.set(newUser);
+            $user.set(newUser);
         }
-        vm.user = user.instance;
+        vm.user = $user.instance;
         vm.$page = $page;
         vm.setting = setting;
         vm.year = moment().format('YYYY');
@@ -931,7 +931,7 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
     function logout() {
         $mdSidenav('left').close();
         $timeout(function() {
-            user.instance.destroy(true);
+            $user.instance.destroy(true);
             bootstrap(true);
         }, 500);
     }
@@ -1600,7 +1600,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
                 }
             },
             companySession: /*@ngInject*/ function($state, user) {
-                var userInstance = user.instance.session('company');
+                var userInstance = $user.instance.session('company');
                 if (userInstance && userInstance.ref) {
                     $state.go('app.landing', {
                         ref: userInstance.ref
@@ -1609,8 +1609,8 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
                 }
                 return false;
             },
-            companyCurrent: /*@ngInject*/ function($location, $timeout, user, layout) {
-                if (!user.instance.current('company') || !user.instance.current('company')._id) {
+            companyCurrent: /*@ngInject*/ function($location, $timeout, $user, layout) {
+                if (!$user.instance.current('company') || !$user.instance.current('company')._id) {
                     $page.toast('Acesse o LiveJob de alguma empresa para criar conexões', 10000);
                     $timeout(function() {
                         $location.path('/');
@@ -1651,7 +1651,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
     // });
 });
 'use strict';
-angular.module('core.profile').controller('$ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, utils, $page, user, setting) {
+angular.module('core.profile').controller('$ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, utils, $page, $user, setting) {
     var vm = this;
     vm.companySession = companySession;
     vm.companyCurrent = companyCurrent;
@@ -1684,7 +1684,7 @@ angular.module('core.profile').directive('profile', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, user, api, moment) {
+angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, $user, api, moment) {
     /**
      * @ngdoc service
      * @name core.profile.$Profile
@@ -1799,24 +1799,73 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
          * @return {array} lista de cargos desejados
          */
     function getWorkPosition() {
-        var result = user.instance.getWorkPosition(user.instance.current('company')._id);
+        var result = $user.instance.getWorkPosition($user.instance.current('company')._id);
         return result.length ? result : [];
     }
     return Profile;
 })
 'use strict';
-angular.module('core.user').factory('user', /*@ngInject*/ function() {
-    this.instance = {};
-    return {
-        set: function(data) {
-            this.instance = data;
-            return data;
-        },
-        destroy: function() {
-            this.instance = {};
+/**
+ * @ngdoc service
+ * @name core.user.factory:$user
+ * @description 
+ * Factory para injeção
+ * @return {object} com metodos para setar e destruir a instância da factory
+ **/
+angular.module('core.user').factory('$user',
+    /*@ngInject*/
+    function() {
+        /**
+         * @ngdoc object
+         * @name core.user.factory:$user#instance
+         * @propertyOf core.user.factory:$user
+         * @description 
+         * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
+         **/
+        this.instance = {};
+
+        return {
+            /**
+             * @ngdoc function
+             * @name core.user.factory:$user#set
+             * @methodOf core.user.factory:$user
+             * @description 
+             * Setar instância do usuário
+             * @example
+             * <pre>
+             * var user = new $User();
+             * $user.set(user);
+             * //now user instance can be injectable
+             * angular.module('myApp').controller('myCtrl',function($user){
+             * console.log($user.instance) //imprime objeto de instância do usuário
+             * })
+             * </pre>
+             **/
+            set: function(data) {
+                this.instance = data;
+                return data;
+            },
+            /**
+             * @ngdoc function
+             * @name core.user.factory:$user#destroy
+             * @methodOf core.user.factory:$user
+             * @description 
+             * Apagar instância do usuário
+             * @example
+             * <pre>
+             * var user = new $User();
+             * $user.set(user);
+             * //now user instance can be injectable
+             * angular.module('myApp').controller('myCtrl',function($user){
+             * $user.instance.destroy() //apaga instância do usuário
+             * })
+             * </pre>
+             **/
+            destroy: function() {
+                this.instance = {};
+            }
         }
-    }
-})
+    })
 'use strict';
 angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
     this.setting = {};
@@ -1832,9 +1881,9 @@ angular.module('core.user').provider('UserSetting', /*@ngInject*/ function() {
 angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
     /**
      * @ngdoc service
-     * @name core.user.$User
+     * @name core.user.service:$User
      * @description 
-     * Comportamentos de usuário
+     * Model de usuário
      * @param {object} params propriedades da instância
      * @param {bool} alert aviso de boas vindas
      * @param {string} message mensagem do aviso
@@ -1842,24 +1891,24 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
     var User = function(params, alert, message) {
             /**
              * @ngdoc object
-             * @name core.user.$User#params
-             * @propertyOf core.user.$User
+             * @name core.user.service:$User#params
+             * @propertyOf core.user.service:$User
              * @description 
              * Propriedades da instância
              **/
             params = params ? params : {};
             /**
              * @ngdoc object
-             * @name core.user.$User#currentData
-             * @propertyOf core.user.$User
+             * @name core.user.service:$User#currentData
+             * @propertyOf core.user.service:$User
              * @description 
              * Armazena dados customizados na instância do usuário
              **/
             this.currentData = {};
             /**
              * @ngdoc object
-             * @name core.user.$User#sessionData
-             * @propertyOf core.user.$User
+             * @name core.user.service:$User#sessionData
+             * @propertyOf core.user.service:$User
              * @description 
              * Armazena dados customizados no localStorage do usuário
              **/
@@ -1868,8 +1917,8 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
         }
         /**
          * @ngdoc function
-         * @name core.user.$User:init
-         * @methodOf core.user.$User
+         * @name core.user.service:$User:init
+         * @methodOf core.user.service:$User
          * @description
          * Inicialização
          * @param {object} params propriedades da instância
@@ -1907,8 +1956,8 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
         }
         /**
          * @ngdoc function
-         * @name core.user.$User:current
-         * @methodOf core.user.$User
+         * @name core.user.service:$User:current
+         * @methodOf core.user.service:$User
          * @description
          * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário
          * @example
@@ -1921,68 +1970,84 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
          * @param {*} val valor
          */
     User.prototype.current = function(key, val) {
-        if (key && val) {
-            if (!this.currentData) this.currentData = {};
-            this.currentData[key] = val;
-        } else if (key) {
-            return this.currentData && this.currentData[key] ? this.currentData[key] : false;
-        }
-        return this.currentData;
-    }
-    User.prototype.session = function(key, val) {
             if (key && val) {
-                if (!this.sessionData) this.sessionData = {};
-                this.sessionData[key] = val;
-                setStorageSession(this.sessionData);
+                if (!this.currentData) this.currentData = {};
+                this.currentData[key] = val;
             } else if (key) {
-                this.sessionData = getStorageSession();
-                return this.sessionData && this.sessionData[key] ? this.sessionData[key] : false;
+                return this.currentData && this.currentData[key] ? this.currentData[key] : false;
             }
+            return this.currentData;
+        }
+        /**
+         * @ngdoc function
+         * @name core.user.service:$User:session
+         * @methodOf core.user.service:$User
+         * @description
+         * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário e ao localStorage
+         * @param {string} key chave
+         * @param {*} val valor
+         */
+    User.prototype.session = function(key, val) {
+        if (key && val) {
+            if (!this.sessionData) this.sessionData = {};
+            this.sessionData[key] = val;
+            setStorageSession(this.sessionData);
+        } else if (key) {
             this.sessionData = getStorageSession();
-            return this.sessionData;
+            return this.sessionData && this.sessionData[key] ? this.sessionData[key] : false;
         }
-        //
-        // filter user companies by _id
-        //
+        this.sessionData = getStorageSession();
+        return this.sessionData;
+    }
+
+    /**
+     * @ngdoc function
+     * @name core.user.service:$User:filterCompany
+     * @methodOf core.user.service:$User
+     * @description
+     * Buscar uma empresa
+     * @param {string} _id id da empresa
+     * @return {object} objeto da empresa
+     */
     User.prototype.filterCompany = function(_id) {
-            var result = false,
-                companies = getCompanies(this);
-            if (companies && companies.length) {
-                companies.forEach(function(row) {
-                    if (row.company._id === _id) {
-                        result = row.company;
-                        return;
-                    }
-                });
-            }
-            return result;
+        var result = false,
+            companies = getCompanies(this);
+        if (companies && companies.length) {
+            companies.forEach(function(row) {
+                if (row.company._id === _id) {
+                    result = row.company;
+                    return;
+                }
+            });
         }
-        //checar se ta authenticado e setar token na rota
-    User.prototype.isAuthed = function() {
-        if ($state.current.protected) {
-            //setar token no header do http se o state for protegido
-            if (token()) $http.defaults.headers.common['token'] = token();
-            if (!$auth.isAuthenticated()) {
-                $state.go("app.login");
-                return false;
-            }
-            $timeout(function() {
-                menu.api().close();
-            })
-            return true;
-        }
-        return false;
+        return result;
     }
+
+    /**
+     * @ngdoc function
+     * @name core.user.service:$User:destroy
+     * @methodOf core.user.service:$User
+     * @description
+     * Destruir sessão do usuário
+     * @param {bool} alert mensagem de aviso (você saiu)
+     */
     User.prototype.destroy = function(alert) {
-        $auth.logout();
-        $auth.removeToken();
-        removeStorageSession();
-        removeStorageUser();
-        // if (UserSetting.logoutStateRedirect)
-        // $state.go(UserSetting.logoutStateRedirect);
-        $page.load.done();
-        if (alert) $page.toast('Você saiu', 3000);
-    }
+            $auth.logout();
+            $auth.removeToken();
+            removeStorageSession();
+            removeStorageUser();
+            $page.load.done();
+            if (alert) $page.toast('Você saiu', 3000);
+        }
+        /**
+         * @ngdoc function
+         * @name core.user.service:$User:getWorkPosition
+         * @methodOf core.user.service:$User
+         * @description
+         * Obter a lista de cargos (@todo migrar para aplicações filhas)
+         * @param {string} companyid id da empresa
+         * @return {array} lista de cargos desejados
+         */
     User.prototype.getWorkPosition = function(companyid) {
         var result = false,
             companies = getCompanies(this);
@@ -2218,7 +2283,7 @@ angular.module('facebook.login').directive('facebookLogin', /*@ngInject*/ functi
     }
 })
 'use strict';
-angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, user, $page, api, setting) {
+angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, $user, $page, api, setting) {
     return {
         go: go
     }
@@ -2256,7 +2321,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                 var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
                 if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
                 $auth.setToken(response.data.token);
-                user.instance.init(response.data.user, true, msg);
+                $user.instance.init(response.data.user, true, msg);
                 if (cbSuccess)
                     cbSuccess()
             }
@@ -2296,7 +2361,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
  * @requires $mdToast
  * @requires core.user.factory:$user
  **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, user) {
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
     var vm = this;
     vm.login = login;
     /**
@@ -2311,7 +2376,7 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         $page.load.init();
         var onSuccess = function(result) {
             $page.load.done();
-            user.instance.init(result.data.user, true);
+            $user.instance.init(result.data.user, true);
         }
         var onError = function(result) {
             $page.load.done();
@@ -2349,7 +2414,7 @@ angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
 });
 'use strict';
 /* global gapi */
-angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, user, setting, api) {
+angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
     var vm = this;
     vm.clientId = setting.google.clientId;
     vm.language = setting.google.language;
@@ -2380,7 +2445,7 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
             var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
             if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
             $auth.setToken(response.data.token);
-            user.instance.init(response.data.user, true, msg);
+            $user.instance.init(response.data.user, true, msg);
         }
         var onFail = function(result) {
             $page.load.done();
@@ -2410,7 +2475,7 @@ angular.module('google.login').directive('googleLogin', /*@ngInject*/ function()
     }
 })
 'use strict';
-angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, user, $page, setting) {
+angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, setting) {
     $scope.register = register;
     $scope.sign = {};
 
@@ -2418,7 +2483,7 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
         $page.load.init();
         var onSuccess = function(result) {
             $page.load.done();
-            user.instance.init(result.data.user, true, 'Olá ' + result.data.user.profile.firstName + ', você entrou para o ' + setting.name, 10000);
+            $user.instance.init(result.data.user, true, 'Olá ' + result.data.user.profile.firstName + ', você entrou para o ' + setting.name, 10000);
         }
         var onError = function(result) {
             $page.load.done();
@@ -2691,7 +2756,7 @@ angular.module('menu.module').filter('nospace', /*@ngInject*/ function() {
 });
 'use strict';
 /* global moment, confirm */
-angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, user, $Profile, setting, api) {
+angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, utils, $page, $user, $Profile, setting, api) {
     var vm = this;
     //
     // Estados Brasileiros
@@ -2731,7 +2796,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
         name: 'Cargos',
         slug: 'positions',
         title: "<i class='fa fa-heartbeat'></i> Área de Interesse",
-        subtitle: "Escolha em quais cargos você se encaixa em <strong>" + user.instance.current('company').name + "</strong>",
+        subtitle: "Escolha em quais cargos você se encaixa em <strong>" + $user.instance.current('company').name + "</strong>",
         template: "core/profile/form/profileForm-step1.tpl.html"
     }, {
         name: 'Dados Pessoais',
@@ -2767,7 +2832,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
         var url = api.url + '/api/configs/education';
         var onSuccess = function(education) {
             vm.education = education;
-            user.instance.current('education', education);
+            $user.instance.current('education', education);
             $timeout(function() {
                 vm.educationLoading = false;
             }, 1000);
@@ -2778,20 +2843,20 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
                 vm.educationLoading = false;
             }, 1000);
         }
-        if (!user.instance.current('education')) {
+        if (!$user.instance.current('education')) {
             vm.educationLoading = true;
             $http.post(url, {
-                company: user.instance.current().company._id
+                company: $user.instance.current().company._id
             }).success(onSuccess).error(onFail);
         } else {
-            vm.education = user.instance.current('education');
+            vm.education = $user.instance.current('education');
         }
     }
     //
     // Events
     //
     $rootScope.$on('CompanyIdUpdated', function() {
-        bootstrap(user.instance.profile);
+        bootstrap($user.instance.profile);
         // $timeout(function() {
         $scope.tabCurrent = 0;
         // }, 2000)
@@ -2834,21 +2899,21 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
     //
     // Bootstrap
     //
-    bootstrap(user.instance.profile);
+    bootstrap($user.instance.profile);
 
     function bootstrap(params) {
         if (!$auth.isAuthenticated()) return;
         //update tab with company name
-        $scope.tabs[0].subtitle = "Escolha em quais cargos você se encaixa em <strong>" + user.instance.current('company').name + "</strong>";
+        $scope.tabs[0].subtitle = "Escolha em quais cargos você se encaixa em <strong>" + $user.instance.current('company').name + "</strong>";
         //
         // Profile corrente
         //
         vm.profile = new $Profile(params);
-        vm.profile.company = user.instance.current('company')._id; //vincular empresa no perfil atual
+        vm.profile.company = $user.instance.current('company')._id; //vincular empresa no perfil atual
         //
         // Empresa corrente
         //
-        vm.company = user.instance.current('company');
+        vm.company = $user.instance.current('company');
         //
         // Feedback
         //
@@ -2860,7 +2925,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
             label: "Anúncios"
         }, {
             value: "companySite",
-            label: "Site " + user.instance.current('company').name
+            label: "Site " + $user.instance.current('company').name
         }, {
             value: "google",
             label: "Google"
@@ -2888,8 +2953,8 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
 
     function save() {
         vm.profile.save(function(response) {
-            user.instance.profileUpdate(response);
-            user.instance.current('companies', response.role);
+            $user.instance.profileUpdate(response);
+            $user.instance.current('companies', response.role);
             bootstrap(response);
             $timeout(function() {
                 vm.forms.profile.$dirty = false;
@@ -2921,7 +2986,7 @@ angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ funct
 
     function hasFormErrorToast() {
         if (hasFormInvalid() && $scope.tabCurrent !== 0) {
-            $page.toast(user.instance.profile.firstName + ', verifique todos os campos e corrija os erros.', 10000);
+            $page.toast($user.instance.profile.firstName + ', verifique todos os campos e corrija os erros.', 10000);
         }
     }
 

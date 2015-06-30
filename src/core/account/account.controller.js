@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, account, $User, UserSetting, utils, $page, user, setting, api) {
+angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, account, $User, UserSetting, utils, $page, $user, setting, api) {
     var vm = this;
     //
     // SEO
@@ -36,19 +36,19 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
     vm.optOutInfo = optOutInfo;
     vm.optOutPutLocation = api.url + '/api/profiles/opt-out';
     vm.optOutPutParams = {
-        company: user.instance.current('company')._id
+        company: $user.instance.current('company')._id
     };
     bootstrap();
 
     function bootstrap() {
         //instantiate new account
         vm.account = account.set(new $Account({
-            email: user.instance.email,
-            facebook: user.instance.facebook,
-            id: user.instance.id,
-            provider: user.instance.provider,
-            profile: user.instance.profile,
-            role: (UserSetting.roleForCompany != 'user') ? user.instance.profile.role : user.instance.role
+            email: $user.instance.email,
+            facebook: $user.instance.facebook,
+            id: $user.instance.id,
+            provider: $user.instance.provider,
+            profile: $user.instance.profile,
+            role: (UserSetting.roleForCompany != 'user') ? $user.instance.profile.role : $user.instance.role
         }));
         vm.accountPristine = angular.copy(vm.account);
         $timeout(function() {
@@ -73,7 +73,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
         confirmAccount(function() {
             $page.load.init();
             //company unlink
-            $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/updateInfo', {
+            $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/updateInfo', {
                 firstName: vm.account.profile.firstName, //nome do perfil
                 lastName: vm.account.profile.lastName, //sobrenome do perfil
                 email: vm.account.email, //email da conta e nao do perfil (email do perfil será usado para contatos profissionais)
@@ -83,8 +83,8 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                 var _user = response.user;
                 var _profile = response;
                 delete _profile.user;
-                user.instance.profile = _profile; //atualizar profile
-                user.set(new $User(user.instance)); //re-instanciar usuario
+                $user.instance.profile = _profile; //atualizar profile
+                $user.set(new $User($user.instance)); //re-instanciar usuario
                 bootstrap(); //re-instanciar profile
                 $page.toast('Dados atualizados');
                 $page.load.done();
@@ -102,7 +102,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
         confirmAccount(function() {
             $page.load.init();
             //company unlink
-            $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/unlinkCompany', {
+            $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/unlinkCompany', {
                 cid: id
             }).success(onSuccessUnlink).error(onFailUnlink);
             //handle unlink success
@@ -110,12 +110,12 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                 var _user = response.user;
                 var _profile = response;
                 delete _profile.user;
-                user.instance.profile = _profile; //atualizar profile
-                user.instance.current('companies', _profile.role); //re-setar empresas atuais
-                if (!user.instance.current('companies').length || !user.instance.current('companies')[0].company || !user.instance.current('companies')[0].company._id) {
-                    user.instance.current('company', {}); //zerar empresa atual se nao existir mais nenhuma
+                $user.instance.profile = _profile; //atualizar profile
+                $user.instance.current('companies', _profile.role); //re-setar empresas atuais
+                if (!$user.instance.current('companies').length || !$user.instance.current('companies')[0].company || !$user.instance.current('companies')[0].company._id) {
+                    $user.instance.current('company', {}); //zerar empresa atual se nao existir mais nenhuma
                 }
-                user.set(new $User(user.instance)); //re-instanciar usuario
+                $user.set(new $User($user.instance)); //re-instanciar usuario
                 bootstrap();
                 $page.toast('empresa desconectada');
                 $page.load.done();
@@ -131,7 +131,7 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
     function savePassword() {
         confirmAccount(function() {
             $page.load.init();
-            $http.put(api.url + '/api/profiles/' + user.instance.id + '/updatePassword', {
+            $http.put(api.url + '/api/profiles/' + $user.instance.id + '/updatePassword', {
                 pw: vm.account._password,
             }).success(onSuccessUpdatePassword).error(onFailUpdatePassword);
 
@@ -150,8 +150,8 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
 
     function deactivateAccount(ev) {
         $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, $location, user, account, api) {
-                $scope.user = user.instance;
+            controller: /*@ngInject*/ function($scope, $mdDialog, $location, $user, account, api) {
+                $scope.user = $user.instance;
                 $scope.account = account.instance;
                 $scope.gender = (account.instance.profile && account.instance.profile.gender === 'F') ? 'a' : 'o';
                 $scope.hide = function() {
@@ -164,13 +164,13 @@ angular.module('core.account').controller('AccountCtrl', /*@ngInject*/ function(
                     confirmAccount(function() {
                         $page.load.init();
                         //company unlink
-                        $http.put(api.url + '/api/profiles/' + user.instance.profile.id + '/deactivateAccount').success(onSuccessDeactivate).error(onFailDeactivate);
+                        $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/deactivateAccount').success(onSuccessDeactivate).error(onFailDeactivate);
                         //handle unlink success
                         function onSuccessDeactivate(response) {
                             $page.toast('Sua conta foi cancelada, você será desconectado em 5 segundos...');
                             $page.load.done();
                             $timeout(function() {
-                                user.instance.destroy();
+                                $user.instance.destroy();
                                 $location.path('/');
                             }, 5000);
                         }

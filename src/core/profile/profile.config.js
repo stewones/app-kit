@@ -22,7 +22,7 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
                 }
             },
             companySession: /*@ngInject*/ function($state, user) {
-                var userInstance = user.instance.session('company');
+                var userInstance = $user.instance.session('company');
                 if (userInstance && userInstance.ref) {
                     $state.go('app.landing', {
                         ref: userInstance.ref
@@ -31,8 +31,8 @@ angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $u
                 }
                 return false;
             },
-            companyCurrent: /*@ngInject*/ function($location, $timeout, user, layout) {
-                if (!user.instance.current('company') || !user.instance.current('company')._id) {
+            companyCurrent: /*@ngInject*/ function($location, $timeout, $user, layout) {
+                if (!$user.instance.current('company') || !$user.instance.current('company')._id) {
                     $page.toast('Acesse o LiveJob de alguma empresa para criar conexões', 10000);
                     $timeout(function() {
                         $location.path('/');

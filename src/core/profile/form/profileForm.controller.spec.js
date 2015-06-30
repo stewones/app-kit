@@ -11,9 +11,9 @@ describe('Component <profile/form/profileForm> controller', function() {
         api,
         layout;
     beforeEach(module('core.profile'));
-    beforeEach(inject(function($injector, $rootScope, $controller, _$auth_, _$User_, _user_, _layout_, _$Profile_, _setting_, _api_) {
+    beforeEach(inject(function($injector, $rootScope, $controller, _$auth_, _$User_, _$user_, _layout_, _$Profile_, _setting_, _api_) {
         layout = _layout_;
-        user = _user_;
+        user = _$user_;
         User = _$User_;
         api = _api_;
         api.url = 'http://localhost:9000';
@@ -94,7 +94,7 @@ describe('Component <profile/form/profileForm> controller', function() {
             positions: Array[45],
             ref: "default"
         });
-        user.set(currentUser);
+        $user.set(currentUser);
     }
 
 

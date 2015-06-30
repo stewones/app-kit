@@ -20,7 +20,7 @@
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, user, enviroment, menu, $login) {
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, menu, $login) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -52,9 +52,9 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
     $rootScope.$on('CompanyIdUpdated', function(e, nv, ov) {
         if (nv != ov) {
             //quando alterar company, atualizar factory  
-            var company = user.instance.filterCompany(nv);
-            user.instance.current('company', company);
-            user.instance.session('company', {
+            var company = $user.instance.filterCompany(nv);
+            $user.instance.current('company', company);
+            $user.instance.session('company', {
                 _id: company._id,
                 name: company.name
             });
@@ -66,7 +66,7 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         bootstrap();
     });
     $rootScope.$on('Unauthorized', function() {
-        user.instance.destroy();
+        $user.instance.destroy();
     });
     //
     // BOOTSTRAP
@@ -78,9 +78,9 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         //http2https(); //@bug - bug com _escaped_fragment_
         if (withUser) {
             var newUser = new $User();
-            user.set(newUser);
+            $user.set(newUser);
         }
-        vm.user = user.instance;
+        vm.user = $user.instance;
         vm.$page = $page;
         vm.setting = setting;
         vm.year = moment().format('YYYY');
@@ -97,7 +97,7 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
     function logout() {
         $mdSidenav('left').close();
         $timeout(function() {
-            user.instance.destroy(true);
+            $user.instance.destroy(true);
             bootstrap(true);
         }, 500);
     }

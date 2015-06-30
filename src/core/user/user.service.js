@@ -3,9 +3,9 @@
 angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, UserSetting, menu, $page, setting) {
     /**
      * @ngdoc service
-     * @name core.user.$User
+     * @name core.user.service:$User
      * @description 
-     * Comportamentos de usuário
+     * Model de usuário
      * @param {object} params propriedades da instância
      * @param {bool} alert aviso de boas vindas
      * @param {string} message mensagem do aviso
@@ -13,24 +13,24 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
     var User = function(params, alert, message) {
             /**
              * @ngdoc object
-             * @name core.user.$User#params
-             * @propertyOf core.user.$User
+             * @name core.user.service:$User#params
+             * @propertyOf core.user.service:$User
              * @description 
              * Propriedades da instância
              **/
             params = params ? params : {};
             /**
              * @ngdoc object
-             * @name core.user.$User#currentData
-             * @propertyOf core.user.$User
+             * @name core.user.service:$User#currentData
+             * @propertyOf core.user.service:$User
              * @description 
              * Armazena dados customizados na instância do usuário
              **/
             this.currentData = {};
             /**
              * @ngdoc object
-             * @name core.user.$User#sessionData
-             * @propertyOf core.user.$User
+             * @name core.user.service:$User#sessionData
+             * @propertyOf core.user.service:$User
              * @description 
              * Armazena dados customizados no localStorage do usuário
              **/
@@ -39,8 +39,8 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
         }
         /**
          * @ngdoc function
-         * @name core.user.$User:init
-         * @methodOf core.user.$User
+         * @name core.user.service:$User:init
+         * @methodOf core.user.service:$User
          * @description
          * Inicialização
          * @param {object} params propriedades da instância
@@ -78,8 +78,8 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
         }
         /**
          * @ngdoc function
-         * @name core.user.$User:current
-         * @methodOf core.user.$User
+         * @name core.user.service:$User:current
+         * @methodOf core.user.service:$User
          * @description
          * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário
          * @example
@@ -92,68 +92,84 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
          * @param {*} val valor
          */
     User.prototype.current = function(key, val) {
-        if (key && val) {
-            if (!this.currentData) this.currentData = {};
-            this.currentData[key] = val;
-        } else if (key) {
-            return this.currentData && this.currentData[key] ? this.currentData[key] : false;
-        }
-        return this.currentData;
-    }
-    User.prototype.session = function(key, val) {
             if (key && val) {
-                if (!this.sessionData) this.sessionData = {};
-                this.sessionData[key] = val;
-                setStorageSession(this.sessionData);
+                if (!this.currentData) this.currentData = {};
+                this.currentData[key] = val;
             } else if (key) {
-                this.sessionData = getStorageSession();
-                return this.sessionData && this.sessionData[key] ? this.sessionData[key] : false;
+                return this.currentData && this.currentData[key] ? this.currentData[key] : false;
             }
+            return this.currentData;
+        }
+        /**
+         * @ngdoc function
+         * @name core.user.service:$User:session
+         * @methodOf core.user.service:$User
+         * @description
+         * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário e ao localStorage
+         * @param {string} key chave
+         * @param {*} val valor
+         */
+    User.prototype.session = function(key, val) {
+        if (key && val) {
+            if (!this.sessionData) this.sessionData = {};
+            this.sessionData[key] = val;
+            setStorageSession(this.sessionData);
+        } else if (key) {
             this.sessionData = getStorageSession();
-            return this.sessionData;
+            return this.sessionData && this.sessionData[key] ? this.sessionData[key] : false;
         }
-        //
-        // filter user companies by _id
-        //
+        this.sessionData = getStorageSession();
+        return this.sessionData;
+    }
+
+    /**
+     * @ngdoc function
+     * @name core.user.service:$User:filterCompany
+     * @methodOf core.user.service:$User
+     * @description
+     * Buscar uma empresa
+     * @param {string} _id id da empresa
+     * @return {object} objeto da empresa
+     */
     User.prototype.filterCompany = function(_id) {
-            var result = false,
-                companies = getCompanies(this);
-            if (companies && companies.length) {
-                companies.forEach(function(row) {
-                    if (row.company._id === _id) {
-                        result = row.company;
-                        return;
-                    }
-                });
-            }
-            return result;
+        var result = false,
+            companies = getCompanies(this);
+        if (companies && companies.length) {
+            companies.forEach(function(row) {
+                if (row.company._id === _id) {
+                    result = row.company;
+                    return;
+                }
+            });
         }
-        //checar se ta authenticado e setar token na rota
-    User.prototype.isAuthed = function() {
-        if ($state.current.protected) {
-            //setar token no header do http se o state for protegido
-            if (token()) $http.defaults.headers.common['token'] = token();
-            if (!$auth.isAuthenticated()) {
-                $state.go("app.login");
-                return false;
-            }
-            $timeout(function() {
-                menu.api().close();
-            })
-            return true;
-        }
-        return false;
+        return result;
     }
+
+    /**
+     * @ngdoc function
+     * @name core.user.service:$User:destroy
+     * @methodOf core.user.service:$User
+     * @description
+     * Destruir sessão do usuário
+     * @param {bool} alert mensagem de aviso (você saiu)
+     */
     User.prototype.destroy = function(alert) {
-        $auth.logout();
-        $auth.removeToken();
-        removeStorageSession();
-        removeStorageUser();
-        // if (UserSetting.logoutStateRedirect)
-        // $state.go(UserSetting.logoutStateRedirect);
-        $page.load.done();
-        if (alert) $page.toast('Você saiu', 3000);
-    }
+            $auth.logout();
+            $auth.removeToken();
+            removeStorageSession();
+            removeStorageUser();
+            $page.load.done();
+            if (alert) $page.toast('Você saiu', 3000);
+        }
+        /**
+         * @ngdoc function
+         * @name core.user.service:$User:getWorkPosition
+         * @methodOf core.user.service:$User
+         * @description
+         * Obter a lista de cargos (@todo migrar para aplicações filhas)
+         * @param {string} companyid id da empresa
+         * @return {array} lista de cargos desejados
+         */
     User.prototype.getWorkPosition = function(companyid) {
         var result = false,
             companies = getCompanies(this);
