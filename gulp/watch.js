@@ -31,8 +31,8 @@ gulp.task('watch', ['inject'], function() {
 
     gulp.watch([
         path.join(conf.paths.src, '/**/*.js'),
-        path.join('!' + conf.paths.src, '/app-module.js'),
-        path.join('!' + conf.paths.src, '/app-module.min.js')], function(event) {
+        path.join('!' + conf.paths.src, '/app-kit.js'),
+        path.join('!' + conf.paths.src, '/app-kit.min.js')], function(event) {
         if (isOnlyChange(event)) {
             gulp.start(['scripts','build-core', 'build-docs']);
         } else {

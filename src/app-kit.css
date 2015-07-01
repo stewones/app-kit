@@ -304,6 +304,83 @@ register-form .entrar {
         box-shadow: none !important;
    }
 }
+md-content.main-wrapper {    background-color: transparent;}
+profile-form { margin-top: 20px; }
+profile-form button.save { display: block;  font-size: 26px;   margin-right: 32px;   text-transform: lowercase;   z-index: 30 !important; }
+profile-form button.save md-icon {   margin-top: -6px !important; }
+profile-form button.save i {   font-size: 18px; }
+profile-form md-tab-item {   text-transform: none !important; }
+profile-form .row.actions {    float: right;    margin-top: -91px;    margin-right: 10px;}
+profile-form md-tabs {    display: block;    margin: 0 0 54px;}
+profile-form .md-tab {    margin: 1px 0px 10px 0px;}
+profile-form h5 {    margin: 0 0 9px;}
+profile-form md-input-container {   }
+profile-form .group { padding: 30px 15px 15px; }
+profile-form .group button md-checkbox { margin: 20px auto; }
+profile-form  .action-button-checkbox-wrap label.subtitle { text-align: center; width: 40px; position: absolute; font-size: 11px; color: #ccc; margin-left: 14px; margin-top: 133px; display: none;}
+profile-form .action-button-checkbox-wrap:hover label.subtitle  {  display: block; }
+profile-form .action-button {  margin-top: 60px; }
+profile-form live-chips .filter-opt a { font-size: 12px;}
+profile-form md-pagination-wrapper {  /*  padding-left: 15px;*/}
+profile-form .actions .md-fab[disabled] {    background-color: #ddd !important;}
+profile-form .group-inner.feedback md-select-label {    padding-top: 11px !important;}
+profile-form .md-input-invalid md-radio-group, profile-form .md-input-invalid md-select, profile-form md-select.md-input-invalid md-select-label {    border-bottom: 1px solid rgb(244, 67, 54) !important;}
+profile-form .group.m-bottom .group-inner {    margin-bottom: 20px;}
+profile-form .zebra .group:nth-child(odd){ background-color: #eee; }
+profile-form md-radio-button {    margin: 12px 12px 12px 0;}
+profile-form live-chips .md-chips:first-child {    /*margin-top: 10px !important;*/}
+profile-form live-chips .md-chips .md-chip-input-container input[type="text"] {    text-transform: uppercase !important;    font-size: 10px;}
+profile-form .group button.remove {    background-color: #ccc !important;    margin-right: 7px; }
+profile-form .group button.remove:hover {    background-color: rgb(244, 67, 54) !important}
+profile-form .chips-wrap { padding-right: 30px; }
+profile-form live-chips .vAccordion--default v-pane-header { font-size: 11px;  padding-left: 3px; }
+profile-form live-chips .md-chips .md-chip { margin: 7px 4px 4px 0; }
+profile-form .educationLoader { margin: 0 auto;}
+profile-form v-pane-header { border-bottom: 0px !important;   margin-bottom: -5px !important; }
+profile-form md-input-container .md-char-counter {  bottom: 0;  font-size: 11px;}
+profile-form md-tabs-content-wrapper md-tab-content { background-color: #fff; padding: 5px 20px 35px !important; }
+profile-form p.subtitle { font-size: 13px; margin: 20px 0 15px; }
+profile-form md-input-container label {   font-size: 13px; position: absolute;  top: -16px; }
+profile-form .state md-select-label { padding-top: 0px; margin-top: 2px; }
+profile-form .profile-tab.idioms md-select { margin: 13px}
+profile-form .action-button-checkbox-wrap { margin-left: 13px;}
+
+
+
+/*
+*
+*
+NAO IDENTAR VIA CTRL+ALT+F POIS O CODE FORMATER ESTA COLOCANDO UM ESPAÇO QUANDO O SELETOR TEM ::
+*
+*
+*/
+profile-form live-chips .vAccordion--default v-pane-header::after, profile-form live-chips .vAccordion--default v-pane-header::before {
+    left: 0;
+    margin-left: 46px;
+    margin-top:-1px;
+}
+/*
+*
+*
+NAO IDENTAR VIA CTRL+ALT+F POIS O CODE FORMATER ESTA COLOCANDO UM ESPAÇO QUANDO O SELETOR TEM ::
+*
+*
+*/
+
+@media (max-width: 600px) {
+    profile-form .action-button-checkbox-wrap label.subtitle {
+        display: none !important;
+    }
+    profile-form .action-button {
+        margin-top: 10px !important;
+    }
+    profile-form {
+        margin-top: -20px !important;
+    }
+    profile-form md-pagination-wrapper {
+        padding-left: 0px !important;
+    }
+}
 .anim-in-out.anim-in-setup.anim-fade, .anim-in-out.anim-in-setup .anim-fade {
   opacity: 0; }
 .anim-in-out.anim-in-setup.anim-slide-left, .anim-in-out.anim-in-setup .anim-slide-left {
@@ -592,15 +669,6 @@ register-form .entrar {
   -moz-transition: all 500ms;
   transition: all 500ms; }
 
-/*
-FONTS
-*/
-@import url(https://fonts.googleapis.com/css?family=Mr+Dafoe);
-@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400,italic);
-@import url(https://fonts.googleapis.com/css?family=Material+Icons);
-@import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css);
-@import url(https://fonts.googleapis.com/css?family=Damion);
-
 img.logo-header { height: 48px; margin-top: 6px; }
 body, html {  overflow: hidden; overflow-y:hidden; overflow-x: hidden}
 body { background-color: #eee; }
@@ -678,6 +746,20 @@ md-list-item.md-3-line .md-list-item-text p {font-size: .75em; font-weight: norm
 }
 .logo-company h4 { font-size: 16px; margin: 5px 0 0 10px;letter-spacing: -1px; font-weight: normal; /*text-shadow: 1px 1px 1px rgba(50, 50, 50, 1)*/ }
 
+loader {
+    margin-bottom: 0px;
+    margin-top: -5px;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+}
+
+.page-loader {/* margin-bottom: 10px; margin-top: 3px;*/ opacity: 0;   transition:0.5s linear all; }
+.page-loader.show { opacity: 1 !important; transition:0.5s linear all; }
+.page-loader.no-auth {/* margin-bottom: 10px; margin-top: 3px !important;*/ }
+.page-loader md-progress-linear {/* margin-top: -9px; margin-bottom: -2px; height: 0px;*/ }
+.page-loader .md-container {height: 3px;/* background-color: red !important; */ }
+.page-loader .md-bar { /*background-color: yellow !important;*/ }
 menu-toggle div {
     text-transform: capitalize !important;
 }
@@ -767,96 +849,37 @@ height: 34px;
 }
 
 
-loader {
-    margin-bottom: 0px;
-    margin-top: -5px;
-    position: absolute;
-    z-index: 10;
-    width: 100%;
+profile-form ul.list-positions {
+    margin: 0;
 }
 
-.page-loader {/* margin-bottom: 10px; margin-top: 3px;*/ opacity: 0;   transition:0.5s linear all; }
-.page-loader.show { opacity: 1 !important; transition:0.5s linear all; }
-.page-loader.no-auth {/* margin-bottom: 10px; margin-top: 3px !important;*/ }
-.page-loader md-progress-linear {/* margin-top: -9px; margin-bottom: -2px; height: 0px;*/ }
-.page-loader .md-container {height: 3px;/* background-color: red !important; */ }
-.page-loader .md-bar { /*background-color: yellow !important;*/ }
-md-content.main-wrapper {    background-color: transparent;}
-profile-form { margin-top: 20px; }
-profile-form button.save { display: block;  font-size: 26px;   margin-right: 32px;   text-transform: lowercase;   z-index: 30 !important; }
-profile-form button.save md-icon {   margin-top: -6px !important; }
-profile-form button.save i {   font-size: 18px; }
-profile-form md-tab-item {   text-transform: none !important; }
-profile-form .row.actions {    float: right;    margin-top: -91px;    margin-right: 10px;}
-profile-form md-tabs {    display: block;    margin: 0 0 54px;}
-profile-form .md-tab {    margin: 1px 0px 10px 0px;}
-profile-form h5 {    margin: 0 0 9px;}
-profile-form md-input-container {   }
-profile-form .group { padding: 30px 15px 15px; }
-profile-form .group button md-checkbox { margin: 20px auto; }
-profile-form  .action-button-checkbox-wrap label.subtitle { text-align: center; width: 40px; position: absolute; font-size: 11px; color: #ccc; margin-left: 14px; margin-top: 133px; display: none;}
-profile-form .action-button-checkbox-wrap:hover label.subtitle  {  display: block; }
-profile-form .action-button {  margin-top: 60px; }
-profile-form live-chips .filter-opt a { font-size: 12px;}
-profile-form md-pagination-wrapper {  /*  padding-left: 15px;*/}
-profile-form .actions .md-fab[disabled] {    background-color: #ddd !important;}
-profile-form .group-inner.feedback md-select-label {    padding-top: 11px !important;}
-profile-form .md-input-invalid md-radio-group, profile-form .md-input-invalid md-select, profile-form md-select.md-input-invalid md-select-label {    border-bottom: 1px solid rgb(244, 67, 54) !important;}
-profile-form .group.m-bottom .group-inner {    margin-bottom: 20px;}
-profile-form .zebra .group:nth-child(odd){ background-color: #eee; }
-profile-form md-radio-button {    margin: 12px 12px 12px 0;}
-profile-form live-chips .md-chips:first-child {    /*margin-top: 10px !important;*/}
-profile-form live-chips .md-chips .md-chip-input-container input[type="text"] {    text-transform: uppercase !important;    font-size: 10px;}
-profile-form .group button.remove {    background-color: #ccc !important;    margin-right: 7px; }
-profile-form .group button.remove:hover {    background-color: rgb(244, 67, 54) !important}
-profile-form .chips-wrap { padding-right: 30px; }
-profile-form live-chips .vAccordion--default v-pane-header { font-size: 11px;  padding-left: 3px; }
-profile-form live-chips .md-chips .md-chip { margin: 7px 4px 4px 0; }
-profile-form .educationLoader { margin: 0 auto;}
-profile-form v-pane-header { border-bottom: 0px !important;   margin-bottom: -5px !important; }
-profile-form md-input-container .md-char-counter {  bottom: 0;  font-size: 11px;}
-profile-form md-tabs-content-wrapper md-tab-content { background-color: #fff; padding: 5px 20px 35px !important; }
-profile-form p.subtitle { font-size: 13px; margin: 20px 0 15px; }
-profile-form md-input-container label {   font-size: 13px; position: absolute;  top: -16px; }
-profile-form .state md-select-label { padding-top: 0px; margin-top: 2px; }
-profile-form .profile-tab.idioms md-select { margin: 13px}
-profile-form .action-button-checkbox-wrap { margin-left: 13px;}
-
-
-
-/*
-*
-*
-NAO IDENTAR VIA CTRL+ALT+F POIS O CODE FORMATER ESTA COLOCANDO UM ESPAÇO QUANDO O SELETOR TEM ::
-*
-*
-*/
-profile-form live-chips .vAccordion--default v-pane-header::after, profile-form live-chips .vAccordion--default v-pane-header::before {
-    left: 0;
-    margin-left: 46px;
-    margin-top:-1px;
+profile-form ul.list-positions li {
+    padding: 4px;
+    margin-right: 12px;
+    font-size: 13px;
+    list-style-type: none;
+    float: left;
+    display: block;
+    width: 199px;
 }
-/*
-*
-*
-NAO IDENTAR VIA CTRL+ALT+F POIS O CODE FORMATER ESTA COLOCANDO UM ESPAÇO QUANDO O SELETOR TEM ::
-*
-*
-*/
 
-@media (max-width: 600px) {
-    profile-form .action-button-checkbox-wrap label.subtitle {
-        display: none !important;
-    }
-    profile-form .action-button {
-        margin-top: 10px !important;
-    }
-    profile-form {
-        margin-top: -20px !important;
-    }
-    profile-form md-pagination-wrapper {
-        padding-left: 0px !important;
-    }
+profile-form ul.list-positions li md-checkbox .md-label span {
+    width: 163px;
+    height: 25px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+profile-form .fieldset {
+    margin: 0px 0 20px;
+}
+
+profile-form md-select {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
 }
 menu-avatar { margin: 20px auto;}
 menu-avatar img { margin: 0 auto; width: 150px;height: 150px;border-radius: 50%;box-sizing: content-box; }
@@ -898,38 +921,6 @@ ul.top-menu li a:hover {
     ul.top-menu {
         margin: 24px 0 0;
     }
-}
-profile-form ul.list-positions {
-    margin: 0;
-}
-
-profile-form ul.list-positions li {
-    padding: 4px;
-    margin-right: 12px;
-    font-size: 13px;
-    list-style-type: none;
-    float: left;
-    display: block;
-    width: 199px;
-}
-
-profile-form ul.list-positions li md-checkbox .md-label span {
-    width: 163px;
-    height: 25px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-}
-
-profile-form .fieldset {
-    margin: 0px 0 20px;
-}
-
-profile-form md-select {
-    margin: 0;
-    padding: 0;
-    display: inline-block;
 }
 .company-chooser {
     font-size: 14px;

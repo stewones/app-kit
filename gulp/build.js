@@ -69,7 +69,7 @@ gulp.task('lib-js-min', [], function() {
         path.join(conf.paths.src, '/core/**/*.js'),
         path.join('!' + conf.paths.src, '/core/**/*.spec.js'),
         path.join('!' + conf.paths.src, '/core/**/*.mock.js')
-    ]).pipe($.ngAnnotate()).pipe($.concat('app-module.min.js')).pipe($.uglify({
+    ]).pipe($.ngAnnotate()).pipe($.concat('app-kit.min.js')).pipe($.uglify({
         preserveComments: $.uglifySaveLicense
     })).pipe($.size()).pipe(gulp.dest(path.join(conf.paths.src, '/')));
 });
@@ -90,7 +90,7 @@ gulp.task('lib-js', ['partials'], function() {
             path.join('!' + conf.paths.src, '/core/**/*.mock.js')
         ])
         //.pipe($.ngAnnotate())
-        .pipe($.concat('app-module.js'))
+        .pipe($.concat('app-kit.js'))
         // .pipe($.uglify({
         //     preserveComments: $.uglifySaveLicense
         // }))
@@ -99,7 +99,7 @@ gulp.task('lib-js', ['partials'], function() {
 gulp.task('lib-css', [], function() {
     return gulp.src([
         path.join(conf.paths.src, '/core/**/*.css')
-    ]).pipe($.concat('app-module.css')).pipe($.size()).pipe(gulp.dest(path.join(conf.paths.src, '/')));
+    ]).pipe($.concat('app-kit.css')).pipe($.size()).pipe(gulp.dest(path.join(conf.paths.src, '/')));
 });
 gulp.task('build-docs', [], function() {
     var gulpDocs = require('gulp-ngdocs');
