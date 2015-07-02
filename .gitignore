@@ -4,6 +4,7 @@ bower_components/
 coverage/
 .sass-cache/
 .tmp/
+.doc.build/
 .build/
 dist/
 *.sublime-project
