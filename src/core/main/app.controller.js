@@ -44,25 +44,9 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
     //
     moment.locale('pt_BR');
     //
-    // Watchers
-    //
-    //
     // Events
     //  
-    $rootScope.$on('CompanyIdUpdated', function(e, nv, ov) {
-        if (nv != ov) {
-            //quando alterar company, atualizar factory  
-            var company = $user.instance.filterCompany(nv);
-            $user.instance.current('company', company);
-            $user.instance.session('company', {
-                _id: company._id,
-                name: company.name
-            });
-            $menu.api().close();
-            bootstrap();
-        }
-    });
-    $rootScope.$on('AccountUpdated', function() {
+    $rootScope.$on('$AppCtrlReboot', function() {
         bootstrap();
     });
     $rootScope.$on('Unauthorized', function() {
@@ -87,7 +71,7 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         vm.state = $state;
         vm.isAuthed = $auth.isAuthenticated;
         vm.logout = logout;
-        vm.$menu = $menu.api();
+       // vm.menu = $menu.api();
         vm.loginConfig = $login.config;
         vm.iframe = $location.hash() === 'iframe' ? true : false;
     }

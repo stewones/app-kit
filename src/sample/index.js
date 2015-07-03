@@ -12,7 +12,7 @@
             //$appProvider.toolbarUrl('toolbar.tpl.html');
             //$appProvider.sidenavUrl('sidenav.tpl.html');
             $loginProvider.templateUrl('login.tpl.html');
-        })
+        })  
         /**
          * Custom Login Ctrl
          */
