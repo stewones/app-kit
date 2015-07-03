@@ -1,12 +1,12 @@
 {
     "setting": {
         "name": "app-kit",
-        "slug": "app-kit-seed",
+        "slug": "app-kit",
         "version": "0.0.1",
-        "title": "app-kit Seed App",
+        "title": "app-kit",
         "baseUrl": "https://app-kit.herokuapp.com",
         "titleSeparator": " — ",
-        "description": "app-kit Seed App",
+        "description": "app-kit",
         "copyright": "",
         "google": {
             "clientId": "",
@@ -19,9 +19,9 @@
             "language": "pt-BR"
         },
         "ogLocale": "pt_BR",
-        "ogSiteName": "app-kit Seed App",
-        "ogTitle": "app-kit Seed App",
-        "ogDescription": "app-kit Seed App",
+        "ogSiteName": "app-kit",
+        "ogTitle": "app-kit",
+        "ogDescription": "app-kit",
         "ogUrl": "https://app-kit.herokuapp.com",
         "ogImage": ""
     }
