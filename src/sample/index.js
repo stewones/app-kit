@@ -1,22 +1,12 @@
 (function() {
     /**
-     * Sample app
+     * App Seed Sample
      */
     'use strict';
-    angular.module('esgrupo.app', ['app.kit']).controller('LoginCtrl', ['$Profile', LoginCtrl]).config(['$loginProvider', '$appProvider', '$stateProvider', TestConfig]);
+    angular.module('app.seed', ['app.kit']).controller('LoginCtrl', [LoginCtrl]);
 
-    function LoginCtrl($Profile) {
+    function LoginCtrl() {
         var vm = this;
         vm.hello = '"As pessoas não sabem o que querem, até mostrarmos a elas."';
-    }
-
-    function TestConfig($loginProvider, $appProvider, $stateProvider) {
-        //
-        // Configs
-        //        
-        //$appProvider.layoutUrl('toolbar.html');
-        //$appProvider.toolbarUrl('toolbar.html');
-        //$appProvider.sidenavUrl('toolbar.html');
-        $loginProvider.templateUrl('login.html');
     }
 })();

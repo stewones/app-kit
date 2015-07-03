@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" ng-app="esgrupo.app" ng-controller="$AppCtrl as app">
+<html class="no-js" ng-app="app.seed" ng-controller="$AppCtrl as app">
     <head>
         <base href="/" />
         <meta charset="utf-8">
@@ -30,14 +30,14 @@
         <!-- endinject -->
         <!-- endbuild -->
         <!-- render -->
-        <link rel="stylesheet" href="app-kit.css" />
+         <link rel="stylesheet" href="app-kit.css" />
         <!-- /render -->
     </head>
     <body layout="row" class="sel-dsb" ng-class="{'not-authed':!app.isAuthed()}">
         <!--[if lt IE 10]>
-        <p class="browsehappy">
-        Você está usando um navegador <strong>desatualizado</strong>. Por favor <a href="http://browsehappy.com/">atualize-o</a> para melhorar sua experiência.
-        </p>
+            <p class="browsehappy">
+            Você está usando um navegador <strong>desatualizado</strong>. Por favor <a href="http://browsehappy.com/">atualize-o</a> para melhorar sua experiência.
+            </p>
         <![endif]-->
         <ui-view name="app" layout="row"></ui-view>
         <!-- Injection -->
