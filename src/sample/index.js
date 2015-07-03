@@ -7,13 +7,12 @@
         /**
          * 1 - App Config
          */
-        .config( /*@ngInject*/ function($loginProvider, $appProvider, $stateProvider, $pageProvider) {
+        .config( /*@ngInject*/ function($loginProvider, $appProvider, $stateProvider) {
             //$appProvider.layoutUrl('layout.tpl.html');
             //$appProvider.toolbarUrl('toolbar.tpl.html');
             //$appProvider.sidenavUrl('sidenav.tpl.html');
+            $appProvider.logoWhite('https://livejob.s3.amazonaws.com/livejob-white.png');
             $loginProvider.templateUrl('login.tpl.html');
-            $pageProvider.logoWhite('https://livejob.s3.amazonaws.com/livejob-white.png');
-
         })
         /**
          * 2 - App Run

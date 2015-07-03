@@ -988,7 +988,7 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login) {
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -1039,9 +1039,11 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         vm.state = $state;
         vm.isAuthed = $auth.isAuthenticated;
         vm.logout = logout;
-       // vm.menu = $menu.api();
+        // vm.menu = $menu.api();
         vm.loginConfig = $login.config;
         vm.iframe = $location.hash() === 'iframe' ? true : false;
+        vm.logo = $app.logo;
+        vm.logoWhite = $app.logoWhite;
     }
     //
     // Behaviors
@@ -1250,152 +1252,219 @@ angular.module("ngLocale", [], ["$provide",
         });
     }
 ]);
-   'use strict';
-   angular.module('app.kit').provider('$app',
-       /**
-        * @ngdoc object
-        * @name app.kit.$appProvider
-        * @description
-        * Provém configurações para aplicação
-        **/
-       /*@ngInject*/
-       function $appProvider($stateProvider) {
-           /**
-            * @ngdoc object
-            * @name app.kit.$appProvider#_config
-            * @propertyOf app.kit.$appProvider
-            * @description 
-            * armazena configurações
-            **/
-           this._config = {};
-           /**
-            * @ngdoc object
-            * @name app.kit.$appProvider#_layoutUrl
-            * @propertyOf app.kit.$appProvider
-            * @description 
-            * url do template para layout
-            **/
-           this._layoutUrl = 'core/page/layout/layout.tpl.html';
-           /**
-            * @ngdoc object
-            * @name app.kit.$appProvider#_toolbarUrl
-            * @propertyOf app.kit.$appProvider
-            * @description 
-            * url do template para toolbar
-            **/
-           this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
-           /**
-            * @ngdoc object
-            * @name app.kit.$appProvider#_sidenavUrl
-            * @propertyOf app.kit.$appProvider
-            * @description 
-            * url do template para sidenav
-            **/
-           this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
-           /**
-            * @ngdoc function
-            * @name app.kit.$appProvider#$get
-            * @propertyOf app.kit.$appProvider
-            * @description 
-            * getter que vira factory pelo angular para se tornar injetável em toda aplicação
-            * @example
-            * <pre>
-            * angular.module('myApp.module').controller('MyCtrl', function($app) {     
-            *      console.log($app.layoutUrl);
-            *      //prints the default layoutUrl
-            *      //ex.: "core/page/layout/layout.tpl.html"     
-            *      console.log($app.config('myOwnConfiguration'));
-            *      //prints the current config
-            *      //ex.: "{ configA: 54, configB: '=D' }"
-            * })
-            * </pre>
-            * @return {object} Retorna um objeto contendo valores das propriedades.
-            **/
-           this.$get = this.get = function() {
-                   return {
-                       config: this._config,
-                       layoutUrl: this._layoutUrl,
-                       toolbarUrl: this._toolbarUrl,
-                       sidenavUrl: this._sidenavUrl
-                   }
-               }
-               /**
-                * @ngdoc function
-                * @name app.kit.$appProvider#config
-                * @methodOf app.kit.$appProvider
-                * @description
-                * getter/setter para configurações
-                * @example
-                * <pre>
-                * angular.module('myApp.module').config(function($appProvider) {     
-                *     $appProvider.config('myOwnConfiguration', {
-                *          configA: 54,
-                *          configB: '=D'
-                *      })
-                * })
-                * </pre>
-                * @param {string} key chave
-                * @param {*} val valor   
-                **/
-           this.config = function(key, val) {
-                   if (val) return this._config[key] = val;
-                   else return this._config[key];
-               }
-               /**
-                * @ngdoc function
-                * @name app.kit.$appProvider#layoutUrl
-                * @methodOf app.kit.$appProvider
-                * @description
-                * getter/setter para url do layout
-                * @example
-                * <pre>
-                * angular.module('myApp.module').config(function($appProvider) {     
-                *      $appProvider.layoutUrl('app/layout/my-layout.html')
-                * })
-                * </pre>
-                * @param {string} val url do template
-                **/
-           this.layoutUrl = function(val) {
-                   if (val) return this._layoutUrl = val;
-                   else return this._layoutUrl;
-               }
-               /**
-                * @ngdoc function
-                * @name app.kit.$appProvider#toolbarUrl
-                * @methodOf app.kit.$appProvider
-                * @description
-                * getter/setter para url do toolbar
-                * @example
-                * <pre>
-                * angular.module('myApp.module').config(function($appProvider) {     
-                *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
-                * })
-                * </pre>
-                * @param {string} val url do template
-                **/
-           this.toolbarUrl = function(val) {
-                   if (val) return this._toolbarUrl = val;
-                   else return this._toolbarUrl;
-               }
-               /**
-                * @ngdoc function
-                * @name app.kit.$appProvider#sidenavUrl
-                * @methodOf app.kit.$appProvider
-                * @description
-                * getter/setter para url do sidenav
-                * @example
-                * <pre>
-                * angular.module('myApp.module').config(function($appProvider) {     
-                *      $appProvider.sidenavUrl('app/layout/my-sidenav.html')
-                * })
-                * </pre>
-                * @param {string} val url do template
-                **/
-           this.sidenavUrl = function(val) {
-               if (val) return this._sidenavUrl = val;
-               else return this._sidenavUrl;
-           }
-       });
+'use strict';
+angular.module('app.kit').provider('$app',
+    /**
+     * @ngdoc object
+     * @name app.kit.$appProvider
+     * @description
+     * Provém configurações para aplicação
+     **/
+    /*@ngInject*/
+    function $appProvider($stateProvider) {
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_config
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena configurações
+         **/
+        this._config = {};
+
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_layoutUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para layout
+         **/
+        this._layoutUrl = 'core/page/layout/layout.tpl.html';
+
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_toolbarUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para toolbar
+         **/
+        this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
+
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_sidenavUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para sidenav
+         **/
+        this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
+
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_logo
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena logo
+         **/
+        this._logo = '';
+
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_logoWhite
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena logo na versão branca
+         **/
+        this._logoWhite = '';
+
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#$get
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($app) {     
+         *      console.log($app.layoutUrl);
+         *      //prints the default layoutUrl
+         *      //ex.: "core/page/layout/layout.tpl.html"     
+         *      console.log($app.config('myOwnConfiguration'));
+         *      //prints the current config
+         *      //ex.: "{ configA: 54, configB: '=D' }"
+         * })
+         * </pre>
+         * @return {object} Retorna um objeto contendo valores das propriedades.
+         **/
+        this.$get = this.get = function() {
+            return {
+                config: this._config,
+                layoutUrl: this._layoutUrl,
+                toolbarUrl: this._toolbarUrl,
+                sidenavUrl: this._sidenavUrl,
+                logoWhite: this._logoWhite,
+                logo: this._logo
+            }
+        }
+
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#config
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para configurações
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.config('myOwnConfiguration', {
+         *          configA: 54,
+         *          configB: '=D'
+         *      })
+         * })
+         * </pre>
+         * @param {string} key chave
+         * @param {*} val valor   
+         **/
+        this.config = function(key, val) {
+            if (val) return this._config[key] = val;
+            else return this._config[key];
+        }
+
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#logo
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para o path da logo
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.logo('assets/images/my-logo.png')
+         * })
+         * </pre>
+         * @param {string} value caminho para logomarca   
+         **/
+        this.logo = function(value) {
+            if (value) return this._logo = value;
+            else return this._logo;
+        }
+
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#logoWhite
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para o path da logo na versão branca
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.logoWhite('assets/images/my-logo.png')
+         * })
+         * </pre>
+         * @param {string} value caminho para logomarca   
+         **/
+        this.logoWhite = function(value) {
+            if (value) return this._logoWhite = value;
+            else return this._logoWhite;
+        }
+
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#layoutUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do layout
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.layoutUrl('app/layout/my-layout.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.layoutUrl = function(val) {
+            if (val) return this._layoutUrl = val;
+            else return this._layoutUrl;
+        }
+
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#toolbarUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do toolbar
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.toolbarUrl = function(val) {
+            if (val) return this._toolbarUrl = val;
+            else return this._toolbarUrl;
+        }
+
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#sidenavUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do sidenav
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.sidenavUrl('app/layout/my-sidenav.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.sidenavUrl = function(val) {
+            if (val) return this._sidenavUrl = val;
+            else return this._sidenavUrl;
+        }
+    }
+)
  'use strict';
  angular.module('app.kit').run( /*@ngInject*/ function() {});
 angular.module("app.setting", []).constant("setting", {
@@ -1558,23 +1627,6 @@ angular.module('core.page').provider('$page',
          **/
         this._ogTag = '';
         /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_logo
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena logo
-         **/
-        this._logo = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_logoWhite
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena logo na versão branca
-         **/
-        this._logoWhite = '';
-
-        /**
          * @ngdoc function
          * @name core.page.$pageProvider#$get
          * @propertyOf core.page.$pageProvider
@@ -1582,10 +1634,7 @@ angular.module('core.page').provider('$page',
          * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($page) {     
-         *      console.log($page.logoWhite);
-         *      //prints the url path to default logoWhite
-         *      //ex.: "assets/images/my-logo.png"     
+         * angular.module('myApp.module').controller('MyCtrl', function($page) {        
          *      console.log($page.config('myOwnConfiguration'));
          *      //prints the current config
          *      //ex.: "{ configA: 54, configB: '=D' }"
@@ -1608,9 +1657,7 @@ angular.module('core.page').provider('$page',
                     ogUrl: ogUrl,
                     ogImage: ogImage,
                     ogSection: ogSection,
-                    ogTag: ogTag,
-                    logoWhite: this._logoWhite,
-                    logo: this._logo
+                    ogTag: ogTag
                 }
             }
             /**
@@ -1635,8 +1682,7 @@ angular.module('core.page').provider('$page',
             if (val) return this._config[key] = val;
             else return this._config[key];
         }
-        this.logo = logo;
-        this.logoWhite = logoWhite;
+
         /**
          * @ngdoc function
          * @name core.page.$pageProvider#title
@@ -1661,31 +1707,6 @@ angular.module('core.page').provider('$page',
         function description(value) {
             if (value) return this._description = value;
             else return this._description;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#logo
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para logo
-         * @param {string} value caminho para logomarca    
-         **/
-        function logo(value) {
-            if (value) return this._logo = value;
-            else return this._logo;
-        }
-
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#logoWhite
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para logo na versão branca com fundo transparente
-         * @param {string} value caminho para logomarca    
-         **/
-        function logoWhite(value) {
-            if (value) return this._logoWhite = value;
-            else return this._logoWhite;
         }
         /**
          * @ngdoc function
@@ -1829,10 +1850,8 @@ angular.module('core.page').provider('$page',
                 }
             }
         }
-
-
     }
-);
+)
 'use strict';
 angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $menuProvider) {
     //
@@ -3894,6 +3913,12 @@ angular.module('core.menu').directive('menuFacepile', /*@ngInject*/ function() {
     }
 });
 'use strict';
+angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/toolbar/title/toolbarTitle.tpl.html"
+    }
+});
+'use strict';
 angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu($menu) {
     return {
         templateUrl: "core/page/toolbar/menu/toolbarMenu.tpl.html",
@@ -3907,12 +3932,6 @@ angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function tool
         }
     }
 })
-'use strict';
-angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/toolbar/title/toolbarTitle.tpl.html"
-    }
-});
 'use strict';
 angular.module('core.profile').controller('ProfileFormPositionsCtrl', function() {
     var vm = this;
@@ -4197,7 +4216,7 @@ $templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span>{{section | menuHuman }}</span></md-button>");
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-facepile ng-if=\"app.user.current(\'company\').facebook && (app.state.current.name!=\'app.home\' && app.state.current.name!=\'app.account\') && app.enviroment !== \'development\' && !app.iframe\" hide-sm=\"\" width=\"304\" url=\"https://www.facebook.com/{{app.user.current(\'company\').facebook}}\" facepile=\"true\" hide-cover=\"false\" ng-hide=\"app.state.current.name===\'app.pages\'\"></menu-facepile><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu.sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu.isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu.isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting.copyright }} © {{ app.year }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
-$templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.$page.logoWhite}}\"></a></div></div>");
+$templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
 $templateCache.put("core/profile/form/profileForm-step1.tpl.html","<div layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><profile-form-positions options=\"company.positions\" selected=\"vm.profile.positions\"></profile-form-positions></div>");
 $templateCache.put("core/profile/form/profileForm-step2.tpl.html","<div layout=\"column\"><div class=\"fieldset\"><h5>Seus dados</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'firstName\')}\" flex=\"\"><label>Nome</label> <input name=\"firstName\" ng-model=\"vm.profile.firstName\" required=\"\" focus=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'cpf\')}\" flex=\"\"><label>CPF</label> <input name=\"cpf\" ng-model=\"vm.profile.doc.cpf\" ui-br-cpf-mask=\"\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'email\')}\" flex=\"\"><label>Email para contato</label> <input name=\"email\" ng-model=\"vm.profile.contact.email\" required=\"\"></md-input-container></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'lastName\')}\" flex=\"\"><label>Sobrenome</label> <input name=\"lastName\" ng-model=\"vm.profile.lastName\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'rg\')}\" flex=\"\"><label>RG</label> <input name=\"rg\" ng-model=\"vm.profile.doc.rg\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'birthday\')}\" flex=\"\"><label>Data de nascimento</label> <input name=\"birthday\" ng-model=\"vm.profile.doc.birthday\" mask=\"39/19/9999\" required=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Sua localização</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'cep\')}\"><label>CEP</label> <input name=\"cep\" ng-model=\"vm.profile.address.default.cep\" ng-change=\"vm.setAddrByCep()\" type=\"number\" ng-maxlength=\"8\" required=\"\"></md-input-container><md-input-container><label>Complemento</label> <input ng-model=\"vm.profile.address.default.comp\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'district\')}\"><label>Bairro</label> <input name=\"district\" ng-model=\"vm.profile.address.default.district\" required=\"\"></md-input-container><md-select required=\"\" placeholder=\"Estado\" class=\"state\" ng-model=\"vm.profile.address.default.state\" ng-class=\"{\'md-input-invalid\':!vm.profile.address.default.state}\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.states\">{{ opt.name }}</md-option></md-select></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'street\')}\"><label>Endereço</label> <input name=\"street\" ng-model=\"vm.profile.address.default.street\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'num\')}\"><label>Número</label> <input name=\"num\" ng-model=\"vm.profile.address.default.num\" type=\"number\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'city\')}\"><label>Cidade</label> <input name=\"city\" ng-model=\"vm.profile.address.default.city\" required=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Informações de contato</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'phone\')}\" flex=\"\"><label>Telefone fixo</label> <input name=\"phone\" ng-model=\"vm.profile.contact.phone\" ui-br-phone-number=\"\"></md-input-container></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'mobile\')}\" flex=\"\"><label>Telefone celular</label> <input name=\"mobile\" ng-model=\"vm.profile.contact.mobile\" required=\"\" ui-br-phone-number=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Informações adicionais</h5><div class=\"group m-bottom\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.gender}\"><label>Sexo</label><md-radio-group name=\"gender\" ng-model=\"vm.profile.gender\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"M\">M</md-radio-button><md-radio-button value=\"F\">F</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.relocating && vm.profile.relocating != false}\"><label>Poderia mudar de cidade?</label><md-radio-group ng-model=\"vm.profile.relocating\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner feedback\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.from}\"><label>Por onde conheceu {{vm.company.name}}?</label><md-select name=\"feedback\" flex=\"\" ng-model=\"vm.profile.from\" placeholder=\"Selecione\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.feedback\">{{ opt.label }}</md-option></md-select></div></div><div class=\"group m-bottom\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.working && vm.profile.working != false}\"><label>Está empregado atualmente?</label><md-radio-group name=\"working\" ng-model=\"vm.profile.working\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.doc.pne && vm.profile.doc.pne != false}\"><label>É portador de necessidades?</label><md-radio-group name=\"pne\" ng-model=\"vm.profile.doc.pne\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><label>Possui CNH?</label><live-chips items=\"vm.cnh\" placeholder=\"Selecione digitando A, B, C ou D\" model=\"vm.profile.doc.cnh\" hide-options=\"true\"></live-chips></div></div></div></div>");
 $templateCache.put("core/profile/form/profileForm-step3.tpl.html","<div layout=\"column\"><div class=\"fieldset\"><h5>Formação</h5><md-progress-circular ng-show=\"vm.educationLoading\" md-diameter=\"24\" class=\"educationLoader md-warn\" md-mode=\"indeterminate\"></md-progress-circular><div ng-hide=\"vm.educationLoading\" class=\"group\" layout=\"row\" layout-sm=\"column\"><div layout=\"column\" class=\"chips-wrap\" flex=\"\"><live-chips items=\"vm.education.schooling\" placeholder=\"Selecione uma formação\" model=\"vm.profile.education.schooling\" truncate-input=\"true\" truncate-options=\"false\"></live-chips></div><div layout=\"column\" class=\"chips-wrap\" flex=\"\"><live-chips items=\"vm.education.technical\" placeholder=\"Selecione um curso técnico\" model=\"vm.profile.education.technical\" truncate-input=\"true\" truncate-options=\"false\"></live-chips></div><div layout=\"column\" class=\"chips-wrap\" flex=\"\"><live-chips items=\"vm.education.graduation\" placeholder=\"Selecione uma graduação\" model=\"vm.profile.education.graduation\" truncate-input=\"true\" truncate-options=\"false\"></live-chips></div></div></div><div class=\"fieldset\"><h5>Cursos</h5><div class=\"group animate-repeat\" layout=\"row\" ng-repeat=\"course in vm.profile.education.courses\"><md-input-container flex=\"\"><label>Nome</label> <input required=\"\" name=\"name\" focus=\"$index===0\" ng-model=\"course.name\"></md-input-container><md-input-container flex=\"\"><label>Horas</label> <input required=\"\" type=\"number\" name=\"hours\" ng-model=\"course.hours\"></md-input-container><md-button class=\"remove md-fab md-warn\" aria-label=\"Remover {{course.name}}\" title=\"Remover {{course.name}}\" ng-click=\"vm.remove(course)\"><md-icon md-svg-src=\"assets/images/icons/ic_delete_24px.svg\"></md-icon></md-button></div><p class=\"subtitle warn\" ng-show=\"!vm.profile.education.courses.length\"><i class=\"fa fa-lightbulb-o\"></i> adicione cursos clicando no lápis --></p></div></div><br><br>");
@@ -4207,7 +4226,7 @@ $templateCache.put("core/profile/form/profileForm.tpl.html","<form novalidate=\"
 $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
 $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
-$templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.$page.logoWhite}}\"></a></div>");
+$templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
 $templateCache.put("core/profile/form/positions/profileFormPositions.tpl.html","<ul class=\"list-positions\"><li ng-repeat=\"item in options\" class=\"animate-repeat\"><md-checkbox title=\"{{item}}\" ng-checked=\"vm.exists(item, selected)\" ng-click=\"vm.toggle(item, selected)\">{{item}}</md-checkbox></li></ul>");
 $templateCache.put("core/utils/directives/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
 $templateCache.put("core/utils/directives/leadForm/leadForm.tpl.html","<form class=\"lead-form\" name=\"leadForm\" novalidate=\"\"><md-input-container flex=\"\"><label>Seu nome</label> <input name=\"name\" ng-model=\"lead.name\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Email</label> <input name=\"email\" type=\"email\" ng-model=\"lead.email\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Empresa</label> <input name=\"company\" ng-model=\"lead.company\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Telefone</label> <input name=\"phone\" ng-model=\"lead.phone\" ui-br-phone-number=\"\" required=\"\"></md-input-container><md-button ng-click=\"register()\" ng-disabled=\"leadForm.$invalid\" class=\"md-primary\">{{label?label:\'Enviar\'}}</md-button><md-progress-circular md-diameter=\"20\" class=\"md-warn md-hue-3\" md-mode=\"indeterminate\" ng-class=\"{\'busy\':vm.busy}\"></md-progress-circular></form>");

@@ -20,7 +20,7 @@
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login) {
+angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -71,9 +71,11 @@ angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting,
         vm.state = $state;
         vm.isAuthed = $auth.isAuthenticated;
         vm.logout = logout;
-       // vm.menu = $menu.api();
+        // vm.menu = $menu.api();
         vm.loginConfig = $login.config;
         vm.iframe = $location.hash() === 'iframe' ? true : false;
+        vm.logo = $app.logo;
+        vm.logoWhite = $app.logoWhite;
     }
     //
     // Behaviors

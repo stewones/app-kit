@@ -89,23 +89,6 @@ angular.module('core.page').provider('$page',
          **/
         this._ogTag = '';
         /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_logo
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena logo
-         **/
-        this._logo = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_logoWhite
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena logo na versão branca
-         **/
-        this._logoWhite = '';
-
-        /**
          * @ngdoc function
          * @name core.page.$pageProvider#$get
          * @propertyOf core.page.$pageProvider
@@ -113,10 +96,7 @@ angular.module('core.page').provider('$page',
          * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($page) {     
-         *      console.log($page.logoWhite);
-         *      //prints the url path to default logoWhite
-         *      //ex.: "assets/images/my-logo.png"     
+         * angular.module('myApp.module').controller('MyCtrl', function($page) {        
          *      console.log($page.config('myOwnConfiguration'));
          *      //prints the current config
          *      //ex.: "{ configA: 54, configB: '=D' }"
@@ -139,9 +119,7 @@ angular.module('core.page').provider('$page',
                     ogUrl: ogUrl,
                     ogImage: ogImage,
                     ogSection: ogSection,
-                    ogTag: ogTag,
-                    logoWhite: this._logoWhite,
-                    logo: this._logo
+                    ogTag: ogTag
                 }
             }
             /**
@@ -166,8 +144,7 @@ angular.module('core.page').provider('$page',
             if (val) return this._config[key] = val;
             else return this._config[key];
         }
-        this.logo = logo;
-        this.logoWhite = logoWhite;
+
         /**
          * @ngdoc function
          * @name core.page.$pageProvider#title
@@ -192,31 +169,6 @@ angular.module('core.page').provider('$page',
         function description(value) {
             if (value) return this._description = value;
             else return this._description;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#logo
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para logo
-         * @param {string} value caminho para logomarca    
-         **/
-        function logo(value) {
-            if (value) return this._logo = value;
-            else return this._logo;
-        }
-
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#logoWhite
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para logo na versão branca com fundo transparente
-         * @param {string} value caminho para logomarca    
-         **/
-        function logoWhite(value) {
-            if (value) return this._logoWhite = value;
-            else return this._logoWhite;
         }
         /**
          * @ngdoc function
@@ -360,7 +312,5 @@ angular.module('core.page').provider('$page',
                 }
             }
         }
-
-
     }
-);
+)
