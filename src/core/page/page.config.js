@@ -1,11 +1,12 @@
 'use strict';
 /*global window*/
-angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $pageProvider, $urlRouterProvider, $locationProvider) {
     //
     // States & Routes
     //
+    console.log($pageProvider.config('page-home'))
+        console.log('2')
     $stateProvider.state('app.page', {
-        protected: false,
         url: '/',
         views: {
             'content': {
@@ -23,6 +24,5 @@ angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlR
             }
         }
     });
-    //$urlRouterProvider.otherwise('/login');
     $locationProvider.html5Mode(true);
 })

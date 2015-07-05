@@ -1,4 +1,21 @@
 'use strict';
+/**
+ * @ngdoc overview
+ * @name app.kit
+ * @description
+ * Kit para criação de aplicações frontend com angular 1.x <br />
+ * Serviços dos módulos com namespace "core" são identificados pelo prefixo $
+ **/
+angular.module('app.kit', [
+    'ngAnimate',
+    'ngTouch',
+    'ngSanitize',
+    'angulartics',
+    'angulartics.google.analytics',
+    'ui.router',
+    'core.app'
+]);
+'use strict';
 angular.module('core.account', [
     'core.utils',
     'core.user',
@@ -28,8 +45,27 @@ angular.module('core.login', [
     'facebook.login'
 ]);
 'use strict';
+/**
+ * @ngdoc overview
+ * @name core.app
+ * @description
+ * Kit para criação de aplicações frontend com angular 1.x <br />
+ * Serviços dos módulos com namespace "core" são identificados pelo prefixo $
+ * Módulo central da aplicação para fácil injeção em módulos filhos
+ **/
+angular.module('core.app', [
+    'app.setting',
+    'app.env',
+    'core.utils',
+    'core.page',
+    'core.login',
+    'core.user',
+    'core.profile',
+    'core.account'
+]);
+'use strict';
 angular.module('core.page', [
-	'core.menu',
+    'core.menu',    
     'ui.router',
     'angularMoment',
     'ngLodash',
@@ -80,30 +116,6 @@ angular.module('google.login', [
 ])
 'use strict';
 angular.module('core.menu', ['ui.router', 'truncate']);
-'use strict';
-/**
- * @ngdoc overview
- * @name app.kit
- * @description
- * Kit para criação de aplicações frontend com angular 1.x <br />
- * Serviços dos módulos com namespace "core" são identificados pelo prefixo $
- **/
-angular.module('app.kit', [
-    'app.setting',
-    'app.env',
-    'core.utils',
-    'ui.router',
-    'ngAnimate',
-    'ngTouch',
-    'ngSanitize',
-    'angulartics',
-    'angulartics.google.analytics',
-    'core.page',
-    'core.login',
-    'core.user',
-    'core.profile',
-    'core.account'
-]);
 'use strict';
 angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, $menuProvider) {
     //
@@ -878,7 +890,7 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
     }
 })
 'use strict';
-angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, setting, api) {
+angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $pageProvider, setting, api) {
     //
     // States & Routes
     //    
@@ -965,6 +977,8 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
     });
     $userProvider.setting('logoutStateRedirect', 'app.home');
     $userProvider.setting('roleForCompany', 'profile');
+    $pageProvider.config('page-home', true);
+    console.log('1')
 });
 'use strict';
 /* global moment */
@@ -988,7 +1002,7 @@ angular.module('app.kit').config( /*@ngInject*/ function($appProvider, $urlMatch
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app) {
+angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app) {
     var vm = this;
     vm.enviroment = enviroment;
     //
@@ -1253,7 +1267,7 @@ angular.module("ngLocale", [], ["$provide",
     }
 ]);
 'use strict';
-angular.module('app.kit').provider('$app',
+angular.module('core.app').provider('$app',
     /**
      * @ngdoc object
      * @name app.kit.$appProvider
@@ -1466,7 +1480,7 @@ angular.module('app.kit').provider('$app',
     }
 )
  'use strict';
- angular.module('app.kit').run( /*@ngInject*/ function() {});
+ angular.module('core.app').run( /*@ngInject*/ function() {});
 angular.module("app.setting", []).constant("setting", {
     name: "app kit",
     slug: "app-kit",
@@ -1499,12 +1513,13 @@ angular.module("app.setting", []).constant("setting", {
 });
 'use strict';
 /*global window*/
-angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $pageProvider, $urlRouterProvider, $locationProvider) {
     //
     // States & Routes
     //
+    console.log($pageProvider.config('page-home'))
+        console.log('2')
     $stateProvider.state('app.page', {
-        protected: false,
         url: '/',
         views: {
             'content': {
@@ -1522,7 +1537,6 @@ angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlR
             }
         }
     });
-    //$urlRouterProvider.otherwise('/login');
     $locationProvider.html5Mode(true);
 })
 'use strict';
@@ -3913,12 +3927,6 @@ angular.module('core.menu').directive('menuFacepile', /*@ngInject*/ function() {
     }
 });
 'use strict';
-angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/toolbar/title/toolbarTitle.tpl.html"
-    }
-});
-'use strict';
 angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu($menu) {
     return {
         templateUrl: "core/page/toolbar/menu/toolbarMenu.tpl.html",
@@ -3932,6 +3940,12 @@ angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function tool
         }
     }
 })
+'use strict';
+angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/toolbar/title/toolbarTitle.tpl.html"
+    }
+});
 'use strict';
 angular.module('core.profile').controller('ProfileFormPositionsCtrl', function() {
     var vm = this;

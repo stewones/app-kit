@@ -1,7 +1,7 @@
 'use strict';
 describe('App Configuration', function() {
     var UserSetting;
-    beforeEach(module('app.kit'));
+    beforeEach(module('core.app'));
     beforeEach(inject(function(_$user_) {
         UserSetting = _$user.setting_;
     }));

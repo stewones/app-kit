@@ -3,7 +3,7 @@
      * App Seed Sample
      */
     'use strict';
-    angular.module('app.seed', ['app.kit'])
+    angular.module('app.seed', ['core.app'])
         /**
          * 1 - App Config
          */

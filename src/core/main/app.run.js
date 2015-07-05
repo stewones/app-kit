@@ -1,2 +1,2 @@
  'use strict';
- angular.module('app.kit').run( /*@ngInject*/ function() {});
+ angular.module('core.app').run( /*@ngInject*/ function() {});

@@ -1,6 +1,6 @@
 'use strict';
 angular.module('core.page', [
-	'core.menu',
+    'core.menu',    
     'ui.router',
     'angularMoment',
     'ngLodash',
