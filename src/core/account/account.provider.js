@@ -10,12 +10,12 @@ angular.module('core.account').provider('$account',
     function $accountProvider() {
         /**
          * @ngdoc object
-         * @name core.account.$accountProvider#instance
+         * @name core.account.$accountProvider#_instance
          * @propertyOf core.account.$accountProvider
          * @description 
          * Instância de conta armazenada pelo {@link core.account.service:$Account serviço}
          **/
-        this.instance = {};
+        this._instance = {};
         /**
          * @ngdoc object
          * @name core.account.$accountProvider#_config
@@ -72,8 +72,11 @@ angular.module('core.account').provider('$account',
                      * </pre>
                      **/
                     set: function(data) {
-                        this.instance = data;
+                        this._instance = data;
                         return data;
+                    },
+                    instance: function() {
+                        return this._instance
                     },
                     /**
                      * @ngdoc function
