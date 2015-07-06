@@ -20,7 +20,7 @@
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('app.kit').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app) {
+angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app) {
     var vm = this;
     vm.enviroment = enviroment;
     //

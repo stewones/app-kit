@@ -15,7 +15,11 @@ angular.module('core.page').provider('$page',
          * @description 
          * armazena configurações
          **/
-        this._config = {};
+        this._config = {
+            // configuração para ativar/desativar a rota inicial
+            'homeEnabled': true
+        };
+
         /**
          * @ngdoc object
          * @name core.page.$pageProvider#_title
@@ -141,8 +145,13 @@ angular.module('core.page').provider('$page',
              * @param {*} val valor   
              **/
         this.config = function(key, val) {
-            if (val) return this._config[key] = val;
-            else return this._config[key];
+            if (key && (val || val === false)) {
+                return this._config[key] = val
+            } else if (key) {
+                return this._config[key]
+            } else {
+                return this._config
+            }
         }
 
         /**

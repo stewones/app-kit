@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.account').directive('optOut', /*@ngInject*/ function() {
+angular.module('core.utils').directive('optOut', /*@ngInject*/ function() {
     return {
         scope: {
             putLocation: '=',
@@ -16,7 +16,7 @@ angular.module('core.account').directive('optOut', /*@ngInject*/ function() {
             itemLocation: '=',
             itemInfo: '='
         },
-        templateUrl: 'core/account/optOut/optOut.tpl.html',
+        templateUrl: 'core/utils/directives/optOut/optOut.tpl.html',
         controller: 'OptOutCtrl',
         controllerAs: 'vm',
         replace: true

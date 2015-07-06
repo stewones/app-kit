@@ -3,7 +3,7 @@
      * App Seed Sample
      */
     'use strict';
-    angular.module('app.seed', ['app.kit'])
+    angular.module('app.seed', ['core.app'])
         /**
          * 1 - App Config
          */
@@ -20,12 +20,11 @@
         .run( /*@ngInject*/ function() {
             //do stuff
         })
-
-    /**
-     * Custom Login Ctrl
-     */
-    .controller('LoginCtrl', /*@ngInject*/ function LoginCtrl($page) {
-        var vm = this;
-        vm.hello = '"As pessoas não sabem o que querem, até mostrarmos a elas."';
-    });
+        /**
+         * Custom Login Ctrl
+         */
+        .controller('LoginCtrl', /*@ngInject*/ function LoginCtrl($page) {
+            var vm = this;
+            vm.hello = '"As pessoas não sabem o que querem, até mostrarmos a elas."';
+        });
 })();

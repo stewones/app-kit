@@ -1,5 +1,5 @@
 'use strict';
-angular.module('app.kit').provider('$app',
+angular.module('core.app').provider('$app',
     /**
      * @ngdoc object
      * @name app.kit.$appProvider

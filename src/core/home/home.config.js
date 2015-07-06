@@ -1,22 +1,18 @@
 'use strict';
 /*global window*/
-angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     /**
      * States & Routes
      */
-    $stateProvider.state('app.pages', {
-        protected: false,
-        url: '/p/:slug/',
+    $stateProvider.state('app.home', {
+        url: '/',
         views: {
             'content': {
-                templateUrl: 'core/page/page.tpl.html',
-                controller: '$PageCtrl as vm'
+                templateUrl: 'core/home/home.tpl.html',
+                controller: '$HomeCtrl as vm'
             }
         },
         resolve: {
-            slug: /*@ngInject*/ function($stateParams) {
-                return $stateParams.slug;
-            },
             closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
