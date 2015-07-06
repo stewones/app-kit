@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $pageProvider, setting, api) {
+angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, setting, api) {
     //
     // States & Routes
     //    
@@ -86,6 +86,4 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatc
     });
     $userProvider.setting('logoutStateRedirect', 'app.home');
     $userProvider.setting('roleForCompany', 'profile');
-    $pageProvider.config('page-home', true);
-    console.log('1')
 });

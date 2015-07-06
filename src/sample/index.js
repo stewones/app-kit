@@ -20,12 +20,11 @@
         .run( /*@ngInject*/ function() {
             //do stuff
         })
-
-    /**
-     * Custom Login Ctrl
-     */
-    .controller('LoginCtrl', /*@ngInject*/ function LoginCtrl($page) {
-        var vm = this;
-        vm.hello = '"As pessoas não sabem o que querem, até mostrarmos a elas."';
-    });
+        /**
+         * Custom Login Ctrl
+         */
+        .controller('LoginCtrl', /*@ngInject*/ function LoginCtrl($page) {
+            var vm = this;
+            vm.hello = '"As pessoas não sabem o que querem, até mostrarmos a elas."';
+        });
 })();

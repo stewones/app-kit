@@ -29,6 +29,8 @@ angular.module('core.account', [
     'satellizer'
 ])
 'use strict';
+angular.module('core.home', []);
+'use strict';
 /**
     * @ngdoc overview
     * @name core.login
@@ -57,6 +59,7 @@ angular.module('core.app', [
     'app.setting',
     'app.env',
     'core.utils',
+    'core.home',
     'core.page',
     'core.login',
     'core.user',
@@ -65,7 +68,8 @@ angular.module('core.app', [
 ]);
 'use strict';
 angular.module('core.page', [
-    'core.menu',    
+    'core.app',
+    'core.menu',
     'ui.router',
     'angularMoment',
     'ngLodash',
@@ -626,6 +630,43 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
     return Account;
 })
 'use strict';
+/*global window*/
+angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+    /**
+     * States & Routes
+     */
+    $stateProvider.state('app.home', {
+        url: '/',
+        views: {
+            'content': {
+                templateUrl: 'core/home/home.tpl.html',
+                controller: '$HomeCtrl as vm'
+            }
+        },
+        resolve: {
+            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        $menu.api().close();
+                    }, 500)
+                }
+            }
+        }
+    });
+    $locationProvider.html5Mode(true);
+})
+'use strict';
+angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page, setting) {
+    var vm = this;
+    //
+    // SEO
+    //
+    $page.title(setting.name + setting.titleSeparator + ' Home');
+    bootstrap();
+
+    function bootstrap() {}
+});
+'use strict';
 angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
     // States & Routes
@@ -890,7 +931,7 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
     }
 })
 'use strict';
-angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $pageProvider, setting, api) {
+angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, setting, api) {
     //
     // States & Routes
     //    
@@ -977,8 +1018,6 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatc
     });
     $userProvider.setting('logoutStateRedirect', 'app.home');
     $userProvider.setting('roleForCompany', 'profile');
-    $pageProvider.config('page-home', true);
-    console.log('1')
 });
 'use strict';
 /* global moment */
@@ -1513,14 +1552,13 @@ angular.module("app.setting", []).constant("setting", {
 });
 'use strict';
 /*global window*/
-angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $pageProvider, $urlRouterProvider, $locationProvider) {
-    //
-    // States & Routes
-    //
-    console.log($pageProvider.config('page-home'))
-        console.log('2')
-    $stateProvider.state('app.page', {
-        url: '/',
+angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+    /**
+     * States & Routes
+     */
+    $stateProvider.state('app.pages', {
+        protected: false,
+        url: '/p/:slug/',
         views: {
             'content': {
                 templateUrl: 'core/page/page.tpl.html',
@@ -1528,6 +1566,9 @@ angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $page
             }
         },
         resolve: {
+            slug: /*@ngInject*/ function($stateParams) {
+                return $stateParams.slug;
+            },
             closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
@@ -1567,7 +1608,11 @@ angular.module('core.page').provider('$page',
          * @description 
          * armazena configurações
          **/
-        this._config = {};
+        this._config = {
+            // configuração para ativar/desativar a rota inicial
+            'homeEnabled': true
+        };
+
         /**
          * @ngdoc object
          * @name core.page.$pageProvider#_title
@@ -1693,8 +1738,13 @@ angular.module('core.page').provider('$page',
              * @param {*} val valor   
              **/
         this.config = function(key, val) {
-            if (val) return this._config[key] = val;
-            else return this._config[key];
+            if (key && (val || val === false)) {
+                return this._config[key] = val
+            } else if (key) {
+                return this._config[key]
+            } else {
+                return this._config
+            }
         }
 
         /**
@@ -4215,6 +4265,7 @@ return a+c}})}),function(a){a(vb)}(function(a){return a.defineLocale("en-gb",{mo
 angular.module("app.kit").run(["$templateCache", function($templateCache) {$templateCache.put("core/account/account.tpl.html","<md-content class=\"main-wrapper account anim-zoom-in md-padding\" layout=\"column\" flex=\"\"><div class=\"account-wrapper connections\"><h4><i class=\"fa fa-rss\"></i> Suas conexões <span ng-if=\"vm.account.role.length>1\">({{vm.account.role.length}})</span></h4><opt-out class=\"animate-repeat-opt-out\" ng-if=\"vm.account.role.length\" ng-repeat=\"item in vm.account.role\" item-id=\"item.company._id\" item-title=\"item.company.name\" item-title-tooltip=\"\'Ir para \'+item.company.name\" item-location=\"\'/\'+item.company.ref+\'/\'\" item-info=\"vm.optOutInfo(item)\" put-location=\"vm.optOutPutLocation\" put-params=\"vm.optOutPutParams\" alert-title=\"\'Desfazer conexão\'\" alert-info=\"\'Você será desconectado da empresa \'+item.company.name+\'.\'\" alert-ok=\"\'Ok, entendo.\'\" alert-cancel=\"\'Não, obrigado.\'\"></opt-out><div class=\"empty\" ng-if=\"!vm.account.role.length\"><small>Você não possui conexões.</small></div></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-at\"></i> Dados gerais</h4><form novalidate=\"\" name=\"vm.form.account\" class=\"md-whiteframe-z1\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Seu nome</label> <input name=\"firstName\" ng-model=\"vm.account.profile.firstName\" required=\"\"></md-input-container><md-input-container><label>Sobrenome</label> <input name=\"lastName\" ng-model=\"vm.account.profile.lastName\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Melhor email</label> <input name=\"email\" ng-model=\"vm.account.email\" type=\"email\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.saveAccount($event)\" ng-disabled=\"vm.account.busy||vm.form.account.$invalid||!vm.form.account.$dirty||vm.pristineAccount()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-unlock-alt\"></i> Alterar senha</h4><form name=\"vm.form.password\" class=\"md-whiteframe-z1\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Nova senha</label> <input type=\"password\" ng-model=\"vm.account._password\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Repetir nova senha</label> <input type=\"password\" ng-model=\"vm.account.__password\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.savePassword()\" ng-disabled=\"vm.account.busy||vm.form.password.$invalid||!vm.form.password.$dirty||(vm.account._password!=vm.account.__password)\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-remove\"><a ng-click=\"vm.deactivateAccount($event)\"><i class=\"fa fa-remove\"></i> Quero cancelar minha conta</a></div></md-content>");
 $templateCache.put("core/account/confirm.tpl.html","<md-dialog aria-label=\"Confirme sua identidade\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Confirme sua identidade</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><menu-avatar first-name=\"user.profile.firstName\" last-name=\"user.profile.lastName\" gender=\"user.profile.gender\" facebook=\"user.facebook\"></menu-avatar><br><form name=\"passwordForm\"><md-input-container><label>Senha</label> <input type=\"password\" ng-model=\"account.password\" required=\"\"></md-input-container></form></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"confirm()\" class=\"md-primary\" ng-disabled=\"passwordForm.$invalid||!passwordForm.$dirty\">Confirmar</md-button></div></md-dialog>");
 $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"Desativação de conta\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Desativação de conta</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><strong>Prezad{{gender}} {{account.profile.firstName}}</strong><p>Conforme nossa política de usuários, não podemos apagar todos os seus dados, pois nem tudo está relacionado somente a você.<br>Iremos apagar suas conexões e o que mais for possível, além disso, você não receberá mais nenhuma oportunidade, ou notificação do LiveJob.</p><p>Deseja realmente prosseguir com a desativação de sua conta?</p></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"cancel()\" class=\"md-primary\">Não, obrigado.</md-button><md-button ng-click=\"confirm()\" class=\"md-primary\">Ok, entendo.</md-button></div></md-dialog>");
+$templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/profile/profile.tpl.html","<md-content class=\"main-wrapper md-padding\" layout=\"column\" flex=\"\"><profile-form company=\"app.user.current(\'company\')\" ng-if=\"vm.companyCurrent\"></profile-form></md-content>");
