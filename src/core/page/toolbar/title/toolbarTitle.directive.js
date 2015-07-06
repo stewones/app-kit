@@ -1,6 +1,8 @@
 'use strict';
-angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
+angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function($app) {
     return {
-        templateUrl: "core/page/toolbar/title/toolbarTitle.tpl.html"
+        templateUrl: function() {
+            return $app.toolbarTitleUrl;
+        }
     }
 });

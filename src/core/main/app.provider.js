@@ -37,6 +37,15 @@ angular.module('core.app').provider('$app',
 
         /**
          * @ngdoc object
+         * @name app.kit.$appProvider#_toolbarTitleUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para o toolbar title
+         **/
+        this._toolbarTitleUrl = 'core/page/toolbar/title/toolbarTitle.tpl.html';
+
+        /**
+         * @ngdoc object
          * @name app.kit.$appProvider#_sidenavUrl
          * @propertyOf app.kit.$appProvider
          * @description 
@@ -86,6 +95,7 @@ angular.module('core.app').provider('$app',
                 config: this._config,
                 layoutUrl: this._layoutUrl,
                 toolbarUrl: this._toolbarUrl,
+                toolbarTitleUrl: this._toolbarTitleUrl,
                 sidenavUrl: this._sidenavUrl,
                 logoWhite: this._logoWhite,
                 logo: this._logo
@@ -189,6 +199,25 @@ angular.module('core.app').provider('$app',
         this.toolbarUrl = function(val) {
             if (val) return this._toolbarUrl = val;
             else return this._toolbarUrl;
+        }
+
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#toolbarTitleUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do componente toolbar-title
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.toolbarTitleUrl = function(val) {
+            if (val) return this._toolbarTitleUrl = val;
+            else return this._toolbarTitleUrl;
         }
 
         /**

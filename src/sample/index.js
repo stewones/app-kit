@@ -11,6 +11,7 @@
             //$appProvider.layoutUrl('layout.tpl.html');
             //$appProvider.toolbarUrl('toolbar.tpl.html');
             //$appProvider.sidenavUrl('sidenav.tpl.html');
+            $appProvider.toolbarTitleUrl('toolbarTitle.tpl.html');
             $appProvider.logoWhite('https://livejob.s3.amazonaws.com/livejob-white.png');
             $loginProvider.templateUrl('login.tpl.html');
         })
