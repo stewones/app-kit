@@ -6,7 +6,7 @@ angular.module('core.menu').directive('menuLink', /*@ngInject*/ function() {
         },
         controller: 'MenuLinkCtrl',
         controllerAs: 'vm',
-        templateUrl: 'core/layout/menu/menuLink.tpl.html',
+        templateUrl: 'core/page/menu/menuLink.tpl.html',
         link: function($scope, $element) {
             var controller = $element.parent().controller();
             $scope.isSelected = function() {
