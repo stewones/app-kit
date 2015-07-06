@@ -120,267 +120,267 @@ angular.module('google.login', [
 ])
 'use strict';
 angular.module('core.menu', ['ui.router', 'truncate']);
-'use strict';
-angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, $menuProvider) {
-    //
-    // States & Routes
-    //
-    $stateProvider.state('app.account', {
-        protected: true,
-        url: '/account/',
-        views: {
-            'content': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $accountProvider.templateUrl()
-                },
-                controller: '$AccountCtrl as vm'
-            }
-        },
-        resolve: {
-            authed: /*@ngInject*/ function($auth, $location) {
-                if (!$auth.isAuthenticated()) {
-                    $location.path('/login/');
-                } else {
-                    return true;
-                }
-            },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
-                if ($auth.isAuthenticated()) {
-                    $timeout(function() {
-                        $menu.api().close();
-                    }, 500)
-                }
-            }
-        }
-    });
-    //$urlRouterProvider.otherwise('/login');
-    $locationProvider.html5Mode(true);
-    //
-    // Set Menu
-    //
-    $menuProvider.set({
-        name: 'Conta',
-        type: 'link',
-        icon: 'fa fa-at',
-        url: '/account/',
-        state: 'app.account'
-    });
-    //
-    // Set Toolbar Menu
-    //
-    // $menuProvider.setToolbarMenu({
-    //     id: 'filtros',
-    //     name: 'Filtros',
-    //     type: 'action',
-    //     icon: 'fa fa-sliders'
-    // });
-});
-'use strict';
-angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, $utils, $page, $user, setting, api) {
-    var vm = this;
-    //
-    // SEO
-    //
-    $page.title(setting.title);
-    $page.description(setting.description);
-    //
-    // Events
-    //
-    $rootScope.$on('CompanyIdUpdated', function() {});
-    //
-    // Watchers
-    //
-    $scope.$on('OptOutItemUnlinked', function(ev, companyid) {
-        unlinkCompany(companyid);
-    });
-    $scope.$watch('vm.account', function(nv, ov) {
-        if (nv != ov) {
-            vm.form.account.$dirty = true;
-        }
-    }, true);
-    //
-    // Bootstrap
-    //
-    vm.saveAccount = saveAccount;
-    vm.savePassword = savePassword;
-    vm.pristineAccount = pristineAccount;
-    vm.deactivateAccount = deactivateAccount;
-    vm.form = {
-        account: {},
-        password: {}
-    };
-    // attributes of opt-out component
-    vm.optOutInfo = optOutInfo;
-    vm.optOutPutLocation = api.url + '/api/profiles/opt-out';
-    vm.optOutPutParams = {
-        company: $user.instance.current('company')._id
-    };
-    bootstrap();
+// 'use strict';
+// angular.module('core.account').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $accountProvider, $menuProvider) {
+//     //
+//     // States & Routes
+//     //
+//     $stateProvider.state('app.account', {
+//         protected: true,
+//         url: '/account/',
+//         views: {
+//             'content': {
+//                 templateUrl: /*@ngInject*/ function() {
+//                     return $accountProvider.templateUrl()
+//                 },
+//                 controller: '$AccountCtrl as vm'
+//             }
+//         },
+//         resolve: {
+//             authed: /*@ngInject*/ function($auth, $location) {
+//                 if (!$auth.isAuthenticated()) {
+//                     $location.path('/login/');
+//                 } else {
+//                     return true;
+//                 }
+//             },
+//             closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
+//                 if ($auth.isAuthenticated()) {
+//                     $timeout(function() {
+//                         $menu.api().close();
+//                     }, 500)
+//                 }
+//             }
+//         }
+//     });
+//     //$urlRouterProvider.otherwise('/login');
+//     $locationProvider.html5Mode(true);
+//     //
+//     // Set Menu
+//     //
+//     $menuProvider.set({
+//         name: 'Conta',
+//         type: 'link',
+//         icon: 'fa fa-at',
+//         url: '/account/',
+//         state: 'app.account'
+//     });
+//     //
+//     // Set Toolbar Menu
+//     //
+//     // $menuProvider.setToolbarMenu({
+//     //     id: 'filtros',
+//     //     name: 'Filtros',
+//     //     type: 'action',
+//     //     icon: 'fa fa-sliders'
+//     // });
+// });
+// 'use strict';
+// angular.module('core.account').controller('$AccountCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $mdDialog, $q, $timeout, $Account, $account, $User, $utils, $page, $user, setting, api) {
+//     var vm = this;
+//     //
+//     // SEO
+//     //
+//     $page.title(setting.title);
+//     $page.description(setting.description);
+//     //
+//     // Events
+//     //
+//     $rootScope.$on('CompanyIdUpdated', function() {});
+//     //
+//     // Watchers
+//     //
+//     $scope.$on('OptOutItemUnlinked', function(ev, companyid) {
+//         unlinkCompany(companyid);
+//     });
+//     $scope.$watch('vm.account', function(nv, ov) {
+//         if (nv != ov) {
+//             vm.form.account.$dirty = true;
+//         }
+//     }, true);
+//     //
+//     // Bootstrap
+//     //
+//     vm.saveAccount = saveAccount;
+//     vm.savePassword = savePassword;
+//     vm.pristineAccount = pristineAccount;
+//     vm.deactivateAccount = deactivateAccount;
+//     vm.form = {
+//         account: {},
+//         password: {}
+//     };
+//     // attributes of opt-out component
+//     vm.optOutInfo = optOutInfo;
+//     vm.optOutPutLocation = api.url + '/api/profiles/opt-out';
+//     vm.optOutPutParams = {
+//         company: $user.instance.current('company')._id
+//     };
+//     bootstrap();
 
-    function bootstrap() {
-        //instantiate new account
-        vm.account = $account.set(new $Account({
-            email: $user.instance.email,
-            facebook: $user.instance.facebook,
-            id: $user.instance.id,
-            provider: $user.instance.provider,
-            profile: $user.instance.profile,
-            role: ($user.setting.roleForCompany != 'user') ? $user.instance.profile.role : $user.instance.role
-        }));
-        vm.accountPristine = angular.copy(vm.account);
-        $timeout(function() {
-            dirty(false);
-        }, 1000)
-    }
-    //handle pra confirmação de conta
-    function confirmAccount(cbSuccess, cbFail) {
-        //confirm account identity
-        vm.account.confirm(onSuccessConfirm, onFailConfirm);
-        //handle confirm account success
-        function onSuccessConfirm(response) {
-            if (cbSuccess) cbSuccess(response)
-        }
-        //handle confirm account fail
-        function onFailConfirm(response) {
-            if (cbFail) cbFail(response)
-        }
-    }
+//     function bootstrap() {
+//         //instantiate new account
+//         vm.account = $account.set(new $Account({
+//             email: $user.instance.email,
+//             facebook: $user.instance.facebook,
+//             id: $user.instance.id,
+//             provider: $user.instance.provider,
+//             profile: $user.instance.profile,
+//             role: ($user.setting.roleForCompany != 'user') ? $user.instance.profile.role : $user.instance.role
+//         }));
+//         vm.accountPristine = angular.copy(vm.account);
+//         $timeout(function() {
+//             dirty(false);
+//         }, 1000)
+//     }
+//     //handle pra confirmação de conta
+//     function confirmAccount(cbSuccess, cbFail) {
+//         //confirm account identity
+//         vm.account.confirm(onSuccessConfirm, onFailConfirm);
+//         //handle confirm account success
+//         function onSuccessConfirm(response) {
+//             if (cbSuccess) cbSuccess(response)
+//         }
+//         //handle confirm account fail
+//         function onFailConfirm(response) {
+//             if (cbFail) cbFail(response)
+//         }
+//     }
 
-    function saveAccount() {
-        confirmAccount(function() {
-            $page.load.init();
-            //company unlink
-            $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/updateInfo', {
-                firstName: vm.account.profile.firstName, //nome do perfil
-                lastName: vm.account.profile.lastName, //sobrenome do perfil
-                email: vm.account.email, //email da conta e nao do perfil (email do perfil será usado para contatos profissionais)
-            }).success(onSuccessUpdateInfo).error(onFailUpdateInfo);
-            //handle unlink success
-            function onSuccessUpdateInfo(response) {
-                var _user = response.user;
-                var _profile = response;
-                delete _profile.user;
-                $user.instance.profile = _profile; //atualizar profile
-                $user.set(new $User($user.instance)); //re-instanciar usuario
-                bootstrap(); //re-instanciar profile
-                $page.toast('Dados atualizados');
-                $page.load.done();
-                $rootScope.$emit('AccountUpdated');
-            }
-            //handle unlink fail
-            function onFailUpdateInfo(response) {
-                $page.toast('não foi possível atualizar seus dados ' + response.error ? response.error : '');
-                $page.load.done();
-            }
-        });
-    }
+//     function saveAccount() {
+//         confirmAccount(function() {
+//             $page.load.init();
+//             //company unlink
+//             $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/updateInfo', {
+//                 firstName: vm.account.profile.firstName, //nome do perfil
+//                 lastName: vm.account.profile.lastName, //sobrenome do perfil
+//                 email: vm.account.email, //email da conta e nao do perfil (email do perfil será usado para contatos profissionais)
+//             }).success(onSuccessUpdateInfo).error(onFailUpdateInfo);
+//             //handle unlink success
+//             function onSuccessUpdateInfo(response) {
+//                 var _user = response.user;
+//                 var _profile = response;
+//                 delete _profile.user;
+//                 $user.instance.profile = _profile; //atualizar profile
+//                 $user.set(new $User($user.instance)); //re-instanciar usuario
+//                 bootstrap(); //re-instanciar profile
+//                 $page.toast('Dados atualizados');
+//                 $page.load.done();
+//                 $rootScope.$emit('AccountUpdated');
+//             }
+//             //handle unlink fail
+//             function onFailUpdateInfo(response) {
+//                 $page.toast('não foi possível atualizar seus dados ' + response.error ? response.error : '');
+//                 $page.load.done();
+//             }
+//         });
+//     }
 
-    function unlinkCompany(id) {
-        confirmAccount(function() {
-            $page.load.init();
-            //company unlink
-            $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/unlinkCompany', {
-                cid: id
-            }).success(onSuccessUnlink).error(onFailUnlink);
-            //handle unlink success
-            function onSuccessUnlink(response) {
-                var _user = response.user;
-                var _profile = response;
-                delete _profile.user;
-                $user.instance.profile = _profile; //atualizar profile
-                $user.instance.current('companies', _profile.role); //re-setar empresas atuais
-                if (!$user.instance.current('companies').length || !$user.instance.current('companies')[0].company || !$user.instance.current('companies')[0].company._id) {
-                    $user.instance.current('company', {}); //zerar empresa atual se nao existir mais nenhuma
-                }
-                $user.set(new $User($user.instance)); //re-instanciar usuario
-                bootstrap();
-                $page.toast('empresa desconectada');
-                $page.load.done();
-                $rootScope.$emit('AccountUpdated');
-            }
-            //handle unlink fail
-            function onFailUnlink(response) {
-                $page.toast('não foi possível desconectar da empresa  ' + response.error ? response.error : '');
-            }
-        });
-    }
+//     function unlinkCompany(id) {
+//         confirmAccount(function() {
+//             $page.load.init();
+//             //company unlink
+//             $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/unlinkCompany', {
+//                 cid: id
+//             }).success(onSuccessUnlink).error(onFailUnlink);
+//             //handle unlink success
+//             function onSuccessUnlink(response) {
+//                 var _user = response.user;
+//                 var _profile = response;
+//                 delete _profile.user;
+//                 $user.instance.profile = _profile; //atualizar profile
+//                 $user.instance.current('companies', _profile.role); //re-setar empresas atuais
+//                 if (!$user.instance.current('companies').length || !$user.instance.current('companies')[0].company || !$user.instance.current('companies')[0].company._id) {
+//                     $user.instance.current('company', {}); //zerar empresa atual se nao existir mais nenhuma
+//                 }
+//                 $user.set(new $User($user.instance)); //re-instanciar usuario
+//                 bootstrap();
+//                 $page.toast('empresa desconectada');
+//                 $page.load.done();
+//                 $rootScope.$emit('AccountUpdated');
+//             }
+//             //handle unlink fail
+//             function onFailUnlink(response) {
+//                 $page.toast('não foi possível desconectar da empresa  ' + response.error ? response.error : '');
+//             }
+//         });
+//     }
 
-    function savePassword() {
-        confirmAccount(function() {
-            $page.load.init();
-            $http.put(api.url + '/api/profiles/' + $user.instance.id + '/updatePassword', {
-                pw: vm.account._password,
-            }).success(onSuccessUpdatePassword).error(onFailUpdatePassword);
+//     function savePassword() {
+//         confirmAccount(function() {
+//             $page.load.init();
+//             $http.put(api.url + '/api/profiles/' + $user.instance.id + '/updatePassword', {
+//                 pw: vm.account._password,
+//             }).success(onSuccessUpdatePassword).error(onFailUpdatePassword);
 
-            function onSuccessUpdatePassword(response) {
-                $page.toast('Senha atualizada');
-                $page.load.done();
-                bootstrap();
-            }
+//             function onSuccessUpdatePassword(response) {
+//                 $page.toast('Senha atualizada');
+//                 $page.load.done();
+//                 bootstrap();
+//             }
 
-            function onFailUpdatePassword(response) {
-                $page.toast('não foi possível alterar sua senha ' + response && response.error ? response.error : '');
-                $page.load.done();
-            }
-        });
-    }
+//             function onFailUpdatePassword(response) {
+//                 $page.toast('não foi possível alterar sua senha ' + response && response.error ? response.error : '');
+//                 $page.load.done();
+//             }
+//         });
+//     }
 
-    function deactivateAccount(ev) {
-        $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, $location, $user, account, api) {
-                $scope.user = $user.instance;
-                $scope.account = account.instance;
-                $scope.gender = (account.instance.profile && account.instance.profile.gender === 'F') ? 'a' : 'o';
-                $scope.hide = function() {
-                    $mdDialog.hide();
-                };
-                $scope.cancel = function() {
-                    $mdDialog.cancel();
-                };
-                $scope.confirm = function() {
-                    confirmAccount(function() {
-                        $page.load.init();
-                        //company unlink
-                        $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/deactivateAccount').success(onSuccessDeactivate).error(onFailDeactivate);
-                        //handle unlink success
-                        function onSuccessDeactivate(response) {
-                            $page.toast('Sua conta foi cancelada, você será desconectado em 5 segundos...');
-                            $page.load.done();
-                            $timeout(function() {
-                                $user.instance.destroy();
-                                $location.path('/');
-                            }, 5000);
-                        }
-                        //handle unlink fail
-                        function onFailDeactivate(response) {
-                            $page.toast('não foi possível cancelar sua conta, por favor entre em contato ' + response.error ? response.error : '');
-                        }
-                    });
-                };
-            },
-            templateUrl: 'core/account/deactivate.tpl.html',
-            parent: angular.element(document.body),
-            targetEvent: ev
-        }).then(function() {
-            this.busy = false;
-        }.bind(this), function() {
-            this.busy = false;
-        }.bind(this));
-    }
+//     function deactivateAccount(ev) {
+//         $mdDialog.show({
+//             controller: /*@ngInject*/ function($scope, $mdDialog, $location, $user, account, api) {
+//                 $scope.user = $user.instance;
+//                 $scope.account = account.instance;
+//                 $scope.gender = (account.instance.profile && account.instance.profile.gender === 'F') ? 'a' : 'o';
+//                 $scope.hide = function() {
+//                     $mdDialog.hide();
+//                 };
+//                 $scope.cancel = function() {
+//                     $mdDialog.cancel();
+//                 };
+//                 $scope.confirm = function() {
+//                     confirmAccount(function() {
+//                         $page.load.init();
+//                         //company unlink
+//                         $http.put(api.url + '/api/profiles/' + $user.instance.profile.id + '/deactivateAccount').success(onSuccessDeactivate).error(onFailDeactivate);
+//                         //handle unlink success
+//                         function onSuccessDeactivate(response) {
+//                             $page.toast('Sua conta foi cancelada, você será desconectado em 5 segundos...');
+//                             $page.load.done();
+//                             $timeout(function() {
+//                                 $user.instance.destroy();
+//                                 $location.path('/');
+//                             }, 5000);
+//                         }
+//                         //handle unlink fail
+//                         function onFailDeactivate(response) {
+//                             $page.toast('não foi possível cancelar sua conta, por favor entre em contato ' + response.error ? response.error : '');
+//                         }
+//                     });
+//                 };
+//             },
+//             templateUrl: 'core/account/deactivate.tpl.html',
+//             parent: angular.element(document.body),
+//             targetEvent: ev
+//         }).then(function() {
+//             this.busy = false;
+//         }.bind(this), function() {
+//             this.busy = false;
+//         }.bind(this));
+//     }
 
-    function optOutInfo(item) {
-        return item.position.length ? 'em ' + item.position.length + ' área' + (item.position.length > 1 ? 's' : '') /*+ ' associada' + (item.position.length > 1 ? 's' : '')*/ : 'nenhuma área';
-    }
+//     function optOutInfo(item) {
+//         return item.position.length ? 'em ' + item.position.length + ' área' + (item.position.length > 1 ? 's' : '') /*+ ' associada' + (item.position.length > 1 ? 's' : '')*/ : 'nenhuma área';
+//     }
 
-    function pristineAccount() {
-        return (vm.accountPristine.profile.firstName === vm.account.profile.firstName) && (vm.accountPristine.profile.lastName === vm.account.profile.lastName) && (vm.accountPristine.profile.email === vm.account.profile.email);
-    }
+//     function pristineAccount() {
+//         return (vm.accountPristine.profile.firstName === vm.account.profile.firstName) && (vm.accountPristine.profile.lastName === vm.account.profile.lastName) && (vm.accountPristine.profile.email === vm.account.profile.email);
+//     }
 
-    function dirty(status) {
-        vm.form.account.$dirty = status;
-        vm.form.password.$dirty = status;
-    }
-})
+//     function dirty(status) {
+//         vm.form.account.$dirty = status;
+//         vm.form.password.$dirty = status;
+//     }
+// })
 'use strict';
 angular.module('core.account').provider('$account',
     /**
@@ -1917,113 +1917,6 @@ angular.module('core.page').provider('$page',
     }
 )
 'use strict';
-angular.module('core.profile').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $menuProvider) {
-    //
-    // States & Routes
-    //
-    $stateProvider.state('app.profile', {
-        protected: true,
-        url: '/profile/',
-        views: {
-            'content': {
-                templateUrl: 'core/profile/profile.tpl.html',
-                controller: '$ProfileCtrl as vm'
-            }
-        },
-        resolve: {
-            authed: /*@ngInject*/ function($auth, $location) {
-                if (!$auth.isAuthenticated()) {
-                    $location.path('/login/');
-                    return false;
-                } else {
-                    return true;
-                }
-            },
-            companySession: /*@ngInject*/ function($state, user) {
-                var userInstance = $user.instance.session('company');
-                if (userInstance && userInstance.ref) {
-                    $state.go('app.landing', {
-                        ref: userInstance.ref
-                    });
-                    return true;
-                }
-                return false;
-            },
-            companyCurrent: /*@ngInject*/ function($location, $timeout, $user, layout) {
-                if (!$user.instance.current('company') || !$user.instance.current('company')._id) {
-                    $page.toast('Acesse o LiveJob de alguma empresa para criar conexões', 10000);
-                    $timeout(function() {
-                        $location.path('/');
-                    }, 1000)
-                    return false;
-                }
-                return true;
-            },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
-                if ($auth.isAuthenticated()) {
-                    $timeout(function() {
-                        $menu.api().close();
-                    }, 500)
-                }
-            }
-        }
-    });
-    //$urlRouterProvider.otherwise('/login');
-    $locationProvider.html5Mode(true);
-    //
-    // Set Menu
-    //
-    $menuProvider.set({
-        name: 'Perfil',
-        type: 'link',
-        icon: 'fa fa-street-view',
-        url: '/profile/',
-        state: 'app.profile'
-    });
-    //
-    // Set Toolbar Menu
-    //
-    // $menuProvider.setToolbarMenu({
-    //     id: 'filtros',
-    //     name: 'Filtros',
-    //     type: 'action',
-    //     icon: 'fa fa-sliders'
-    // });
-});
-'use strict';
-angular.module('core.profile').controller('$ProfileCtrl', /*@ngInject*/ function(companySession, companyCurrent, $rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $utils, $page, $user, setting) {
-    var vm = this;
-    vm.companySession = companySession;
-    vm.companyCurrent = companyCurrent;
-    //
-    // SEO
-    //
-    $page.title(setting.title);
-    $page.description(setting.description);
-    //
-    // Events
-    //
-    $rootScope.$on('CompanyIdUpdated', function() {});
-    //
-    // Watchers
-    //
-    //
-    // Bootstrap
-    //
-    //
-    bootstrap();
-
-    function bootstrap() {}
-})
-'use strict';
-angular.module('core.profile').directive('profile', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/profile/profile.tpl.html",
-        controller: '$ProfileCtrl',
-        controllerAs: 'vm'
-    }
-})
-'use strict';
 angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, $user, api, moment) {
     /**
      * @ngdoc service
@@ -2579,39 +2472,6 @@ angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
             value: "TO",
             name: "Tocantins"
         }];
-    }
-})
-'use strict';
-angular.module('core.account').controller('OptOutCtrl', /*@ngInject*/ function($scope, $location, $mdDialog) {
-    $scope.callAction = function(ev) {
-        var confirm = $mdDialog.confirm().parent(angular.element(document.body)).title($scope.alertTitle).content($scope.alertInfo).ariaLabel($scope.alertTitle).ok($scope.alertOk).cancel($scope.alertCancel).targetEvent(ev);
-        $mdDialog.show(confirm).then(function() {
-            $scope.$emit('OptOutItemUnlinked', $scope.itemId);
-        }, function() {});
-    }
-});
-'use strict';
-angular.module('core.account').directive('optOut', /*@ngInject*/ function() {
-    return {
-        scope: {
-            putLocation: '=',
-            putParams: '=',
-            putLabel: '=',
-            alertTitle: '=',
-            alertInfo: '=',
-            alertOk: '=',
-            alertCancel: '=',
-            itemId: '=',
-            itemImage: '=',
-            itemTitle: '=',
-            itemTitleTooltip: '=',
-            itemLocation: '=',
-            itemInfo: '='
-        },
-        templateUrl: 'core/account/optOut/optOut.tpl.html',
-        controller: 'OptOutCtrl',
-        controllerAs: 'vm',
-        replace: true
     }
 })
 'use strict';
@@ -3196,337 +3056,6 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
-'use strict';
-/* global moment, confirm */
-angular.module('core.profile').controller('ProfileFormCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $log, $utils, $page, $user, $Profile, setting, api) {
-    var vm = this;
-    //
-    // Estados Brasileiros
-    //
-    vm.states = $utils.brStates();
-    //
-    // Tipos de CNH
-    //
-    vm.cnh = ["A", "B", "C", "D"];
-    //
-    // Idiomas
-    //
-    vm.idioms = ["Inglês", "Italiano", "Espanhol", "Francês", "Japonês", "Russo", "Aramaico", "Árabe", "Mandarim"];
-    vm.idiomsLevel = ["Básico", "Intermediário", "Fluente"];
-    //
-    // Form
-    //
-    vm.save = save;
-    vm.add = add;
-    vm.remove = remove;
-    vm.forms = {
-        profile: {}
-    };
-    vm.hasFormError = hasFormError;
-    vm.hasFormErrorToast = hasFormErrorToast;
-    vm.setAddrByCep = setAddrByCep;
-    vm.hideActionAddWhen = hideActionAddWhen;
-    vm.cycleXpMonths = cycleXpMonths;
-    vm.education = {};
-    vm.education.schooling = [];
-    vm.education.technical = [];
-    vm.education.graduation = [];
-    //
-    // Tabs
-    //
-    var tabs = [{
-        name: 'Cargos',
-        slug: 'positions',
-        title: "<i class='fa fa-heartbeat'></i> Área de Interesse",
-        subtitle: "Escolha em quais cargos você se encaixa em <strong>" + $user.instance.current('company').name + "</strong>",
-        template: "core/profile/form/profileForm-step1.tpl.html"
-    }, {
-        name: 'Dados Pessoais',
-        slug: 'personal',
-        title: "<i class='fa fa-smile-o'></i> Dados Pessoais",
-        subtitle: "Algumas informações sobre você",
-        template: "core/profile/form/profileForm-step2.tpl.html"
-    }, {
-        name: 'Curso',
-        slug: 'graduation',
-        title: "<i class='fa fa-graduation-cap'></i> Formação e Cursos",
-        subtitle: "Nos informe sua formação escolar e cite alguns cursos que já tenha realizado",
-        template: "core/profile/form/profileForm-step3.tpl.html"
-    }, {
-        name: 'Experiência',
-        slug: 'xps',
-        title: "<i class='fa fa-flask'></i> Experiências",
-        subtitle: "Conte-nos um pouco sobre sua trajetória.",
-        template: "core/profile/form/profileForm-step4.tpl.html"
-    }, {
-        name: 'Idioma',
-        slug: 'idioms',
-        title: "<i class='fa fa-language'></i> Idiomas",
-        subtitle: "Especifique alguns idiomas que você fale",
-        template: "core/profile/form/profileForm-step5.tpl.html"
-    }];
-    $scope.tabs = tabs;
-    $scope.tabCurrent = 0;
-    //
-    // Education
-    //
-    function education() {
-        var url = api.url + '/api/configs/education';
-        var onSuccess = function(education) {
-            vm.education = education;
-            $user.instance.current('education', education);
-            $timeout(function() {
-                vm.educationLoading = false;
-            }, 1000);
-        }
-        var onFail = function() {
-            $page.toast('Impossible to load education options');
-            $timeout(function() {
-                vm.educationLoading = false;
-            }, 1000);
-        }
-        if (!$user.instance.current('education')) {
-            vm.educationLoading = true;
-            $http.post(url, {
-                company: $user.instance.current().company._id
-            }).success(onSuccess).error(onFail);
-        } else {
-            vm.education = $user.instance.current('education');
-        }
-    }
-    //
-    // Events
-    //
-    $rootScope.$on('CompanyIdUpdated', function() {
-        bootstrap($user.instance.profile);
-        // $timeout(function() {
-        $scope.tabCurrent = 0;
-        // }, 2000)
-    });
-    //
-    // Watchers
-    //           
-    $scope.$watch('tabCurrent', function() {
-        if (tabs[$scope.tabCurrent].slug === 'graduation') {
-            education();
-        }
-    });
-    $scope.$watch('vm.profile.positions', function(nv, ov) {
-        if (nv != ov) vm.forms.profile.$dirty = true;
-    }, true);
-    $scope.$watchCollection('vm.profile.doc.cnh', function(nv, ov) {
-        if (nv != ov) vm.forms.profile.$dirty = true;
-    }, true);
-    $scope.$watchCollection('vm.profile.education.courses', function(nv, ov) {
-        if (nv != ov) vm.forms.profile.$dirty = true;
-    }, true);
-    $scope.$watchCollection('vm.profile.education.graduation', function(nv, ov) {
-        if (nv != ov) vm.forms.profile.$dirty = true;
-    }, true);
-    $scope.$watchCollection('vm.profile.education.schooling', function(nv, ov) {
-        if (nv != ov) vm.forms.profile.$dirty = true;
-    }, true);
-    $scope.$watchCollection('vm.profile.education.technical', function(nv, ov) {
-        if (nv != ov) vm.forms.profile.$dirty = true;
-    }, true);
-    $scope.$watchCollection('vm.profile.education.idioms', function(nv, ov) {
-        if (nv != ov) vm.forms.profile.$dirty = true;
-    }, true);
-    $scope.$watchCollection('vm.profile.xp.companies', function(nv, ov) {
-        if (nv != ov) {
-            vm.forms.profile.$dirty = true;
-            cycleXpMonths(nv);
-        }
-    }, true);
-    //
-    // Bootstrap
-    //
-    bootstrap($user.instance.profile);
-
-    function bootstrap(params) {
-        if (!$auth.isAuthenticated()) return;
-        //update tab with company name
-        $scope.tabs[0].subtitle = "Escolha em quais cargos você se encaixa em <strong>" + $user.instance.current('company').name + "</strong>";
-        //
-        // Profile corrente
-        //
-        vm.profile = new $Profile(params);
-        vm.profile.company = $user.instance.current('company')._id; //vincular empresa no perfil atual
-        //
-        // Empresa corrente
-        //
-        vm.company = $user.instance.current('company');
-        //
-        // Feedback
-        //
-        vm.feedback = [{
-            value: "indicacao",
-            label: "Indicação"
-        }, {
-            value: "oferta",
-            label: "Anúncios"
-        }, {
-            value: "companySite",
-            label: "Site " + $user.instance.current('company').name
-        }, {
-            value: "google",
-            label: "Google"
-        }, {
-            value: "facebook",
-            label: "Facebook"
-        }, {
-            value: "outros",
-            label: "Outros meios"
-        }]
-    }
-    //
-    // Behaviors
-    //
-    function cycleXpMonths(companies) {
-        if (!companies) companies = vm.profile.xp.companies;
-        var total = 0;
-        companies.forEach(function(company) {
-            if (company.start && company.end) {
-                total += Math.floor(moment(company.end, 'DD/MM/YYYY').diff(moment(company.start, 'DD/MM/YYYY'), 'months', true));
-            }
-        });
-        vm.profile.xp.months = total;
-    }
-
-    function save() {
-        vm.profile.save(function(response) {
-            $user.instance.profileUpdate(response);
-            $user.instance.current('companies', response.role);
-            bootstrap(response);
-            $timeout(function() {
-                vm.forms.profile.$dirty = false;
-            }, 500);
-            if (tabs[$scope.tabCurrent].slug != 'graduation' && tabs[$scope.tabCurrent].slug != 'xps') {
-                if ($scope.tabCurrent < 4) $scope.tabCurrent++; //proxima etapa
-                //else
-                // $scope.tabCurrent = 0; //vai pro inicio
-            }
-        });
-    }
-
-    function hasFormError(name) {
-        var result = false;
-        if (vm.forms.profile.$error) {
-            if (vm.forms.profile.$error.required && vm.forms.profile.$error.required.length) angular.forEach(vm.forms.profile.$error.required, function(row) {
-                if (row.$name === name) {
-                    result = true;
-                    return;
-                }
-            })
-        }
-        return result;
-    }
-
-    function hasFormInvalid() {
-        return vm.forms.profile.$invalid;
-    }
-
-    function hasFormErrorToast() {
-        if (hasFormInvalid() && $scope.tabCurrent !== 0) {
-            $page.toast($user.instance.profile.firstName + ', verifique todos os campos e corrija os erros.', 10000);
-        }
-    }
-
-    function setAddrByCep() {
-        var cep = vm.profile.address.
-        default.cep;
-        if (cep && cep.toString().length === 8) {
-            var url = api.url + '/api/cep/';
-            //$page.load.init();
-            var onSuccess = function(response) {
-                //$page.load.done();
-                var addr = response.data;
-                vm.profile.address.
-                default.street = addr.street;
-                vm.profile.address.
-                default.district = addr.district;
-                vm.profile.address.
-                default.city = addr.city;
-                vm.profile.address.
-                default.state = addr.state;
-            }
-            var onError = function() {
-                $page.load.done();
-            }
-            $http.get(url + cep, {}).then(onSuccess, onError);
-        }
-    }
-
-    function hideActionAddWhen() {
-        return tabs[$scope.tabCurrent].slug != 'graduation' && tabs[$scope.tabCurrent].slug != 'idioms' && tabs[$scope.tabCurrent].slug != 'xps';
-    }
-
-    function add() {
-        //adicionar curso
-        if (tabs[$scope.tabCurrent].slug === 'graduation') {
-            vm.profile.education.courses.unshift({
-                name: '',
-                hours: ''
-            });
-        }
-        //adicionar idioma
-        if (tabs[$scope.tabCurrent].slug === 'idioms') {
-            vm.profile.education.idioms.unshift({
-                idiom: '',
-                level: ''
-            });
-        }
-        //adicionar xp
-        if (tabs[$scope.tabCurrent].slug === 'xps') {
-            vm.profile.xp.companies.unshift({
-                name: '',
-                position: '',
-                start: '',
-                end: '',
-                info: '',
-                current: ''
-            });
-        }
-        $scope.$emit('itemAdded');
-    }
-
-    function remove(item) {
-        var index;
-        //remover curso
-        if (tabs[$scope.tabCurrent].slug === 'graduation') {
-            index = vm.profile.education.courses.indexOf(item);
-            if (confirm('Certeza que deseja remover o curso ' + item.name + '?')) {
-                vm.profile.education.courses.splice(index, 1);
-            }
-        }
-        //remover idioma
-        if (tabs[$scope.tabCurrent].slug === 'idioms') {
-            index = vm.profile.education.idioms.indexOf(item);
-            if (confirm('Certeza que deseja remover o idioma ' + item.lang + '?')) {
-                vm.profile.education.idioms.splice(index, 1);
-            }
-        }
-        //remover xp
-        if (tabs[$scope.tabCurrent].slug === 'xps') {
-            index = vm.profile.xp.companies.indexOf(item);
-            if (confirm('Certeza que deseja remover a empresa ' + item.name + ' de suas experiências?')) {
-                vm.profile.xp.companies.splice(index, 1);
-            }
-        }
-    }
-})
-'use strict';
-angular.module('core.profile').directive('profileForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            company: '=',
-        },
-        restrict: "E",
-        controller: 'ProfileFormCtrl',
-        controllerAs: 'vm',
-        templateUrl: 'core/profile/form/profileForm.tpl.html',
-    }
-})
  'use strict';
  /* global moment */
  /**
@@ -3997,29 +3526,24 @@ angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
     }
 });
 'use strict';
-angular.module('core.profile').controller('ProfileFormPositionsCtrl', function() {
-    var vm = this;
-    vm.exists = function(item, list) {
-        return list.indexOf(item) > -1;
-    };
-    vm.selected = [];
-    vm.toggle = function(item, list) {
-        var idx = list.indexOf(item);
-        if (idx > -1) list.splice(idx, 1);
-        else list.push(item);
-    };
-
-})
-'use strict';
-angular.module('core.profile').directive('profileFormPositions', /*@ngInject*/ function() {
+angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
     return {
         scope: {
-            options: '=',
-            selected: '=',
+            focus: '=',
+            focusWhen: '='
         },
-        templateUrl: "core/profile/form/positions/profileFormPositions.tpl.html",
-        controller: 'ProfileFormPositionsCtrl',
-        controllerAs: 'vm'
+        restrict: 'A',
+        link: function(scope, elem) {
+            scope.$watch('focusWhen', function(nv, ov) {
+                if (nv != ov) {
+                    if (nv) {
+                        elem.focus();
+                    }
+                }
+            });
+            if (scope.focus)
+                elem.focus();
+        }
     }
 })
 'use strict';
@@ -4077,27 +3601,6 @@ angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function(
             // }
     }
 });
-'use strict';
-angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
-    return {
-        scope: {
-            focus: '=',
-            focusWhen: '='
-        },
-        restrict: 'A',
-        link: function(scope, elem) {
-            scope.$watch('focusWhen', function(nv, ov) {
-                if (nv != ov) {
-                    if (nv) {
-                        elem.focus();
-                    }
-                }
-            });
-            if (scope.focus)
-                elem.focus();
-        }
-    }
-})
 'use strict';
 angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, layout) {
     var vm = this;
@@ -4236,6 +3739,39 @@ angular.module('core.utils').directive('onScrollApplyOpacity', /*@ngInject*/ fun
     }
 })
 'use strict';
+angular.module('core.utils').controller('OptOutCtrl', /*@ngInject*/ function($scope, $location, $mdDialog) {
+    $scope.callAction = function(ev) {
+        var confirm = $mdDialog.confirm().parent(angular.element(document.body)).title($scope.alertTitle).content($scope.alertInfo).ariaLabel($scope.alertTitle).ok($scope.alertOk).cancel($scope.alertCancel).targetEvent(ev);
+        $mdDialog.show(confirm).then(function() {
+            $scope.$emit('OptOutItemUnlinked', $scope.itemId);
+        }, function() {});
+    }
+});
+'use strict';
+angular.module('core.utils').directive('optOut', /*@ngInject*/ function() {
+    return {
+        scope: {
+            putLocation: '=',
+            putParams: '=',
+            putLabel: '=',
+            alertTitle: '=',
+            alertInfo: '=',
+            alertOk: '=',
+            alertCancel: '=',
+            itemId: '=',
+            itemImage: '=',
+            itemTitle: '=',
+            itemTitleTooltip: '=',
+            itemLocation: '=',
+            itemInfo: '='
+        },
+        templateUrl: 'core/utils/directives/optOut/optOut.tpl.html',
+        controller: 'OptOutCtrl',
+        controllerAs: 'vm',
+        replace: true
+    }
+})
+'use strict';
 angular.module('core.utils').directive('updateModelKeyEnter', /*@ngInject*/ function() {
     return {
         restrict: 'A',
@@ -4268,8 +3804,6 @@ $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"D
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
-$templateCache.put("core/profile/profile.tpl.html","<md-content class=\"main-wrapper md-padding\" layout=\"column\" flex=\"\"><profile-form company=\"app.user.current(\'company\')\" ng-if=\"vm.companyCurrent\"></profile-form></md-content>");
-$templateCache.put("core/account/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
 $templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
@@ -4282,17 +3816,11 @@ $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-facepile ng-if=\"app.user.current(\'company\').facebook && (app.state.current.name!=\'app.home\' && app.state.current.name!=\'app.account\') && app.enviroment !== \'development\' && !app.iframe\" hide-sm=\"\" width=\"304\" url=\"https://www.facebook.com/{{app.user.current(\'company\').facebook}}\" facepile=\"true\" hide-cover=\"false\" ng-hide=\"app.state.current.name===\'app.pages\'\"></menu-facepile><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu.sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu.isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu.isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting.copyright }} © {{ app.year }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
-$templateCache.put("core/profile/form/profileForm-step1.tpl.html","<div layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><profile-form-positions options=\"company.positions\" selected=\"vm.profile.positions\"></profile-form-positions></div>");
-$templateCache.put("core/profile/form/profileForm-step2.tpl.html","<div layout=\"column\"><div class=\"fieldset\"><h5>Seus dados</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'firstName\')}\" flex=\"\"><label>Nome</label> <input name=\"firstName\" ng-model=\"vm.profile.firstName\" required=\"\" focus=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'cpf\')}\" flex=\"\"><label>CPF</label> <input name=\"cpf\" ng-model=\"vm.profile.doc.cpf\" ui-br-cpf-mask=\"\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'email\')}\" flex=\"\"><label>Email para contato</label> <input name=\"email\" ng-model=\"vm.profile.contact.email\" required=\"\"></md-input-container></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'lastName\')}\" flex=\"\"><label>Sobrenome</label> <input name=\"lastName\" ng-model=\"vm.profile.lastName\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'rg\')}\" flex=\"\"><label>RG</label> <input name=\"rg\" ng-model=\"vm.profile.doc.rg\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'birthday\')}\" flex=\"\"><label>Data de nascimento</label> <input name=\"birthday\" ng-model=\"vm.profile.doc.birthday\" mask=\"39/19/9999\" required=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Sua localização</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'cep\')}\"><label>CEP</label> <input name=\"cep\" ng-model=\"vm.profile.address.default.cep\" ng-change=\"vm.setAddrByCep()\" type=\"number\" ng-maxlength=\"8\" required=\"\"></md-input-container><md-input-container><label>Complemento</label> <input ng-model=\"vm.profile.address.default.comp\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'district\')}\"><label>Bairro</label> <input name=\"district\" ng-model=\"vm.profile.address.default.district\" required=\"\"></md-input-container><md-select required=\"\" placeholder=\"Estado\" class=\"state\" ng-model=\"vm.profile.address.default.state\" ng-class=\"{\'md-input-invalid\':!vm.profile.address.default.state}\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.states\">{{ opt.name }}</md-option></md-select></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'street\')}\"><label>Endereço</label> <input name=\"street\" ng-model=\"vm.profile.address.default.street\" required=\"\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'num\')}\"><label>Número</label> <input name=\"num\" ng-model=\"vm.profile.address.default.num\" type=\"number\"></md-input-container><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'city\')}\"><label>Cidade</label> <input name=\"city\" ng-model=\"vm.profile.address.default.city\" required=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Informações de contato</h5><div class=\"group\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'phone\')}\" flex=\"\"><label>Telefone fixo</label> <input name=\"phone\" ng-model=\"vm.profile.contact.phone\" ui-br-phone-number=\"\"></md-input-container></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><md-input-container ng-class=\"{\'md-input-invalid\':vm.hasFormError(\'mobile\')}\" flex=\"\"><label>Telefone celular</label> <input name=\"mobile\" ng-model=\"vm.profile.contact.mobile\" required=\"\" ui-br-phone-number=\"\"></md-input-container></div></div></div><div class=\"fieldset\"><h5>Informações adicionais</h5><div class=\"group m-bottom\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.gender}\"><label>Sexo</label><md-radio-group name=\"gender\" ng-model=\"vm.profile.gender\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"M\">M</md-radio-button><md-radio-button value=\"F\">F</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.relocating && vm.profile.relocating != false}\"><label>Poderia mudar de cidade?</label><md-radio-group ng-model=\"vm.profile.relocating\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner feedback\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.from}\"><label>Por onde conheceu {{vm.company.name}}?</label><md-select name=\"feedback\" flex=\"\" ng-model=\"vm.profile.from\" placeholder=\"Selecione\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.feedback\">{{ opt.label }}</md-option></md-select></div></div><div class=\"group m-bottom\" layout=\"row\" layout-sm=\"column\"><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.working && vm.profile.working != false}\"><label>Está empregado atualmente?</label><md-radio-group name=\"working\" ng-model=\"vm.profile.working\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\" ng-class=\"{\'md-input-invalid\':!vm.profile.doc.pne && vm.profile.doc.pne != false}\"><label>É portador de necessidades?</label><md-radio-group name=\"pne\" ng-model=\"vm.profile.doc.pne\" layout=\"row\" class=\"md-primary\"><md-radio-button value=\"1\">Sim</md-radio-button><md-radio-button value=\"0\">Não</md-radio-button></md-radio-group></div><div flex=\"\" class=\"group-inner\" layout=\"column\"><label>Possui CNH?</label><live-chips items=\"vm.cnh\" placeholder=\"Selecione digitando A, B, C ou D\" model=\"vm.profile.doc.cnh\" hide-options=\"true\"></live-chips></div></div></div></div>");
-$templateCache.put("core/profile/form/profileForm-step3.tpl.html","<div layout=\"column\"><div class=\"fieldset\"><h5>Formação</h5><md-progress-circular ng-show=\"vm.educationLoading\" md-diameter=\"24\" class=\"educationLoader md-warn\" md-mode=\"indeterminate\"></md-progress-circular><div ng-hide=\"vm.educationLoading\" class=\"group\" layout=\"row\" layout-sm=\"column\"><div layout=\"column\" class=\"chips-wrap\" flex=\"\"><live-chips items=\"vm.education.schooling\" placeholder=\"Selecione uma formação\" model=\"vm.profile.education.schooling\" truncate-input=\"true\" truncate-options=\"false\"></live-chips></div><div layout=\"column\" class=\"chips-wrap\" flex=\"\"><live-chips items=\"vm.education.technical\" placeholder=\"Selecione um curso técnico\" model=\"vm.profile.education.technical\" truncate-input=\"true\" truncate-options=\"false\"></live-chips></div><div layout=\"column\" class=\"chips-wrap\" flex=\"\"><live-chips items=\"vm.education.graduation\" placeholder=\"Selecione uma graduação\" model=\"vm.profile.education.graduation\" truncate-input=\"true\" truncate-options=\"false\"></live-chips></div></div></div><div class=\"fieldset\"><h5>Cursos</h5><div class=\"group animate-repeat\" layout=\"row\" ng-repeat=\"course in vm.profile.education.courses\"><md-input-container flex=\"\"><label>Nome</label> <input required=\"\" name=\"name\" focus=\"$index===0\" ng-model=\"course.name\"></md-input-container><md-input-container flex=\"\"><label>Horas</label> <input required=\"\" type=\"number\" name=\"hours\" ng-model=\"course.hours\"></md-input-container><md-button class=\"remove md-fab md-warn\" aria-label=\"Remover {{course.name}}\" title=\"Remover {{course.name}}\" ng-click=\"vm.remove(course)\"><md-icon md-svg-src=\"assets/images/icons/ic_delete_24px.svg\"></md-icon></md-button></div><p class=\"subtitle warn\" ng-show=\"!vm.profile.education.courses.length\"><i class=\"fa fa-lightbulb-o\"></i> adicione cursos clicando no lápis --></p></div></div><br><br>");
-$templateCache.put("core/profile/form/profileForm-step4.tpl.html","<div layout=\"column\"><div class=\"fieldset\"><div class=\"group animate-repeat\" layout=\"row\" layout-sm=\"column\" ng-repeat=\"company in vm.profile.xp.companies\"><div flex=\"\" layout=\"column\"><div layout=\"row\" flex=\"\"><md-input-container flex=\"\"><label>Nome da empresa</label> <input focus=\"$index===0\" required=\"\" name=\"name\" ng-model=\"company.name\"></md-input-container><md-input-container flex=\"\"><label>Cargo</label> <input required=\"\" name=\"position\" ng-model=\"company.position\"></md-input-container></div><div layout=\"row\" flex=\"\"><md-input-container flex=\"\"><label>Começou</label> <input required=\"\" mask=\"39/19/9999\" name=\"start\" ng-model=\"company.start\" ng-change=\"vm.cycleXpMonths()\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container><md-input-container flex=\"\"><label>Saiu</label> <input focus=\"\" focus-when=\"!company.current\" mask=\"39/19/9999\" name=\"end\" ng-disabled=\"company.current\" ng-model=\"company.end\" ng-change=\"vm.cycleXpMonths()\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container></div><div layout=\"column\" flex=\"\"><md-input-container flex=\"\"><label>Breve descrição do seu trabalho com {{company.name}}</label> <textarea ng-model=\"company.info\" columns=\"1\" md-maxlength=\"150\">\r\n                    </textarea></md-input-container></div></div><div layout=\"row\"><div class=\"action-button-checkbox-wrap\"><label class=\"subtitle\">meu trabalho atual</label><md-button class=\"action-button checkbox md-fab\"><md-checkbox ng-model=\"company.current\" aria-label=\"Trabalha atualmente em {{company.name}}?\"></md-checkbox></md-button></div><md-button class=\"action-button remove md-fab md-warn\" aria-label=\"Remover {{company.name}}\" title=\"Remover {{company.name}}\" ng-click=\"vm.remove(company)\"><md-icon md-svg-src=\"assets/images/icons/ic_delete_24px.svg\"></md-icon></md-button></div></div><h5 ng-show=\"vm.profile.xp.months\"><br><i class=\"fa fa-lightbulb-o\"></i> Você possui ~{{vm.profile.xp.months | toYears }} de experiência</h5><p class=\"subtitle warn\" ng-show=\"!vm.profile.xp.companies.length\"><i class=\"fa fa-lightbulb-o\"></i> adicione empresas clicando no lápis --></p></div></div><br><br>");
-$templateCache.put("core/profile/form/profileForm-step5.tpl.html","<div class=\"fieldset\"><h5>Idiomas</h5><div class=\"group animate-repeat\" layout=\"row\" ng-repeat=\"idiom in vm.profile.education.idioms\"><md-select flex=\"\" required=\"\" placeholder=\"Língua\" class=\"lang\" ng-model=\"idiom.lang\" ng-class=\"{\'md-input-invalid\':!idiom.lang}\"><md-option ng-value=\"opt\" ng-repeat=\"opt in vm.idioms\">{{ opt }}</md-option></md-select><md-select flex=\"\" required=\"\" placeholder=\"Nível\" class=\"lang\" ng-model=\"idiom.level\" ng-class=\"{\'md-input-invalid\':!idiom.level}\"><md-option ng-value=\"opt\" ng-repeat=\"opt in vm.idiomsLevel\">{{ opt }}</md-option></md-select><md-button class=\"remove md-fab md-warn\" aria-label=\"Remover {{idiom.lang}}\" title=\"Remover {{idiom.lang}}\" ng-click=\"vm.remove(idiom)\"><md-icon md-svg-src=\"assets/images/icons/ic_delete_24px.svg\"></md-icon></md-button></div><p class=\"subtitle warn\" ng-show=\"!vm.profile.education.idioms.length\"><i class=\"fa fa-lightbulb-o\"></i> adicione idiomas clicando no lápis --></p></div>");
-$templateCache.put("core/profile/form/profileForm.tpl.html","<form novalidate=\"\" name=\"vm.forms.profile\" class=\"md-whiteframe-z1\"><md-tabs md-dynamic-height=\"\" md-center-tabs=\"\" md-selected=\"tabCurrent\" md-border-bottom=\"\"><md-tab ng-repeat=\"tab in tabs\" ng-disabled=\"tab.disabled\"><md-tab-label><span ng-bind-html=\"tab.title\"></span></md-tab-label><md-tab-body><div class=\"profile-tab {{tab.slug}}\"><p class=\"subtitle\" ng-bind-html=\"tab.subtitle\"></p><div ng-include=\"tab.template\"></div></div></md-tab-body></md-tab></md-tabs><div layout=\"\" class=\"row actions content-action-wrapper\"><md-button ng-hide=\"vm.hideActionAddWhen()\" class=\"add md-fab md-warn\" aria-label=\"Adicionar {{tabs[tabCurrent].name}}\" title=\"Adicionar {{tabs[tabCurrent].name}}\" ng-click=\"vm.add()\"><md-icon md-svg-src=\"assets/images/icons/ic_mode_edit_18px.svg\"></md-icon></md-button><md-button class=\"save md-fab md-primary\" aria-label=\"Atualizar Perfil\" title=\"Atualizar Perfil\" ng-click=\"vm.save()\" ng-disabled=\"vm.profile.busy||(vm.forms.profile.$invalid&&tabCurrent!=0)||!vm.forms.profile.$dirty\"><md-icon md-svg-src=\"assets/images/icons/ic_thumb_up_24px.svg\" ng-click=\"vm.hasFormErrorToast()\"></md-icon></md-button></div></form>");
 $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
 $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
-$templateCache.put("core/profile/form/positions/profileFormPositions.tpl.html","<ul class=\"list-positions\"><li ng-repeat=\"item in options\" class=\"animate-repeat\"><md-checkbox title=\"{{item}}\" ng-checked=\"vm.exists(item, selected)\" ng-click=\"vm.toggle(item, selected)\">{{item}}</md-checkbox></li></ul>");
 $templateCache.put("core/utils/directives/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
 $templateCache.put("core/utils/directives/leadForm/leadForm.tpl.html","<form class=\"lead-form\" name=\"leadForm\" novalidate=\"\"><md-input-container flex=\"\"><label>Seu nome</label> <input name=\"name\" ng-model=\"lead.name\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Email</label> <input name=\"email\" type=\"email\" ng-model=\"lead.email\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Empresa</label> <input name=\"company\" ng-model=\"lead.company\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Telefone</label> <input name=\"phone\" ng-model=\"lead.phone\" ui-br-phone-number=\"\" required=\"\"></md-input-container><md-button ng-click=\"register()\" ng-disabled=\"leadForm.$invalid\" class=\"md-primary\">{{label?label:\'Enviar\'}}</md-button><md-progress-circular md-diameter=\"20\" class=\"md-warn md-hue-3\" md-mode=\"indeterminate\" ng-class=\"{\'busy\':vm.busy}\"></md-progress-circular></form>");
-$templateCache.put("core/utils/directives/liveChips/liveChips.tpl.html","<md-chips ng-model=\"vm.selectedItems\" md-autocomplete-snap=\"\" md-require-match=\"\"><md-autocomplete md-selected-item=\"vm.selectedItem\" md-search-text=\"vm.searchText\" md-items=\"item in vm.querySearch(vm.searchText)\" md-item-text=\"item\" placeholder=\"{{vm.placeholder}}\"><span md-highlight-text=\"vm.searchText\">{{item}}</span></md-autocomplete><md-chip-template><span><a ng-class=\"{\'truncate\':truncateInput}\" title=\"{{$chip}}\">{{$chip}}</a></span></md-chip-template></md-chips><v-accordion ng-hide=\"hideOptions\" class=\"vAccordion--default\" layout-align=\"start start\" layout-align-sm=\"center start\" control=\"accordion\"><v-pane><v-pane-header class=\"border-bottom\"><div>Opções</div></v-pane-header><v-pane-content><md-list><md-list-item class=\"filter-opt\" ng-repeat=\"chip in items track by $index\"><div class=\"md-list-item-text compact\"><a ng-class=\"{\'truncate\':truncateOptions}\" title=\"{{chip}}\" ng-click=\"vm.applyRole(chip,accordion)\"><i class=\"fa fa-gear\"></i> {{chip}}</a></div></md-list-item></md-list></v-pane-content></v-pane></v-accordion>");}]);
+$templateCache.put("core/utils/directives/liveChips/liveChips.tpl.html","<md-chips ng-model=\"vm.selectedItems\" md-autocomplete-snap=\"\" md-require-match=\"\"><md-autocomplete md-selected-item=\"vm.selectedItem\" md-search-text=\"vm.searchText\" md-items=\"item in vm.querySearch(vm.searchText)\" md-item-text=\"item\" placeholder=\"{{vm.placeholder}}\"><span md-highlight-text=\"vm.searchText\">{{item}}</span></md-autocomplete><md-chip-template><span><a ng-class=\"{\'truncate\':truncateInput}\" title=\"{{$chip}}\">{{$chip}}</a></span></md-chip-template></md-chips><v-accordion ng-hide=\"hideOptions\" class=\"vAccordion--default\" layout-align=\"start start\" layout-align-sm=\"center start\" control=\"accordion\"><v-pane><v-pane-header class=\"border-bottom\"><div>Opções</div></v-pane-header><v-pane-content><md-list><md-list-item class=\"filter-opt\" ng-repeat=\"chip in items track by $index\"><div class=\"md-list-item-text compact\"><a ng-class=\"{\'truncate\':truncateOptions}\" title=\"{{chip}}\" ng-click=\"vm.applyRole(chip,accordion)\"><i class=\"fa fa-gear\"></i> {{chip}}</a></div></md-list-item></md-list></v-pane-content></v-pane></v-accordion>");
+$templateCache.put("core/utils/directives/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");}]);
