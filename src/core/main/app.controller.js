@@ -46,8 +46,21 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     //
     // Events
     //  
-    $rootScope.$on('$AppCtrlReboot', function() {
+    $rootScope.$on('$AppReboot', function() {
         bootstrap();
+    });
+    $rootScope.$on('$CompanyIdUpdated', function(e, nv, ov) {
+        if (nv != ov) {
+            //quando alterar company, atualizar factory  
+            var company = $user.instance().filterCompany(nv);
+            $user.instance().current('company', company);
+            $user.instance().session('company', {
+                _id: company._id,
+                name: company.name
+            });
+            $menu.api().close();
+            bootstrap();
+        }
     });
     $rootScope.$on('Unauthorized', function() {
         $user.instance().destroy();

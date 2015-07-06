@@ -12,7 +12,7 @@ angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ func
     $scope.$watch('vm.companyid', function(nv, ov) {
         if (nv != ov) {
             $scope.companyid = nv;
-            $rootScope.$emit('CompanyIdUpdated', nv, ov);
+            $rootScope.$emit('$CompanyIdUpdated', nv, ov);
         }
     });
 });
