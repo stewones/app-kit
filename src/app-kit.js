@@ -2344,8 +2344,6 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
             removeStorageUser();
             $page.load.done();
             if (alert) $page.toast('Você saiu', 3000);
-            if ($user.setting.logoutRedirect)
-                $window.location($user.setting.logoutRedirect);
         }
         /**
          * @ngdoc function
@@ -2786,6 +2784,12 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
+'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -3108,12 +3112,6 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
-'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
  'use strict';
  /* global moment */
  /**

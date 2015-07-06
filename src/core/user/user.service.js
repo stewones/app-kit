@@ -160,8 +160,6 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
             removeStorageUser();
             $page.load.done();
             if (alert) $page.toast('Você saiu', 3000);
-            if ($user.setting.logoutRedirect)
-                $window.location($user.setting.logoutRedirect);
         }
         /**
          * @ngdoc function
