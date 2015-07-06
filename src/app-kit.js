@@ -47,6 +47,20 @@ angular.module('core.login', [
     'facebook.login'
 ]);
 'use strict';
+angular.module('core.page', [
+    'core.app',
+    'core.menu',
+    'ui.router',
+    'angularMoment',
+    'ngLodash',
+    'ngAnimate',
+    'ngMaterial',
+    'ngSanitize',
+    'anim-in-out',
+    'ui.utils.masks',
+    'directives.inputMatch'
+]);
+'use strict';
 /**
  * @ngdoc overview
  * @name core.app
@@ -65,20 +79,6 @@ angular.module('core.app', [
     'core.user',
     'core.profile',
     'core.account'
-]);
-'use strict';
-angular.module('core.page', [
-    'core.app',
-    'core.menu',
-    'ui.router',
-    'angularMoment',
-    'ngLodash',
-    'ngAnimate',
-    'ngMaterial',
-    'ngSanitize',
-    'anim-in-out',
-    'ui.utils.masks',
-    'directives.inputMatch'
 ]);
 'use strict';
 angular.module('core.profile', [
@@ -931,6 +931,374 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
     }
 })
 'use strict';
+/*global window*/
+angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+    /**
+     * States & Routes
+     */
+    $stateProvider.state('app.pages', {
+        protected: false,
+        url: '/p/:slug/',
+        views: {
+            'content': {
+                templateUrl: 'core/page/page.tpl.html',
+                controller: '$PageCtrl as vm'
+            }
+        },
+        resolve: {
+            slug: /*@ngInject*/ function($stateParams) {
+                return $stateParams.slug;
+            },
+            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        $menu.api().close();
+                    }, 500)
+                }
+            }
+        }
+    });
+    $locationProvider.html5Mode(true);
+})
+'use strict';
+angular.module('core.page').controller('$PageCtrl', /*@ngInject*/ function($page, setting) {
+    var vm = this;
+    //
+    // SEO
+    //
+    $page.title(setting.name + setting.titleSeparator + ' Home');
+    bootstrap();
+
+    function bootstrap() {}
+});
+'use strict';
+angular.module('core.page').provider('$page',
+    /**
+     * @ngdoc object
+     * @name core.page.$pageProvider
+     * @description
+     * Provém configurações/comportamentos/estados para página
+     **/
+    /*@ngInject*/
+    function $pageProvider() {
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_config
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena configurações
+         **/
+        this._config = {
+            // configuração para ativar/desativar a rota inicial
+            'homeEnabled': true
+        };
+
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_title
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena o título
+         **/
+        this._title = '';
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_description
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena a descrição
+         **/
+        this._description = '';
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_ogSiteName
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena open graph site name
+         **/
+        this._ogSiteName = '';
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_ogTitle
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena open graph title
+         **/
+        this._ogTitle = '';
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_ogDescription
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena open graph description
+         **/
+        this._ogDescription = '';
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_ogUrl
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena open graph url
+         **/
+        this._ogUrl = '';
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_ogImage
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena open graph image 
+         **/
+        this._ogImage = '';
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_ogSection
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena open graph section
+         **/
+        this._ogSection = '';
+        /**
+         * @ngdoc object
+         * @name core.page.$pageProvider#_ogTag
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * armazena open graph tags
+         **/
+        this._ogTag = '';
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#$get
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($page) {        
+         *      console.log($page.config('myOwnConfiguration'));
+         *      //prints the current config
+         *      //ex.: "{ configA: 54, configB: '=D' }"
+         * })
+         * </pre>
+         * @return {object} Retorna um objeto contendo valores das propriedades.
+         **/
+        this.$get = this.get = /*@ngInject*/ function($mdToast) {
+                return {
+                    config: this._config,
+                    load: load(),
+                    progress: progress(),
+                    toast: toast($mdToast),
+                    title: title,
+                    description: description,
+                    ogLocale: ogLocale,
+                    ogSiteName: ogSiteName,
+                    ogTitle: ogTitle,
+                    ogDescription: ogDescription,
+                    ogUrl: ogUrl,
+                    ogImage: ogImage,
+                    ogSection: ogSection,
+                    ogTag: ogTag
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name core.page.$pageProvider#config
+             * @methodOf core.page.$pageProvider
+             * @description
+             * getter/setter para configurações
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($pageProvider) {     
+             *     $pageProvider.config('myOwnConfiguration', {
+             *          configA: 54,
+             *          configB: '=D'
+             *      })
+             * })
+             * </pre>
+             * @param {string} key chave
+             * @param {*} val valor   
+             **/
+        this.config = function(key, val) {
+            if (key && (val || val === false)) {
+                return this._config[key] = val
+            } else if (key) {
+                return this._config[key]
+            } else {
+                return this._config
+            }
+        }
+
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#title
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para meta tag título
+         * @param {string} str título da página
+         * @return {string} título da página
+         **/
+        function title(value) {
+            if (value) return this._title = value;
+            else return this._title;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#description
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para meta tag descrição
+         * @param {string} value descrição da página    
+         **/
+        function description(value) {
+            if (value) return this._description = value;
+            else return this._description;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#ogLocale
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para open-graph locale
+         * @param {string} value locale    
+         **/
+        function ogLocale(value) {
+            if (value) return this._ogLocale = value;
+            else return this._ogLocale;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#ogSiteName
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para open-graph site name
+         * @param {string} value site name    
+         **/
+        function ogSiteName(value) {
+            if (value) return this._ogSiteName = value;
+            else return this._ogSiteName;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#ogTitle
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para open-graph title
+         * @param {string} value title    
+         **/
+        function ogTitle(value) {
+            if (value) return this._ogTitle = value;
+            else return this._ogTitle;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#ogDescription
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para open-graph description
+         * @param {string} value description    
+         **/
+        function ogDescription(value) {
+            if (value) return this._ogDescription = value;
+            else return this._ogDescription;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#ogUrl
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para open-graph url
+         * @param {string} value url    
+         **/
+        function ogUrl(value) {
+            if (value) return this._ogUrl = value;
+            else return this._ogUrl;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#ogImage
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para open-graph image
+         * @param {string} value image    
+         **/
+        function ogImage(value) {
+            if (value) return this._ogImage = value;
+            else return this._ogImage;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#ogSection
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para open-graph section
+         * @param {string} value section    
+         **/
+        function ogSection(value) {
+            if (value) return this._ogSection = value;
+            else return this._ogSection;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#ogTag
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter para open-graph tag
+         * @param {string} value tag    
+         **/
+        function ogTag(value) {
+            if (value) return this._ogTag = value;
+            else return this._ogTag;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#load
+         * @methodOf core.page.$pageProvider
+         * @description
+         * inicia e termina o carregamento da página
+         * @return {object} com metodos de inicialização (init) e finalização (done)
+         **/
+        function load() {
+            return {
+                init: function() {
+                    this.status = true;
+                    //console.log('loader iniciado...' + this.status);
+                },
+                done: function() {
+                    this.status = false;
+                    //console.log('loader finalizado...' + this.status);
+                }
+            }
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#toast
+         * @methodOf core.page.$pageProvider
+         * @description
+         * mostra uma mensagem de aviso
+         * @param {string} msg mensagem
+         * @param {integer} time tempo em milisegundos
+         **/
+        function toast($mdToast) {
+            return function(msg, time) {
+                time = time ? time : 5000;
+                $mdToast.show($mdToast.simple().content(msg).position('bottom right').hideDelay(time));
+            }
+        }
+        //another type of load
+        function progress() {
+            return {
+                init: function() {
+                    this.status = true;
+                    //console.log('progress iniciado...' + this.status);
+                },
+                done: function() {
+                    this.status = false;
+                    //console.log('progress finalizado...' + this.status);
+                }
+            }
+        }
+    }
+)
+'use strict';
 angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, setting, api) {
     //
     // States & Routes
@@ -1550,374 +1918,6 @@ angular.module("app.setting", []).constant("setting", {
     ogSection: "app-kit",
     ogTag: "app-kit"
 });
-'use strict';
-/*global window*/
-angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
-    /**
-     * States & Routes
-     */
-    $stateProvider.state('app.pages', {
-        protected: false,
-        url: '/p/:slug/',
-        views: {
-            'content': {
-                templateUrl: 'core/page/page.tpl.html',
-                controller: '$PageCtrl as vm'
-            }
-        },
-        resolve: {
-            slug: /*@ngInject*/ function($stateParams) {
-                return $stateParams.slug;
-            },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
-                if ($auth.isAuthenticated()) {
-                    $timeout(function() {
-                        $menu.api().close();
-                    }, 500)
-                }
-            }
-        }
-    });
-    $locationProvider.html5Mode(true);
-})
-'use strict';
-angular.module('core.page').controller('$PageCtrl', /*@ngInject*/ function($page, setting) {
-    var vm = this;
-    //
-    // SEO
-    //
-    $page.title(setting.name + setting.titleSeparator + ' Home');
-    bootstrap();
-
-    function bootstrap() {}
-});
-'use strict';
-angular.module('core.page').provider('$page',
-    /**
-     * @ngdoc object
-     * @name core.page.$pageProvider
-     * @description
-     * Provém configurações/comportamentos/estados para página
-     **/
-    /*@ngInject*/
-    function $pageProvider() {
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_config
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena configurações
-         **/
-        this._config = {
-            // configuração para ativar/desativar a rota inicial
-            'homeEnabled': true
-        };
-
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_title
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena o título
-         **/
-        this._title = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_description
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena a descrição
-         **/
-        this._description = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_ogSiteName
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena open graph site name
-         **/
-        this._ogSiteName = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_ogTitle
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena open graph title
-         **/
-        this._ogTitle = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_ogDescription
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena open graph description
-         **/
-        this._ogDescription = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_ogUrl
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena open graph url
-         **/
-        this._ogUrl = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_ogImage
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena open graph image 
-         **/
-        this._ogImage = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_ogSection
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena open graph section
-         **/
-        this._ogSection = '';
-        /**
-         * @ngdoc object
-         * @name core.page.$pageProvider#_ogTag
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena open graph tags
-         **/
-        this._ogTag = '';
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#$get
-         * @propertyOf core.page.$pageProvider
-         * @description 
-         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
-         * @example
-         * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($page) {        
-         *      console.log($page.config('myOwnConfiguration'));
-         *      //prints the current config
-         *      //ex.: "{ configA: 54, configB: '=D' }"
-         * })
-         * </pre>
-         * @return {object} Retorna um objeto contendo valores das propriedades.
-         **/
-        this.$get = this.get = /*@ngInject*/ function($mdToast) {
-                return {
-                    config: this._config,
-                    load: load(),
-                    progress: progress(),
-                    toast: toast($mdToast),
-                    title: title,
-                    description: description,
-                    ogLocale: ogLocale,
-                    ogSiteName: ogSiteName,
-                    ogTitle: ogTitle,
-                    ogDescription: ogDescription,
-                    ogUrl: ogUrl,
-                    ogImage: ogImage,
-                    ogSection: ogSection,
-                    ogTag: ogTag
-                }
-            }
-            /**
-             * @ngdoc function
-             * @name core.page.$pageProvider#config
-             * @methodOf core.page.$pageProvider
-             * @description
-             * getter/setter para configurações
-             * @example
-             * <pre>
-             * angular.module('myApp.module').config(function($pageProvider) {     
-             *     $pageProvider.config('myOwnConfiguration', {
-             *          configA: 54,
-             *          configB: '=D'
-             *      })
-             * })
-             * </pre>
-             * @param {string} key chave
-             * @param {*} val valor   
-             **/
-        this.config = function(key, val) {
-            if (key && (val || val === false)) {
-                return this._config[key] = val
-            } else if (key) {
-                return this._config[key]
-            } else {
-                return this._config
-            }
-        }
-
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#title
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para meta tag título
-         * @param {string} str título da página
-         * @return {string} título da página
-         **/
-        function title(value) {
-            if (value) return this._title = value;
-            else return this._title;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#description
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para meta tag descrição
-         * @param {string} value descrição da página    
-         **/
-        function description(value) {
-            if (value) return this._description = value;
-            else return this._description;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#ogLocale
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para open-graph locale
-         * @param {string} value locale    
-         **/
-        function ogLocale(value) {
-            if (value) return this._ogLocale = value;
-            else return this._ogLocale;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#ogSiteName
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para open-graph site name
-         * @param {string} value site name    
-         **/
-        function ogSiteName(value) {
-            if (value) return this._ogSiteName = value;
-            else return this._ogSiteName;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#ogTitle
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para open-graph title
-         * @param {string} value title    
-         **/
-        function ogTitle(value) {
-            if (value) return this._ogTitle = value;
-            else return this._ogTitle;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#ogDescription
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para open-graph description
-         * @param {string} value description    
-         **/
-        function ogDescription(value) {
-            if (value) return this._ogDescription = value;
-            else return this._ogDescription;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#ogUrl
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para open-graph url
-         * @param {string} value url    
-         **/
-        function ogUrl(value) {
-            if (value) return this._ogUrl = value;
-            else return this._ogUrl;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#ogImage
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para open-graph image
-         * @param {string} value image    
-         **/
-        function ogImage(value) {
-            if (value) return this._ogImage = value;
-            else return this._ogImage;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#ogSection
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para open-graph section
-         * @param {string} value section    
-         **/
-        function ogSection(value) {
-            if (value) return this._ogSection = value;
-            else return this._ogSection;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#ogTag
-         * @methodOf core.page.$pageProvider
-         * @description
-         * getter/getter para open-graph tag
-         * @param {string} value tag    
-         **/
-        function ogTag(value) {
-            if (value) return this._ogTag = value;
-            else return this._ogTag;
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#load
-         * @methodOf core.page.$pageProvider
-         * @description
-         * inicia e termina o carregamento da página
-         * @return {object} com metodos de inicialização (init) e finalização (done)
-         **/
-        function load() {
-            return {
-                init: function() {
-                    this.status = true;
-                    //console.log('loader iniciado...' + this.status);
-                },
-                done: function() {
-                    this.status = false;
-                    //console.log('loader finalizado...' + this.status);
-                }
-            }
-        }
-        /**
-         * @ngdoc function
-         * @name core.page.$pageProvider#toast
-         * @methodOf core.page.$pageProvider
-         * @description
-         * mostra uma mensagem de aviso
-         * @param {string} msg mensagem
-         * @param {integer} time tempo em milisegundos
-         **/
-        function toast($mdToast) {
-            return function(msg, time) {
-                time = time ? time : 5000;
-                $mdToast.show($mdToast.simple().content(msg).position('bottom right').hideDelay(time));
-            }
-        }
-        //another type of load
-        function progress() {
-            return {
-                init: function() {
-                    this.status = true;
-                    //console.log('progress iniciado...' + this.status);
-                },
-                done: function() {
-                    this.status = false;
-                    //console.log('progress finalizado...' + this.status);
-                }
-            }
-        }
-    }
-)
 'use strict';
 angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, $user, api, moment) {
     /**
@@ -2783,11 +2783,11 @@ angular.module('core.menu').provider('$menu',
          * </pre>
          * @return {object} Retorna um objeto correspondente a uma Factory
          **/
-        this.$get = this.get = function() {
+        this.$get = this.get = /*@ngInject*/ function($rootScope, $mdSidenav) {
                 return {
                     main: this.mainMenu,
                     toolbar: this.toolbarMenu,
-                    api: api
+                    api: api($rootScope, $mdSidenav)
                 }
             }
             /**
@@ -2849,59 +2849,61 @@ angular.module('core.menu').provider('$menu',
              * </pre>
              * @return {object} comportamentos do menu
              **/
-        function api() {
-            return {
-                openedSection: false,
-                currentPage: null,
-                open: function() {
-                    $rootScope.$emit('AppMenuOpened');
-                    $mdSidenav('left').open();
-                },
-                close: function() {
-                    $rootScope.$emit('AppMenuClosed');
-                    $mdSidenav('left').close();
-                },
-                //sections: sampleMenu(),
-                sections: this.mainMenu,
-                selectSection: function(section) {
-                    this.openedSection = section;
-                },
-                toggleSelectSection: function(section) {
-                    this.openedSection = (this.openedSection === section ? false : section);
-                },
-                isChildSectionSelected: function(section) {
-                    return this.openedSection === section;
-                },
-                isSectionSelected: function(section) {
-                    var selected = false;
-                    var openedSection = this.openedSection;
-                    if (openedSection === section) {
-                        selected = true;
-                    } else if (section.children) {
-                        section.children.forEach(function(childSection) {
-                            if (childSection === openedSection) {
-                                selected = true;
-                            }
-                        });
+        function api($rootScope, $mdSidenav) {
+            return function api() {
+                return {
+                    openedSection: false,
+                    currentPage: null,
+                    open: function() {
+                        $rootScope.$emit('AppMenuOpened');
+                        $mdSidenav('left').open();
+                    },
+                    close: function() {
+                        $rootScope.$emit('AppMenuClosed');
+                        $mdSidenav('left').close();
+                    },
+                    //sections: sampleMenu(),
+                    sections: this.mainMenu,
+                    selectSection: function(section) {
+                        this.openedSection = section;
+                    },
+                    toggleSelectSection: function(section) {
+                        this.openedSection = (this.openedSection === section ? false : section);
+                    },
+                    isChildSectionSelected: function(section) {
+                        return this.openedSection === section;
+                    },
+                    isSectionSelected: function(section) {
+                        var selected = false;
+                        var openedSection = this.openedSection;
+                        if (openedSection === section) {
+                            selected = true;
+                        } else if (section.children) {
+                            section.children.forEach(function(childSection) {
+                                if (childSection === openedSection) {
+                                    selected = true;
+                                }
+                            });
+                        }
+                        return selected;
+                    },
+                    selectPage: function(section, page) {
+                        //page && page.url && $location.path(page.url);
+                        this.currentSection = section;
+                        this.currentPage = page;
+                    },
+                    isPageSelected: function(page) {
+                        return this.currentPage === page;
+                    },
+                    isOpen: function(section) {
+                        return this.isSectionSelected(section);
+                    },
+                    toggleOpen: function(section) {
+                        return this.toggleSelectSection(section);
+                    },
+                    isSelected: function(page) {
+                        return this.isPageSelected(page);
                     }
-                    return selected;
-                },
-                selectPage: function(section, page) {
-                    //page && page.url && $location.path(page.url);
-                    this.currentSection = section;
-                    this.currentPage = page;
-                },
-                isPageSelected: function(page) {
-                    return this.currentPage === page;
-                },
-                isOpen: function(section) {
-                    return this.isSectionSelected(section);
-                },
-                toggleOpen: function(section) {
-                    return this.toggleSelectSection(section);
-                },
-                isSelected: function(page) {
-                    return this.isPageSelected(page);
                 }
             }
         }
@@ -3509,6 +3511,39 @@ angular.module('core.menu').directive('menuFacepile', /*@ngInject*/ function() {
         }
     }
 });
+'use strict';
+angular.module('core.page').controller('ToolbarMenuCtrl', /*@ngInject*/ function($rootScope, $mdBottomSheet) {
+    var vm = this;
+    $rootScope.$on('AppMenuOpened', function() {
+        $mdBottomSheet.hide();
+    });
+    $rootScope.$on('CompanyIdUpdated', function() {
+        $mdBottomSheet.hide();
+    });
+    vm.showFilters = function() {
+        $mdBottomSheet.show({
+            templateUrl: 'app/finder/filter/finderFilterMobile.tpl.html',
+            controller: 'FinderFilterCtrl',
+            controllerAs: 'vm',
+            //targetEvent: $event,
+            //parent: '.finder-wrapper',
+            locals: {},
+            //scope: ''
+            //preserveScope: true,
+            disableParentScroll: false
+        }).then(function() {});
+    }
+    //
+    // Events
+    //
+    //
+    // Bootstrap
+    //
+    //
+    bootstrap();
+
+    function bootstrap() {}
+})
 'use strict';
 angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function toolbarMenu($menu) {
     return {

@@ -39,11 +39,11 @@ angular.module('core.menu').provider('$menu',
          * </pre>
          * @return {object} Retorna um objeto correspondente a uma Factory
          **/
-        this.$get = this.get = function() {
+        this.$get = this.get = /*@ngInject*/ function($rootScope, $mdSidenav) {
                 return {
                     main: this.mainMenu,
                     toolbar: this.toolbarMenu,
-                    api: api
+                    api: api($rootScope, $mdSidenav)
                 }
             }
             /**
@@ -105,59 +105,61 @@ angular.module('core.menu').provider('$menu',
              * </pre>
              * @return {object} comportamentos do menu
              **/
-        function api() {
-            return {
-                openedSection: false,
-                currentPage: null,
-                open: function() {
-                    $rootScope.$emit('AppMenuOpened');
-                    $mdSidenav('left').open();
-                },
-                close: function() {
-                    $rootScope.$emit('AppMenuClosed');
-                    $mdSidenav('left').close();
-                },
-                //sections: sampleMenu(),
-                sections: this.mainMenu,
-                selectSection: function(section) {
-                    this.openedSection = section;
-                },
-                toggleSelectSection: function(section) {
-                    this.openedSection = (this.openedSection === section ? false : section);
-                },
-                isChildSectionSelected: function(section) {
-                    return this.openedSection === section;
-                },
-                isSectionSelected: function(section) {
-                    var selected = false;
-                    var openedSection = this.openedSection;
-                    if (openedSection === section) {
-                        selected = true;
-                    } else if (section.children) {
-                        section.children.forEach(function(childSection) {
-                            if (childSection === openedSection) {
-                                selected = true;
-                            }
-                        });
+        function api($rootScope, $mdSidenav) {
+            return function api() {
+                return {
+                    openedSection: false,
+                    currentPage: null,
+                    open: function() {
+                        $rootScope.$emit('AppMenuOpened');
+                        $mdSidenav('left').open();
+                    },
+                    close: function() {
+                        $rootScope.$emit('AppMenuClosed');
+                        $mdSidenav('left').close();
+                    },
+                    //sections: sampleMenu(),
+                    sections: this.mainMenu,
+                    selectSection: function(section) {
+                        this.openedSection = section;
+                    },
+                    toggleSelectSection: function(section) {
+                        this.openedSection = (this.openedSection === section ? false : section);
+                    },
+                    isChildSectionSelected: function(section) {
+                        return this.openedSection === section;
+                    },
+                    isSectionSelected: function(section) {
+                        var selected = false;
+                        var openedSection = this.openedSection;
+                        if (openedSection === section) {
+                            selected = true;
+                        } else if (section.children) {
+                            section.children.forEach(function(childSection) {
+                                if (childSection === openedSection) {
+                                    selected = true;
+                                }
+                            });
+                        }
+                        return selected;
+                    },
+                    selectPage: function(section, page) {
+                        //page && page.url && $location.path(page.url);
+                        this.currentSection = section;
+                        this.currentPage = page;
+                    },
+                    isPageSelected: function(page) {
+                        return this.currentPage === page;
+                    },
+                    isOpen: function(section) {
+                        return this.isSectionSelected(section);
+                    },
+                    toggleOpen: function(section) {
+                        return this.toggleSelectSection(section);
+                    },
+                    isSelected: function(page) {
+                        return this.isPageSelected(page);
                     }
-                    return selected;
-                },
-                selectPage: function(section, page) {
-                    //page && page.url && $location.path(page.url);
-                    this.currentSection = section;
-                    this.currentPage = page;
-                },
-                isPageSelected: function(page) {
-                    return this.currentPage === page;
-                },
-                isOpen: function(section) {
-                    return this.isSectionSelected(section);
-                },
-                toggleOpen: function(section) {
-                    return this.toggleSelectSection(section);
-                },
-                isSelected: function(page) {
-                    return this.isPageSelected(page);
                 }
             }
         }
