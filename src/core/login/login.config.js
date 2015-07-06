@@ -39,9 +39,11 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                     $page.title(setting.name + setting.titleSeparator + 'Cadastro');
                 }
             },
-            authed: /*@ngInject*/ function($auth, $location, $login) {
-                if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
+            resolve: {
+                authed: /*@ngInject*/ function($auth, $location, $login) {
+                    if ($auth.isAuthenticated()) {
+                        $location.path($login.config.auth.loginSuccessRedirect);
+                    }
                 }
             }
         }
@@ -54,9 +56,11 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 controller: '$LostCtrl as vm'
             }
         },
-        authed: /*@ngInject*/ function($auth, $location, $login) {
-            if ($auth.isAuthenticated()) {
-                $location.path($login.config.auth.loginSuccessRedirect);
+        resolve: {
+            authed: /*@ngInject*/ function($auth, $location, $login) {
+                if ($auth.isAuthenticated()) {
+                    $location.path($login.config.auth.loginSuccessRedirect);
+                }
             }
         }
     });
