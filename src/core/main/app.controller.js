@@ -50,7 +50,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         bootstrap();
     });
     $rootScope.$on('Unauthorized', function() {
-        $user.instance.destroy();
+        $user.instance().destroy();
     });
     //
     // BOOTSTRAP
@@ -64,7 +64,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             var newUser = new $User();
             $user.set(newUser);
         }
-        vm.user = $user.instance;
+        vm.user = $user.instance();
         vm.$page = $page;
         vm.setting = setting;
         vm.year = moment().format('YYYY');
@@ -83,7 +83,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     function logout() {
         $mdSidenav('left').close();
         $timeout(function() {
-            $user.instance.destroy(true);
+            $user.instance().destroy(true);
             bootstrap(true);
         }, 500);
     }

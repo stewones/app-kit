@@ -108,12 +108,12 @@ angular.module('core.page').provider('$page',
          * </pre>
          * @return {object} Retorna um objeto contendo valores das propriedades.
          **/
-        this.$get = this.get = function() {
+        this.$get = this.get = /*@ngInject*/ function($mdToast) {
                 return {
                     config: this._config,
                     load: load(),
                     progress: progress(),
-                    toast: toast,
+                    toast: toast($mdToast),
                     title: title,
                     description: description,
                     ogLocale: ogLocale,
@@ -304,9 +304,11 @@ angular.module('core.page').provider('$page',
          * @param {string} msg mensagem
          * @param {integer} time tempo em milisegundos
          **/
-        function toast(msg, time) {
-            time = time ? time : 5000;
-            $mdToast.show($mdToast.simple().content(msg).position('bottom right').hideDelay(time));
+        function toast($mdToast) {
+            return function(msg, time) {
+                time = time ? time : 5000;
+                $mdToast.show($mdToast.simple().content(msg).position('bottom right').hideDelay(time));
+            }
         }
         //another type of load
         function progress() {

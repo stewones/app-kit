@@ -37,7 +37,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                 var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
                 if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
                 $auth.setToken(response.data.token);
-                $user.instance.init(response.data.user, true, msg);
+                $user.instance().init(response.data.user, true, msg);
                 if (cbSuccess)
                     cbSuccess()
             }

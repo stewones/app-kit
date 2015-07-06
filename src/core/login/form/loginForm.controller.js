@@ -24,7 +24,7 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         $page.load.init();
         var onSuccess = function(result) {
             $page.load.done();
-            $user.instance.init(result.data.user, true);
+            $user.instance().init(result.data.user, true);
         }
         var onError = function(result) {
             $page.load.done();

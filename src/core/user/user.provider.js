@@ -41,7 +41,9 @@ angular.module('core.user').provider('$user',
          **/
         this.$get = this.get = function() {
             return {
-                instance: this._instance,
+                instance: function() {
+                    return this._instance
+                },
                 setting: this._setting,
                 /**
                  * @ngdoc function
@@ -55,7 +57,7 @@ angular.module('core.user').provider('$user',
                  * $user.set(user);
                  * //now user instance can be injectable
                  * angular.module('myApp').controller('myCtrl',function($user){
-                 * console.log($user.instance) //imprime objeto de instância do usuário
+                 * console.log($user.instance()) //imprime objeto de instância do usuário
                  * })
                  * </pre>
                  **/
@@ -75,7 +77,7 @@ angular.module('core.user').provider('$user',
                  * $user.set(user);
                  * //now user instance can be injectable
                  * angular.module('myApp').controller('myCtrl',function($user){
-                 * $user.instance.destroy() //apaga instância do usuário
+                 * $user.instance().destroy() //apaga instância do usuário
                  * })
                  * </pre>
                  **/

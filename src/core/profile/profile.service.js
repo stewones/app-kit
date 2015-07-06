@@ -114,7 +114,7 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
          * @return {array} lista de cargos desejados
          */
     function getWorkPosition() {
-        var result = $user.instance.getWorkPosition($user.instance.current('company')._id);
+        var result = $user.instance().getWorkPosition($user.instance().current('company')._id);
         return result.length ? result : [];
     }
     return Profile;

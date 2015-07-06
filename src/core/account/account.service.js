@@ -93,7 +93,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
                         if (cbError) return cbError(response);
                     }.bind(this));
                 };
-                $scope.user = $user.instance;
+                $scope.user = $user.instance();
                 $scope.account = account.instance;
             },
             templateUrl: 'core/account/confirm.tpl.html',
