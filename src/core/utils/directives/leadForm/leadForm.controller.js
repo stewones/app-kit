@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, layout) {
+angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, $page) {
     var vm = this;
     $scope.register = function() {
         vm.busy = true;

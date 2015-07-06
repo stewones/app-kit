@@ -9,9 +9,9 @@ describe('Component <helpers/directive/leadForm> controller', function() {
         $page,
         requestHandler;
     beforeEach(module('livejob'));
-    beforeEach(inject(function($injector, _$controller_, _api_, _layout_) {
+    beforeEach(inject(function($injector, _$controller_, _api_, _$page_) {
         api = _api_;
-        layout = _layout_;
+        layout = _$page_;
         api.url = 'http://localhost:9000';
         $controller = _$controller_;
         $httpBackend = $injector.get('$httpBackend');

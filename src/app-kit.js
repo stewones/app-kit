@@ -3526,27 +3526,6 @@ angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function() {
     }
 });
 'use strict';
-angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
-    return {
-        scope: {
-            focus: '=',
-            focusWhen: '='
-        },
-        restrict: 'A',
-        link: function(scope, elem) {
-            scope.$watch('focusWhen', function(nv, ov) {
-                if (nv != ov) {
-                    if (nv) {
-                        elem.focus();
-                    }
-                }
-            });
-            if (scope.focus)
-                elem.focus();
-        }
-    }
-})
-'use strict';
 angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope) {
     var vm = this;
     vm.companyid = $scope.companyid;
@@ -3602,7 +3581,28 @@ angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function(
     }
 });
 'use strict';
-angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, layout) {
+angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
+    return {
+        scope: {
+            focus: '=',
+            focusWhen: '='
+        },
+        restrict: 'A',
+        link: function(scope, elem) {
+            scope.$watch('focusWhen', function(nv, ov) {
+                if (nv != ov) {
+                    if (nv) {
+                        elem.focus();
+                    }
+                }
+            });
+            if (scope.focus)
+                elem.focus();
+        }
+    }
+})
+'use strict';
+angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, $page) {
     var vm = this;
     $scope.register = function() {
         vm.busy = true;

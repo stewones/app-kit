@@ -792,8 +792,6 @@ live-chips .filter-opt { min-height: 23px; }
 live-chips .filter-opt a i { color: #ccc }
 live-chips .filter-opt a:hover { text-decoration: underline;} 
 live-chips .filter-opt .truncate { width: 155px !important;}
-.opacity-9 { opacity: .9 }
-.opacity-1 { opacity: 1 }
 .opt-out {
     margin: 10px 10px 30px 0;
     background-color: #fff;
@@ -868,3 +866,5 @@ live-chips .filter-opt .truncate { width: 155px !important;}
     opacity: 1;
     /*max-height:40px;*/
 }
+.opacity-9 { opacity: .9 }
+.opacity-1 { opacity: 1 }
