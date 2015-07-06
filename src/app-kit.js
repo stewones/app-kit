@@ -1108,7 +1108,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         vm.state = $state;
         vm.isAuthed = $auth.isAuthenticated;
         vm.logout = logout;
-        // vm.menu = $menu.api();
+        vm.menu = $menu.api();
         vm.loginConfig = $login.config;
         vm.iframe = $location.hash() === 'iframe' ? true : false;
         vm.logo = $app.logo;
@@ -2620,68 +2620,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
     }
 })
 'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginFormCtrl
- * @description 
- * Controlador do componente
- * @requires $scope
- * @requires $auth
- * @requires $mdToast
- * @requires core.user.factory:$user
- **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
-    var vm = this;
-    vm.login = login;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LoginFormCtrl#login
-     * @propertyOf core.login.controller:$LoginFormCtrl
-     * @description 
-     * Controlador do componente de login
-     * @param {string} logon objeto contendo as credenciais email e password
-     **/
-    function login(logon) {
-        $page.load.init();
-        var onSuccess = function(result) {
-            $page.load.done();
-            $user.instance().init(result.data.user, true);
-        }
-        var onError = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
-        }
-        $auth.login({
-            email: logon.email,
-            password: logon.password
-        }).then(onSuccess, onError);
-    }
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:loginForm
- * @restrict EA
- * @description 
- * Componente para o formulário de login
- * @element div
- * @param {object} config objeto de configurações do módulo login
- * @param {object} user objeto instância do usuário
- **/
-angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            config: '=',
-            user: '='
-        },
-        restrict: 'EA',
-        templateUrl: "core/login/form/loginForm.tpl.html",
-        controller: '$LoginFormCtrl',
-        controllerAs: 'vm',
-        link: function() {}
-    }
-});
-'use strict';
 /* global gapi */
 angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
     var vm = this;
@@ -2744,6 +2682,68 @@ angular.module('google.login').directive('googleLogin', /*@ngInject*/ function()
     }
 })
 'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires core.user.factory:$user
+ **/
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
+    var vm = this;
+    vm.login = login;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
+    function login(logon) {
+        $page.load.init();
+        var onSuccess = function(result) {
+            $page.load.done();
+            $user.instance().init(result.data.user, true);
+        }
+        var onError = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+        }
+        $auth.login({
+            email: logon.email,
+            password: logon.password
+        }).then(onSuccess, onError);
+    }
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ **/
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            config: '=',
+            user: '='
+        },
+        restrict: 'EA',
+        templateUrl: "core/login/form/loginForm.tpl.html",
+        controller: '$LoginFormCtrl',
+        controllerAs: 'vm',
+        link: function() {}
+    }
+});
+'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, setting) {
     $scope.register = register;
     $scope.sign = {};
@@ -2780,12 +2780,6 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
-'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -2797,6 +2791,7 @@ angular.module('core.menu').provider('$menu',
      **/
     /*@ngInject*/
     function $menuProvider() {
+        var instance = this;
         /**
          * @ngdoc object
          * @name core.menu.$menuProvider#mainMenu
@@ -2832,7 +2827,7 @@ angular.module('core.menu').provider('$menu',
                 return {
                     main: this.mainMenu,
                     toolbar: this.toolbarMenu,
-                    api: api($rootScope, $mdSidenav)
+                    api: api(instance, $rootScope, $mdSidenav)
                 }
             }
             /**
@@ -2894,7 +2889,7 @@ angular.module('core.menu').provider('$menu',
              * </pre>
              * @return {object} comportamentos do menu
              **/
-        function api($rootScope, $mdSidenav) {
+        function api(instance, $rootScope, $mdSidenav) {
             return function api() {
                 return {
                     openedSection: false,
@@ -2908,7 +2903,7 @@ angular.module('core.menu').provider('$menu',
                         $mdSidenav('left').close();
                     },
                     //sections: sampleMenu(),
-                    sections: this.mainMenu,
+                    sections: instance.mainMenu,
                     selectSection: function(section) {
                         this.openedSection = section;
                     },
@@ -3107,6 +3102,12 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
+'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
  'use strict';
  /* global moment */
  /**

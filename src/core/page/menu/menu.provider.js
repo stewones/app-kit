@@ -8,6 +8,7 @@ angular.module('core.menu').provider('$menu',
      **/
     /*@ngInject*/
     function $menuProvider() {
+        var instance = this;
         /**
          * @ngdoc object
          * @name core.menu.$menuProvider#mainMenu
@@ -43,7 +44,7 @@ angular.module('core.menu').provider('$menu',
                 return {
                     main: this.mainMenu,
                     toolbar: this.toolbarMenu,
-                    api: api($rootScope, $mdSidenav)
+                    api: api(instance, $rootScope, $mdSidenav)
                 }
             }
             /**
@@ -105,7 +106,7 @@ angular.module('core.menu').provider('$menu',
              * </pre>
              * @return {object} comportamentos do menu
              **/
-        function api($rootScope, $mdSidenav) {
+        function api(instance, $rootScope, $mdSidenav) {
             return function api() {
                 return {
                     openedSection: false,
@@ -119,7 +120,7 @@ angular.module('core.menu').provider('$menu',
                         $mdSidenav('left').close();
                     },
                     //sections: sampleMenu(),
-                    sections: this.mainMenu,
+                    sections: instance.mainMenu,
                     selectSection: function(section) {
                         this.openedSection = section;
                     },

@@ -84,7 +84,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         vm.state = $state;
         vm.isAuthed = $auth.isAuthenticated;
         vm.logout = logout;
-        // vm.menu = $menu.api();
+        vm.menu = $menu.api();
         vm.loginConfig = $login.config;
         vm.iframe = $location.hash() === 'iframe' ? true : false;
         vm.logo = $app.logo;
