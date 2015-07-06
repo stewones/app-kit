@@ -66,7 +66,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
         this.busy = true;
         var vm = this;
         $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, $user, account, api) {
+            controller: /*@ngInject*/ function($scope, $mdDialog, $user, $account, api) {
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
@@ -94,7 +94,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
                     }.bind(this));
                 };
                 $scope.user = $user.instance();
-                $scope.account = account.instance;
+                $scope.account = $account.instance();
             },
             templateUrl: 'core/account/confirm.tpl.html',
             parent: angular.element(document.body),
