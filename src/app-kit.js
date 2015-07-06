@@ -686,9 +686,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
             }
         },
         resolve: {
-            authed: /*@ngInject*/ function($auth, $location, $login) {
+            authed: /*@ngInject*/ function($auth, $window, $login) {
                 if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
+                    $window.location($login.config.auth.loginSuccessRedirect);
                 }
             }
         }
@@ -711,9 +711,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: /*@ngInject*/ function($auth, $location, $login) {
+                authed: /*@ngInject*/ function($auth, $window, $login) {
                     if ($auth.isAuthenticated()) {
-                        $location.path($login.config.auth.loginSuccessRedirect);
+                        $window.location($login.config.auth.loginSuccessRedirect);
                     }
                 }
             }
@@ -728,9 +728,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
             }
         },
         resolve: {
-            authed: /*@ngInject*/ function($auth, $location, $login) {
+            authed: /*@ngInject*/ function($auth, $window, $login) {
                 if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
+                    $window.location = $login.config.auth.loginSuccessRedirect
                 }
             }
         }
@@ -2184,7 +2184,7 @@ angular.module('core.user').provider('$user',
     })
 'use strict';
 /* global window */
-angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, $user, $menu, $page, setting) {
+angular.module('core.user').service('$User', /*@ngInject*/ function($state, $http, $auth, $timeout, $user, $menu, $page, $window, setting) {
     /**
      * @ngdoc service
      * @name core.user.service:$User
@@ -2344,6 +2344,8 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
             removeStorageUser();
             $page.load.done();
             if (alert) $page.toast('Você saiu', 3000);
+            if ($user.setting.logoutRedirect)
+                $window.location($user.setting.logoutRedirect);
         }
         /**
          * @ngdoc function
@@ -2624,68 +2626,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
     }
 })
 'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginFormCtrl
- * @description 
- * Controlador do componente
- * @requires $scope
- * @requires $auth
- * @requires $mdToast
- * @requires core.user.factory:$user
- **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
-    var vm = this;
-    vm.login = login;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LoginFormCtrl#login
-     * @propertyOf core.login.controller:$LoginFormCtrl
-     * @description 
-     * Controlador do componente de login
-     * @param {string} logon objeto contendo as credenciais email e password
-     **/
-    function login(logon) {
-        $page.load.init();
-        var onSuccess = function(result) {
-            $page.load.done();
-            $user.instance().init(result.data.user, true);
-        }
-        var onError = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
-        }
-        $auth.login({
-            email: logon.email,
-            password: logon.password
-        }).then(onSuccess, onError);
-    }
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:loginForm
- * @restrict EA
- * @description 
- * Componente para o formulário de login
- * @element div
- * @param {object} config objeto de configurações do módulo login
- * @param {object} user objeto instância do usuário
- **/
-angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            config: '=',
-            user: '='
-        },
-        restrict: 'EA',
-        templateUrl: "core/login/form/loginForm.tpl.html",
-        controller: '$LoginFormCtrl',
-        controllerAs: 'vm',
-        link: function() {}
-    }
-});
-'use strict';
 /* global gapi */
 angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
     var vm = this;
@@ -2747,6 +2687,68 @@ angular.module('google.login').directive('googleLogin', /*@ngInject*/ function()
         controllerAs: 'google'
     }
 })
+'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires core.user.factory:$user
+ **/
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
+    var vm = this;
+    vm.login = login;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
+    function login(logon) {
+        $page.load.init();
+        var onSuccess = function(result) {
+            $page.load.done();
+            $user.instance().init(result.data.user, true);
+        }
+        var onError = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+        }
+        $auth.login({
+            email: logon.email,
+            password: logon.password
+        }).then(onSuccess, onError);
+    }
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ **/
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            config: '=',
+            user: '='
+        },
+        restrict: 'EA',
+        templateUrl: "core/login/form/loginForm.tpl.html",
+        controller: '$LoginFormCtrl',
+        controllerAs: 'vm',
+        link: function() {}
+    }
+});
 'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, setting) {
     $scope.register = register;

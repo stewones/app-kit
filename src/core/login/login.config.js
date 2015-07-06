@@ -15,9 +15,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
             }
         },
         resolve: {
-            authed: /*@ngInject*/ function($auth, $location, $login) {
+            authed: /*@ngInject*/ function($auth, $window, $login) {
                 if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
+                    $window.location($login.config.auth.loginSuccessRedirect);
                 }
             }
         }
@@ -40,9 +40,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: /*@ngInject*/ function($auth, $location, $login) {
+                authed: /*@ngInject*/ function($auth, $window, $login) {
                     if ($auth.isAuthenticated()) {
-                        $location.path($login.config.auth.loginSuccessRedirect);
+                        $window.location($login.config.auth.loginSuccessRedirect);
                     }
                 }
             }
@@ -57,9 +57,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
             }
         },
         resolve: {
-            authed: /*@ngInject*/ function($auth, $location, $login) {
+            authed: /*@ngInject*/ function($auth, $window, $login) {
                 if ($auth.isAuthenticated()) {
-                    $location.path($login.config.auth.loginSuccessRedirect);
+                    $window.location = $login.config.auth.loginSuccessRedirect
                 }
             }
         }
