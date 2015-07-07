@@ -53,7 +53,7 @@ angular.module('core.login').provider('$login',
                 return {
                     config: this._config,
                     templateUrl: this._templateUrl,
-                    signupTemplateUrl: _signupTemplateUrl
+                    signupTemplateUrl: this._signupTemplateUrl
                 }
             }
             /**
