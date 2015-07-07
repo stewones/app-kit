@@ -23,6 +23,14 @@ angular.module('core.login').provider('$login',
          **/
         this._templateUrl = 'core/login/login.tpl.html';
         /**
+         * @ngdoc object
+         * @name core.login.$loginProvider#_signupTemplateUrl
+         * @propertyOf core.login.$loginProvider
+         * @description 
+         * url do template para novos cadastros
+         **/
+        this._signupTemplateUrl = 'core/login/register/register.tpl.html';
+        /**
          * @ngdoc function
          * @name core.login.$loginProvider#$get
          * @propertyOf core.login.$loginProvider
@@ -44,7 +52,8 @@ angular.module('core.login').provider('$login',
         this.$get = this.get = function() {
                 return {
                     config: this._config,
-                    templateUrl: this._templateUrl
+                    templateUrl: this._templateUrl,
+                    signupTemplateUrl: _signupTemplateUrl
                 }
             }
             /**
@@ -84,7 +93,25 @@ angular.module('core.login').provider('$login',
              * @param {string} val url do template
              **/
         this.templateUrl = function(val) {
-            if (val) return this._templateUrl = val;
-            else return this._templateUrl;
+                if (val) return this._templateUrl = val;
+                else return this._templateUrl;
+            }
+            /**
+             * @ngdoc function
+             * @name core.login.$loginProvider#signupTemplateUrl
+             * @methodOf core.login.$loginProvider
+             * @description
+             * setter para url do template de novos cadastros
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($loginProvider) {     
+             *      $loginProvider.signupTemplateUrl('app/login/my-signup.html')
+             * })
+             * </pre>
+             * @param {string} val url do template
+             **/
+        this.signupTemplateUrl = function(val) {
+            if (val) return this._signupTemplateUrl = val;
+            else return this._signupTemplateUrl;
         }
     });

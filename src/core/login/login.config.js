@@ -34,7 +34,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
         url: '/signup/',
         views: {
             'content': {
-                templateUrl: 'core/login/register/register.tpl.html',
+                templateUrl: /*@ngInject*/ function() {
+                    return $loginProvider.signupTemplateUrl()
+                },
                 controller: /*@ngInject*/ function($page, setting) {
                     $page.title(setting.name + setting.titleSeparator + 'Cadastro');
                 }
