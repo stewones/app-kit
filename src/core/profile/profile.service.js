@@ -63,19 +63,6 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
              * Posições de trabalho (@todo migrar para aplicações filhas)
              **/
             this.positions = params.role ? getWorkPosition(params.role) : [];
-            /**
-             * @ngdoc object
-             * @name core.profile.$Profile#education
-             * @propertyOf core.profile.$Profile
-             * @description 
-             * Educação (@todo migrar para aplicações filhas)
-             **/
-            if (this.education && this.education.courses.length) {
-                this.education.courses.forEach(function(row, i) {
-                    if (row.name)
-                        this.education.courses[i].name = string(row.name).decodeHTMLEntities();
-                }.bind(this))
-            }
         }
         /**
          * @ngdoc function
