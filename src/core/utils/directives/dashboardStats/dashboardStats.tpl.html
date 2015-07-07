@@ -1,0 +1,13 @@
+<div class="dashboard-stats bg margin md-whiteframe-z1 counter" flex>
+    <md-progress-circular ng-show="loading" class="md-hue-2" md-mode="indeterminate"></md-progress-circular>
+    <button class="refresh" ng-click="update()" ng-disabled="loading" ng-hide="loading">
+    <i class="fa fa-refresh"></i>
+    <md-tooltip>
+    Atualizar
+    </md-tooltip>
+    </button>
+    <div flex ng-repeat="item in data" class="data animate-repeat" ng-if="!loading">
+        <h4>{{item.name}}</h4>
+        <span count-to="{{item.value}}" value="0" duration="4"></span>
+    </div>
+</div>

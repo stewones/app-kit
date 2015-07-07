@@ -3633,6 +3633,17 @@ angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function($ap
     }
 });
 'use strict';
+angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
+    return {
+        restrict: 'EA',
+        link: /*@ngInject*/ function($scope) {
+            $timeout(function() {
+                $scope.$emit('reset');
+            }, 5000)
+        }
+    }
+});
+'use strict';
 angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope) {
     var vm = this;
     vm.companyid = $scope.companyid;
@@ -3688,6 +3699,107 @@ angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function(
     }
 });
 'use strict';
+//https://github.com/sparkalow/angular-count-to
+angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
+    return {
+        replace: false,
+        scope: true,
+        link: function(scope, element, attrs) {
+            var e = element[0];
+            var num, refreshInterval, duration, steps, step, countTo, value, increment;
+            var calculate = function() {
+                refreshInterval = 30;
+                step = 0;
+                scope.timoutId = null;
+                countTo = parseInt(attrs.countTo) || 0;
+                scope.value = parseInt(attrs.value, 10) || 0;
+                duration = (parseFloat(attrs.duration) * 1000) || 0;
+                steps = Math.ceil(duration / refreshInterval);
+                increment = ((countTo - scope.value) / steps);
+                num = scope.value;
+            }
+            var tick = function() {
+                scope.timoutId = $timeout(function() {
+                    num += increment;
+                    step++;
+                    if (step >= steps) {
+                        $timeout.cancel(scope.timoutId);
+                        num = countTo;
+                        e.textContent = countTo;
+                    } else {
+                        e.textContent = Math.round(num);
+                        tick();
+                    }
+                }, refreshInterval);
+            }
+            var start = function() {
+                if (scope.timoutId) {
+                    $timeout.cancel(scope.timoutId);
+                }
+                calculate();
+                tick();
+            }
+            attrs.$observe('countTo', function(val) {
+                if (val) {
+                    start();
+                }
+            });
+            attrs.$observe('value', function(val) {
+                start();
+            });
+            return true;
+        }
+    }
+});
+'use strict';
+angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+            data: '=',
+            url: '=',
+            post: '='
+        },
+        templateUrl: 'app/utils/directives/dashboardStats/dashboardStats.tpl.html',
+        link: function() {},
+        controller: /*@ngInject*/ function($scope, $http) {
+            bootstrap();
+            $scope.update = update;
+            $scope.$watch('post', function(nv, ov) {
+                if (nv != ov) {
+                    bootstrap();
+                }
+            }, true);
+
+            function bootstrap() {
+                $scope.loading = true;
+                var onSuccess = function(response) {
+                    $scope.loading = false;
+                    for (var k in response.data) {
+                        if (response.data.hasOwnProperty(k)) {
+                            $scope.data.forEach(function(row, i) {
+                                if (row.slug === k) {
+                                    $scope.data[i].value = response.data[k];
+                                }
+                            })
+                        }
+                    }
+                }
+                var onFail = function(response) {
+                    $scope.loading = false;
+                    $scope.error = response && response.data ? response.data : 'erro no servidor';
+                }
+                $http.post($scope.url, $scope.post).then(onSuccess, onFail);
+            }
+
+            function update() {
+                bootstrap();
+            }
+        }
+    }
+})
+'use strict';
 angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
     return {
         scope: {
@@ -3705,6 +3817,20 @@ angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
             });
             if (scope.focus)
                 elem.focus();
+        }
+    }
+})
+'use strict';
+angular.module('core.utils').directive('infiniteScroll', /*@ngInject*/ function infiniteScroll() {
+    return {
+        restrict: "EA",
+        link: function infiniteScrollLink($scope, $element) {
+            var e = $element[0];
+            $element.bind('scroll', function() {
+                if (e.scrollTop + e.offsetHeight >= e.scrollHeight - 10) {
+                    $scope.$emit('ScreenBottomReached');
+                }
+            })
         }
     }
 })
@@ -3925,9 +4051,10 @@ $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><me
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
 $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
-$templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
+$templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/utils/directives/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
+$templateCache.put("core/utils/directives/dashboardStats/dashboardStats.tpl.html","<div class=\"dashboard-stats bg margin md-whiteframe-z1 counter\" flex=\"\"><md-progress-circular ng-show=\"loading\" class=\"md-hue-2\" md-mode=\"indeterminate\"></md-progress-circular><button class=\"refresh\" ng-click=\"update()\" ng-disabled=\"loading\" ng-hide=\"loading\"><i class=\"fa fa-refresh\"></i><md-tooltip>Atualizar</md-tooltip></button><div flex=\"\" ng-repeat=\"item in data\" class=\"data animate-repeat\" ng-if=\"!loading\"><h4>{{item.name}}</h4><span count-to=\"{{item.value}}\" value=\"0\" duration=\"4\"></span></div></div>");
 $templateCache.put("core/utils/directives/leadForm/leadForm.tpl.html","<form class=\"lead-form\" name=\"leadForm\" novalidate=\"\"><md-input-container flex=\"\"><label>Seu nome</label> <input name=\"name\" ng-model=\"lead.name\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Email</label> <input name=\"email\" type=\"email\" ng-model=\"lead.email\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Empresa</label> <input name=\"company\" ng-model=\"lead.company\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Telefone</label> <input name=\"phone\" ng-model=\"lead.phone\" ui-br-phone-number=\"\" required=\"\"></md-input-container><md-button ng-click=\"register()\" ng-disabled=\"leadForm.$invalid\" class=\"md-primary\">{{label?label:\'Enviar\'}}</md-button><md-progress-circular md-diameter=\"20\" class=\"md-warn md-hue-3\" md-mode=\"indeterminate\" ng-class=\"{\'busy\':vm.busy}\"></md-progress-circular></form>");
 $templateCache.put("core/utils/directives/liveChips/liveChips.tpl.html","<md-chips ng-model=\"vm.selectedItems\" md-autocomplete-snap=\"\" md-require-match=\"\"><md-autocomplete md-selected-item=\"vm.selectedItem\" md-search-text=\"vm.searchText\" md-items=\"item in vm.querySearch(vm.searchText)\" md-item-text=\"item\" placeholder=\"{{vm.placeholder}}\"><span md-highlight-text=\"vm.searchText\">{{item}}</span></md-autocomplete><md-chip-template><span><a ng-class=\"{\'truncate\':truncateInput}\" title=\"{{$chip}}\">{{$chip}}</a></span></md-chip-template></md-chips><v-accordion ng-hide=\"hideOptions\" class=\"vAccordion--default\" layout-align=\"start start\" layout-align-sm=\"center start\" control=\"accordion\"><v-pane><v-pane-header class=\"border-bottom\"><div>Opções</div></v-pane-header><v-pane-content><md-list><md-list-item class=\"filter-opt\" ng-repeat=\"chip in items track by $index\"><div class=\"md-list-item-text compact\"><a ng-class=\"{\'truncate\':truncateOptions}\" title=\"{{chip}}\" ng-click=\"vm.applyRole(chip,accordion)\"><i class=\"fa fa-gear\"></i> {{chip}}</a></div></md-list-item></md-list></v-pane-content></v-pane></v-accordion>");
 $templateCache.put("core/utils/directives/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");}]);

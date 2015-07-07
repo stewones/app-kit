@@ -767,6 +767,46 @@ ul.top-menu li a:hover {
 @media (max-width: 600px) {
     .company-chooser {}
 }
+.dashboard-stats md-progress-circular {
+    margin: 0 auto;
+    display: block;
+}
+
+.dashboard-stats .data {
+    margin-bottom: 25px;
+}
+
+.dashboard-stats .refresh {
+    float: right;
+    color: #ccc;
+    border: none;
+    background-color: transparent;
+}
+
+.dashboard-stats .refresh:hover {
+    color: #333;
+}
+
+.dashboard-stats .animate-repeat {
+    line-height: inherit !important;
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.dashboard-stats .animate-repeat.ng-move, .dashboard-stats .animate-repeat.ng-enter, .dashboard-stats .animate-repeat.ng-leave {
+    -webkit-transition: all linear 0.5s;
+    transition: all linear 0.5s;
+}
+
+.dashboard-stats .animate-repeat.ng-leave.ng-leave-active, .dashboard-stats .animate-repeat.ng-move, .dashboard-stats .animate-repeat.ng-enter {
+    opacity: 0;
+    max-height: 0;
+}
+
+.dashboard-stats .animate-repeat.ng-leave, .dashboard-stats .animate-repeat.ng-move.ng-move-active, .dashboard-stats .animate-repeat.ng-enter.ng-enter-active {
+    opacity: 1;
+    max-height: 40px;
+}
 .lead-form md-progress-circular {
     margin: 14px 0 0 -18px;
     opacity: 0
