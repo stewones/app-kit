@@ -833,6 +833,7 @@ live-chips .filter-opt .truncate { width: 155px !important;}
     color: #fff;
     font-size: 20px;
     margin-top: 7px;
+    display: block;
 }
 
 .opt-out a:hover {
