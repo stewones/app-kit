@@ -1603,31 +1603,31 @@ angular.module("app.setting", []).constant("setting", {
 /*global window*/
 angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     /**
-     * States & Routes
+     * States & Routes (@todo - é preciso dar replace nesta config pelas apps filhas)
      */
-    $stateProvider.state('app.pages', {
-        protected: false,
-        url: '/p/:slug/',
-        views: {
-            'content': {
-                templateUrl: 'core/page/page.tpl.html',
-                controller: '$PageCtrl as vm'
-            }
-        },
-        resolve: {
-            slug: /*@ngInject*/ function($stateParams) {
-                return $stateParams.slug;
-            },
-            closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
-                if ($auth.isAuthenticated()) {
-                    $timeout(function() {
-                        $menu.api().close();
-                    }, 500)
-                }
-            }
-        }
-    });
-    $locationProvider.html5Mode(true);
+    // $stateProvider.state('app.pages', {
+    //     protected: false,
+    //     url: '/p/:slug/',
+    //     views: {
+    //         'content': {
+    //             templateUrl: 'core/page/page.tpl.html',
+    //             controller: '$PageCtrl as vm'
+    //         }
+    //     },
+    //     resolve: {
+    //         slug: /*@ngInject*/ function($stateParams) {
+    //             return $stateParams.slug;
+    //         },
+    //         closeMenu: /*@ngInject*/ function($timeout, $auth, $menu) {
+    //             if ($auth.isAuthenticated()) {
+    //                 $timeout(function() {
+    //                     $menu.api().close();
+    //                 }, 500)
+    //             }
+    //         }
+    //     }
+    // });
+    // $locationProvider.html5Mode(true);
 })
 'use strict';
 angular.module('core.page').controller('$PageCtrl', /*@ngInject*/ function($page, setting) {
@@ -2784,12 +2784,6 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
-'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -3112,6 +3106,12 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
+'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
  'use strict';
  /* global moment */
  /**
@@ -3693,35 +3693,6 @@ angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, $page) {
-    var vm = this;
-    $scope.register = function() {
-        vm.busy = true;
-        var onSuccess = function() {
-            vm.busy = false;
-            $page.toast($scope.lead.name + ' agradecemos o interesse, responderemos seu contato em breve.', 10000);
-            $scope.lead = {};
-        }
-        var onFail = function(response) {
-            vm.busy = false;
-            $page.toast(response);
-        }
-        $http.post(api.url + '/api/leads', $scope.lead).success(onSuccess).error(onFail);
-    }
-});
-'use strict';
-angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            label: '@'
-        },
-        templateUrl: 'core/utils/directives/leadForm/leadForm.tpl.html',
-        controller: 'LeadFormCtrl',
-        controllerAs: 'vm',
-        replace: true
-    }
-})
-'use strict';
 angular.module('core.utils').controller('LiveChipsCtrl', /*@ngInject*/ function($scope, $rootScope) {
     var vm = this;
     vm.applyRole = applyRole;
@@ -3811,6 +3782,35 @@ angular.module('core.utils').directive('liveChips', /*@ngInject*/ function() {
     }
 });
 'use strict';
+angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, $page) {
+    var vm = this;
+    $scope.register = function() {
+        vm.busy = true;
+        var onSuccess = function() {
+            vm.busy = false;
+            $page.toast($scope.lead.name + ' agradecemos o interesse, responderemos seu contato em breve.', 10000);
+            $scope.lead = {};
+        }
+        var onFail = function(response) {
+            vm.busy = false;
+            $page.toast(response);
+        }
+        $http.post(api.url + '/api/leads', $scope.lead).success(onSuccess).error(onFail);
+    }
+});
+'use strict';
+angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            label: '@'
+        },
+        templateUrl: 'core/utils/directives/leadForm/leadForm.tpl.html',
+        controller: 'LeadFormCtrl',
+        controllerAs: 'vm',
+        replace: true
+    }
+})
+'use strict';
 /* jshint undef: false, unused: false */
 angular.module('core.utils').directive('onScrollApplyOpacity', /*@ngInject*/ function() {
     //
@@ -3895,8 +3895,8 @@ $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"D
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
-$templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
 $templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
