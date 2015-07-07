@@ -8,7 +8,7 @@ angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function(
             url: '=',
             post: '='
         },
-        templateUrl: 'app/utils/directives/dashboardStats/dashboardStats.tpl.html',
+        templateUrl: 'core/utils/directives/dashboardStats/dashboardStats.tpl.html',
         link: function() {},
         controller: /*@ngInject*/ function($scope, $http) {
             bootstrap();
