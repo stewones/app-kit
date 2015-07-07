@@ -2784,6 +2784,12 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
+'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -3106,12 +3112,6 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
-'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
  'use strict';
  /* global moment */
  /**

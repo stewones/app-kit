@@ -832,7 +832,7 @@ live-chips .filter-opt .truncate { width: 155px !important;}
 .opt-out button i {
     color: #fff;
     font-size: 20px;
-    margin-top: 7px;
+    margin-top: -2px;
     display: block;
 }
 
