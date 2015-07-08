@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, lodash) {
+angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, $auth, lodash) {
     var vm = this,
         _ = lodash;
     vm.companyid = $scope.companyid;
@@ -20,7 +20,7 @@ angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ func
     // Add options for all companies
     // https://github.com/esgrupo/livejob/issues/23
     //
-    if ($user.instance().role.length > 1 && $scope.showAllOption) {
+    if ($auth.isAuthenticated() && $scope.showAllOption && $user.instance().role.length > 1) {
         var allcompanies = [],
             already = _.findIndex($scope.companies, function(row) {
                 return row.company.name === 'Todas Empresas';

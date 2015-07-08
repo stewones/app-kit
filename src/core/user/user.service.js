@@ -154,10 +154,10 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
      * @param {bool} alert mensagem de aviso (você saiu)
      */
     User.prototype.destroy = function(alert) {
-            $auth.logout();
-            $auth.removeToken();
             removeStorageSession();
             removeStorageUser();
+            $auth.removeToken();
+            $auth.logout();
             $page.load.done();
             if (alert) $page.toast('Você saiu', 3000);
         }
