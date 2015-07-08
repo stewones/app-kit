@@ -5,7 +5,6 @@ angular.module('core.profile', [
     'core.menu',
     'ui.router',
     'vAccordion',
-    'angularMoment',
     'ngLodash',
     'ngMask',
     'string',
