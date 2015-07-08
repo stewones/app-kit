@@ -18,12 +18,12 @@ describe('Http Interceptor Service', function() {
         it('should return object with status 2 for $q.reject on request error', function() {
             expect(Interceptor.requestError(true).$$state.status).toEqual(2);
         });
-        it('should $emit Unauthorized on response error 401', function() {
+        it('should $emit $Unauthorized on response error 401', function() {
             spyOn(rootScope, '$emit');
             Interceptor.responseError({
                 status: 401
             });
-            expect(rootScope.$emit).toHaveBeenCalledWith('Unauthorized');
+            expect(rootScope.$emit).toHaveBeenCalledWith('$Unauthorized');
         });
     });
 });

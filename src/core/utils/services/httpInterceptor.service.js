@@ -22,7 +22,7 @@ angular.module('core.utils').factory('HttpInterceptor', /*@ngInject*/ function($
         // optional method
         'responseError': function(rejection) {
             if (rejection.status === 401) {
-                $rootScope.$emit('Unauthorized');
+                $rootScope.$emit('$Unauthorized');
             }
             // do something on error
             //if (canRecover(rejection)) {
