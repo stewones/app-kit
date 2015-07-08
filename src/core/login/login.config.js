@@ -15,9 +15,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
             }
         },
         resolve: {
-            authed: /*@ngInject*/ function($auth, $window, $login) {
+            authed: /*@ngInject*/ function($auth, $location, $login) {
                 if ($auth.isAuthenticated()) {
-                    $window.location($login.config.auth.loginSuccessRedirect);
+                    $location.path($login.config.auth.loginSuccessRedirect);
                 }
             }
         }
@@ -42,9 +42,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: /*@ngInject*/ function($auth, $window, $login) {
+                authed: /*@ngInject*/ function($auth, $location, $login) {
                     if ($auth.isAuthenticated()) {
-                        $window.location($login.config.auth.loginSuccessRedirect);
+                        $location.path($login.config.auth.loginSuccessRedirect);
                     }
                 }
             }
@@ -61,7 +61,7 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
         resolve: {
             authed: /*@ngInject*/ function($auth, $window, $login) {
                 if ($auth.isAuthenticated()) {
-                    $window.location = $login.config.auth.loginSuccessRedirect
+                    $window.location = $login.config.auth.loginSuccessRedirect //here we use $window to fix issue related with $location.hash (#) in url
                 }
             }
         }
