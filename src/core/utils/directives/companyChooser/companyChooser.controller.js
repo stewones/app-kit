@@ -8,6 +8,7 @@ angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ func
         if (nv != ov) {
             vm.companyid = nv;
         }
+        addAllOption();
     });
     //internal scope databind
     $scope.$watch('vm.companyid', function(nv, ov) {
@@ -20,21 +21,23 @@ angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ func
     // Add options for all companies
     // https://github.com/esgrupo/livejob/issues/23
     //
-    if ($auth.isAuthenticated() && $scope.showAllOption && $user.instance().role.length > 1) {
-        var allcompanies = [],
-            already = _.findIndex($scope.companies, function(row) {
-                return row.company.name === 'Todas Empresas';
-            });
-        if (already === -1) {
-            $user.instance().current('companies').forEach(function(row) {
-                allcompanies.push(row.company._id)
-            })
-            $scope.companies.push({
-                company: {
-                    name: 'Todas Empresas',
-                    _id: allcompanies
-                }
-            });
+    function addAllOption() {
+        if ($scope.showAllOption && $user.instance().role && $user.instance().role.length > 1) {
+            var allcompanies = [],
+                already = _.findIndex($scope.companies, function(row) {
+                    return row.company.name === 'Todas Empresas';
+                });
+            if (already === -1) {
+                $user.instance().current('companies').forEach(function(row) {
+                    allcompanies.push(row.company._id)
+                })
+                $scope.companies.push({
+                    company: {
+                        name: 'Todas Empresas',
+                        _id: allcompanies
+                    }
+                });
+            }
         }
     }
 });

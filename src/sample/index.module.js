@@ -37,11 +37,11 @@
 
 
             //work with Event!
-            var eventInstance = new Event({title:'Awesome',desc:'Okd!!'});
+            var eventInstance = new Event({_id: 123, title:'Awesome',desc:'Okd!!'});
             console.log(eventInstance);
             vm.event = eventInstance;
             //call instance behaviors
-            //eventInstance.save();
+            eventInstance.save();
 
         });
 })();

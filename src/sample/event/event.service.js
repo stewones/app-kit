@@ -11,6 +11,7 @@
         var Event = function(params) {
             //params to instantiate
             params = params ? params : {};
+            params.id = params._id ? params._id : false;
 
             // new way
             angular.extend(this, params);
@@ -40,8 +41,6 @@
             //     city: '',
             //     state: ''
             // }
-
-
         }
 
         Event.prototype.setEdit = setEdit;
@@ -57,10 +56,10 @@
             return this.edit = result;
         }
 
-        function save(form) {
-            console.log(form);
+        function save() {
+            console.log(this.id);
             // Should create or update?
-            return this.edit ? update() : create(form);
+            //return this.edit ? update() : create(form);
         }
 
         function update() {
