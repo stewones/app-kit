@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, lodash) {
+angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, lodash) {
     var vm = this,
         _ = lodash;
     vm.companyid = $scope.companyid;
