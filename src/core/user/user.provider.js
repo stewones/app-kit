@@ -15,7 +15,7 @@ angular.module('core.user').provider('$user',
          * @description 
          * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
          **/
-        this._instance = {};
+        this._instance = null;
         /**
          * @ngdoc object
          * @name core.user.$userProvider#_setting
@@ -42,7 +42,7 @@ angular.module('core.user').provider('$user',
         this.$get = this.get = function() {
             return {
                 instance: function() {
-                    return this._instance
+                    return this._instance;
                 },
                 setting: this._setting,
                 /**
@@ -82,7 +82,7 @@ angular.module('core.user').provider('$user',
                  * </pre>
                  **/
                 destroy: function() {
-                    this._instance = {};
+                    this._instance = null;
                 }
             }
         }
