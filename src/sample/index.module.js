@@ -31,8 +31,17 @@
         /**
          * Custom Login Ctrl
          */
-        .controller('LoginCtrl', /*@ngInject*/ function LoginCtrl($page) {
+        .controller('LoginCtrl', /*@ngInject*/ function LoginCtrl($page, Event) {
             var vm = this;
             vm.hello = '"As pessoas não sabem o que querem, até mostrarmos a elas."';
+
+
+            //work with Event!
+            var eventInstance = new Event({title:'Awesome',desc:'Okd!!'});
+            console.log(eventInstance);
+            vm.event = eventInstance;
+            //call instance behaviors
+            //eventInstance.save();
+
         });
 })();
