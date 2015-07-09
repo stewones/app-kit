@@ -1,0 +1,20 @@
+<md-content class="md-padding anim-zoom-in home" layout="row" layout-sm="column" flex >
+    <div layout="column" class="home" layout-padding flex>
+         <div
+            image-cutter
+            cut-width="300"
+            cut-height="300"
+            cut-shape="square"
+            cut-label="Cortar"
+            cut-result="vm.imageCropResult"
+            cut-step="vm.imageCropStep">
+        </div>
+        Resultado do CROP: {{vm.imageCropResult}}
+        <md-button class="md-fab md-accent" aria-label="refresh">
+            <md-tooltip>
+                Refresh
+            </md-tooltip>
+            <i class="material-icons">replay</i>
+        </md-button>
+    </div>
+</md-content>

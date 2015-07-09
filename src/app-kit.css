@@ -193,6 +193,44 @@ google-login button span {
     display: inline-block;
     padding-left: 30px;
 }
+register-form .registrar {
+    display: block;
+    margin: 0 auto;
+}
+register-form .wrapper, .login-lost .wrapper {
+    margin: 30px auto 10px;
+    max-width: 280px;
+    padding: 15px 15px;
+}
+register-form img.avatar, .login-lost .wrapper img.avatar {
+    display: block;
+    margin: 0 auto;
+    opacity: .3;
+}
+.login-lost .wrapper button {
+    margin: 0 auto;
+    display: block;
+}
+register-form .entrar {
+    height: 34px;
+    margin: 0 2px 0 0;
+    border: none;
+    background-color: #45619d;
+    padding: 0px 16px !important;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    width: 185px;
+    display: inline-block;
+}
+@media (max-width: 600px) {
+    register-form .wrapper, .login-lost .wrapper {
+        box-shadow: none !important;
+   }
+}
 .anim-in-out.anim-in-setup.anim-fade, .anim-in-out.anim-in-setup .anim-fade {
   opacity: 0; }
 .anim-in-out.anim-in-setup.anim-slide-left, .anim-in-out.anim-in-setup .anim-slide-left {
@@ -572,44 +610,6 @@ loader {
 .page-loader md-progress-linear {/* margin-top: -9px; margin-bottom: -2px; height: 0px;*/ }
 .page-loader .md-container {height: 3px;/* background-color: red !important; */ }
 .page-loader .md-bar { /*background-color: yellow !important;*/ }
-register-form .registrar {
-    display: block;
-    margin: 0 auto;
-}
-register-form .wrapper, .login-lost .wrapper {
-    margin: 30px auto 10px;
-    max-width: 280px;
-    padding: 15px 15px;
-}
-register-form img.avatar, .login-lost .wrapper img.avatar {
-    display: block;
-    margin: 0 auto;
-    opacity: .3;
-}
-.login-lost .wrapper button {
-    margin: 0 auto;
-    display: block;
-}
-register-form .entrar {
-    height: 34px;
-    margin: 0 2px 0 0;
-    border: none;
-    background-color: #45619d;
-    padding: 0px 16px !important;
-    color: #fff;
-    font-size: 12px;
-    font-weight: bold;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-    width: 185px;
-    display: inline-block;
-}
-@media (max-width: 600px) {
-    register-form .wrapper, .login-lost .wrapper {
-        box-shadow: none !important;
-   }
-}
 menu-toggle div {
     text-transform: capitalize !important;
 }
@@ -807,6 +807,11 @@ ul.top-menu li a:hover {
     opacity: 1;
     max-height: 40px;
 }
+  .image-cutter input[type=file] {
+      padding: 183px 27px;
+  }
+  .image-cutter button { padding: 0 15px; }
+  .image-cutter button i { margin: 10px 8px 0 0 !important }
 .lead-form md-progress-circular {
     margin: 14px 0 0 -18px;
     opacity: 0

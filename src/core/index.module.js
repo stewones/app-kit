@@ -7,6 +7,7 @@
  * Serviços dos módulos com namespace "core" são identificados pelo prefixo $
  **/
 angular.module('app.kit', [
+    'ngMaterial',
     'ngAnimate',
     'ngTouch',
     'ngSanitize',

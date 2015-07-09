@@ -1,7 +1,6 @@
 <md-content class="md-padding anim-zoom-in login" layout="row" layout-sm="column" ng-if="!app.isAuthed()" flex ng-controller="LoginCtrl as vm">
     <div layout="column" class="login" layout-padding flex>
         <h4 class="text-center">{{vm.hello}}<br /><small>Steve J.</small></h4>
-        Event Instance: {{vm.event}}
         <login-form config="vm.config" user="app.user"></login-form>
     </div>
 </md-content>
