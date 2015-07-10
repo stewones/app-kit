@@ -1,0 +1,28 @@
+<md-dialog class="image-cutter-wrapper" aria-label="{{cutOnModalTitle}}">
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h5>{{cutOnModalTitle}}</h5>
+        <span flex></span>
+        <md-button class="close md-icon-button" ng-click="hide()">
+            <i class="material-icons">&#xE14C;</i>
+        </md-button>
+    </div>
+</md-toolbar>
+<md-dialog-content>
+<!-- area of crop -->
+<image-cutter-area
+endpoint-url="{{endpointUrl}}"
+endpoint-params="endpointParams"
+endpoint-success="endpointSuccess"
+endpoint-fail="endpointFail"
+cut-on-modal="{{cutOnModal}}"
+cut-width="{{cutWidth}}"
+cut-height="{{cutHeight}}"
+cut-shape="{{cutShape}}"
+cut-label="{{cutLabel}}"
+cut-result="cutResult"
+cut-step="cutStep">
+</image-cutter-area>
+<!-- /area of crop -->
+</md-dialog-content>
+</md-dialog>
