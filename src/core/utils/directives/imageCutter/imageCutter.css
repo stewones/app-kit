@@ -1,5 +1,31 @@
-  .image-cutter input[type=file] {
-      padding: 183px 27px;
-  }
-  .image-cutter button { padding: 0 15px; }
-  .image-cutter button i { margin: 10px 8px 0 0 !important }
+.image-cutter input[type=file] {
+    padding: 183px 27px;
+}
+
+.image-cutter button {
+    padding: 0 15px;
+}
+
+.image-cutter button i {
+    margin: 10px 8px 0 0 !important
+}
+
+.image-cutter .progress {
+    position: absolute;
+    width: 100%;
+    top: 40%;
+}
+
+.image-cutter .progress md-progress-circular {
+    margin: 0 auto;
+}
+
+.opacity-1 { opacity: .1 }
+.opacity-2 { opacity: .2 }
+.opacity-3 { opacity: .3 }
+.opacity-4 { opacity: .4 }
+.opacity-5 { opacity: .5 }
+.opacity-6 { opacity: .6 }
+.opacity-7 { opacity: .7 }
+.opacity-8 { opacity: .8 }
+.opacity-9 { opacity: .9 }

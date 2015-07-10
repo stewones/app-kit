@@ -595,7 +595,6 @@ md-list-item.md-3-line .md-list-item-text p {font-size: .75em; font-weight: norm
  .logo-company h4.name { width:170px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 }
 .logo-company h4 { font-size: 16px; margin: 5px 0 0 10px;letter-spacing: -1px; font-weight: normal; /*text-shadow: 1px 1px 1px rgba(50, 50, 50, 1)*/ }
-
 loader {
     margin-bottom: 0px;
     margin-top: -5px;
@@ -807,11 +806,37 @@ ul.top-menu li a:hover {
     opacity: 1;
     max-height: 40px;
 }
-  .image-cutter input[type=file] {
-      padding: 183px 27px;
-  }
-  .image-cutter button { padding: 0 15px; }
-  .image-cutter button i { margin: 10px 8px 0 0 !important }
+.image-cutter input[type=file] {
+    padding: 183px 27px;
+}
+
+.image-cutter button {
+    padding: 0 15px;
+}
+
+.image-cutter button i {
+    margin: 10px 8px 0 0 !important
+}
+
+.image-cutter .progress {
+    position: absolute;
+    width: 100%;
+    top: 40%;
+}
+
+.image-cutter .progress md-progress-circular {
+    margin: 0 auto;
+}
+
+.opacity-1 { opacity: .1 }
+.opacity-2 { opacity: .2 }
+.opacity-3 { opacity: .3 }
+.opacity-4 { opacity: .4 }
+.opacity-5 { opacity: .5 }
+.opacity-6 { opacity: .6 }
+.opacity-7 { opacity: .7 }
+.opacity-8 { opacity: .8 }
+.opacity-9 { opacity: .9 }
 .lead-form md-progress-circular {
     margin: 14px 0 0 -18px;
     opacity: 0

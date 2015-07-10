@@ -2800,12 +2800,6 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
-'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -3128,6 +3122,12 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
+'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
  'use strict';
  /* global moment */
  /**
@@ -3830,10 +3830,14 @@ angular.module('core.utils').controller('ImageCutterCtrl', /*@ngInject*/ functio
     var vm = this;  
 });
 'use strict';
-angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function() {
+angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function($http, $rootScope, api) {
     return {
         scope: {
-            endpoint: '=',
+            endpointUrl: '=',
+            endpointParams: '=',
+            endpointSuccess: '=',
+            endpointFail: '=',
+            cutOnModal: '=',
             cutWidth: '=',
             cutHeight: '=',
             cutShape: '=',
@@ -3841,41 +3845,94 @@ angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function() {
             cutResult: '=',
             cutStep: '='
         },
-        //require: ['^imageCrop', '^ngModel'],
         replace: true,
+        transclude: true,
         restrict: 'EA',
         controller: 'ImageCutterCtrl',
         controllerAs: 'vm',
         templateUrl: 'core/utils/directives/imageCutter/imageCutter.tpl.html',
         link: function($scope, $elem, $attr) {
             $scope.cutLabel = $scope.cutLabel ? $scope.cutLabel : 'Crop';
+            $scope.endpointParams = $scope.endpointParams ? $scope.endpointParams : {};
+            $scope.reboot = reboot;
+            $scope.modal = modal;
             $scope.$watch('cutStep', function(nv, ov) {
                 if (nv != ov) {
+                    /**
+                     * Passo 2 - seleção da imagem
+                     */
                     if (nv === 2) {
-                        //refresh button
-                        // var refreshButton = '';
-                        // refreshButton += '<button class="refresh md-raised md-accent" ng-click="cutResult=null;cutStep=1">';
-                        // refreshButton += '<i class="fa fa-refresh"></i>';
-                        // refreshButton += '<md-tooltip>';
-                        // refreshButton += 'Recomeçar';
-                        // refreshButton += '</md-tooltip>';
-                        // refreshButton += '</button>';
-
                         //add material classes and icon to "crop" button
                         $($elem).find('button:contains("Crop")')
                             .addClass('md-raised md-primary md-button md-default-theme')
                             .html('<span><i class="fa fa-crop"></i> ' + $scope.cutLabel + '<span>')
                             //coloca o bottao de reset ao lado do bottao de crop
-                            .parent().append($($elem).find('button.refresh'));
+                            .parent()
+                            .append($($elem).find('button.refresh').removeAttr('ng-transclude'))
+                            .parent()
+                            .prepend($($elem).find('div.progress'));
 
-                        var interval = setInterval(function() {
-                            $scope.$apply(function() {
+                        // var interval = setInterval(function() {
+                        //     $scope.$apply(function() {
+                        //         clearInterval(interval);
+                        //     })
+                        // }, 500);
+                    }
+                    /**
+                     * Passo 3 - corte
+                     */
+                    if (nv === 3) {
+                        if ($scope.endpointUrl) {
+                            toggleBusy();
+                            //colocando em um intervalo de tempo pra pegar corretamente o resultado do cut
+                            var interval = setInterval(function() {
+                                var params = {
+                                        image: $scope.cutResult
+                                    }
+                                    //extendendo aos parametros da diretiva
+                                angular.extend(params, $scope.endpointParams);
+                                //send to server
+                                $http
+                                    .put($scope.endpointUrl, params)
+                                    .success(function(response) {
+                                        if (typeof $scope.endpointSuccess === 'function') $scope.endpointSuccess(response);
+                                        toggleBusy();
+                                    })
+                                    .error(function(response) {
+                                        if (typeof $scope.endpointFail === 'function') $scope.endpointFail(response);
+                                        toggleBusy();
+                                    })
+                                    //limpando intervalo de tempo pra não gerar loop infinito
                                 clearInterval(interval);
-                            })
-                        }, 500);
+                            }, 1000);
+                        }
                     }
                 }
             })
+
+            function toggleOpacity() {
+                $($elem).find('img.image-crop-final').toggleClass('opacity-3');
+            }
+
+            function toggleBusy() {
+                $scope.busy = !$scope.busy;
+                if ($scope.busy === false) {
+                    //re-reboot directive
+                    reboot();
+                }
+                toggleOpacity();
+            }
+
+            function reboot() {
+                $scope.cutResult = null;
+                $scope.cutStep = 1;
+                $($elem).find('input.image-crop-input').val('');
+                $rootScope.$emit('CropReset');
+            }
+
+            function modal() {
+                alert('UAU MOTHER FOCKER')
+            }
         }
     }
 });
@@ -4031,20 +4088,6 @@ angular.module('core.utils').directive('onScrollApplyOpacity', /*@ngInject*/ fun
     }
 })
 'use strict';
-angular.module('core.utils').directive('updateModelKeyEnter', /*@ngInject*/ function() {
-    return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function(scope, elem, attrs, ngModelCtrl) {
-            elem.bind("keyup", function(e) {
-                if (e.keyCode === 13) {
-                    ngModelCtrl.$commitViewValue();
-                }
-            });
-        }
-    }
-})
-'use strict';
 angular.module('core.utils').controller('OptOutCtrl', /*@ngInject*/ function($scope, $location, $mdDialog) {
     $scope.callAction = function(ev) {
         var confirm = $mdDialog.confirm().parent(angular.element(document.body)).title($scope.alertTitle).content($scope.alertInfo).ariaLabel($scope.alertTitle).ok($scope.alertOk).cancel($scope.alertCancel).targetEvent(ev);
@@ -4075,6 +4118,20 @@ angular.module('core.utils').directive('optOut', /*@ngInject*/ function() {
         controller: 'OptOutCtrl',
         controllerAs: 'vm',
         replace: true
+    }
+})
+'use strict';
+angular.module('core.utils').directive('updateModelKeyEnter', /*@ngInject*/ function() {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, elem, attrs, ngModelCtrl) {
+            elem.bind("keyup", function(e) {
+                if (e.keyCode === 13) {
+                    ngModelCtrl.$commitViewValue();
+                }
+            });
+        }
     }
 })
 !function(a,b){"object"==typeof exports&&"undefined"!=typeof module?b(require("../moment")):"function"==typeof define&&define.amd?define(["moment"],b):b(a.moment)}(this,function(a){"use strict";
@@ -4178,7 +4235,7 @@ $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"to
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
 $templateCache.put("core/utils/directives/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
 $templateCache.put("core/utils/directives/dashboardStats/dashboardStats.tpl.html","<div class=\"dashboard-stats bg margin md-whiteframe-z1 counter\" flex=\"\"><md-progress-circular ng-show=\"loading\" class=\"md-hue-2\" md-mode=\"indeterminate\"></md-progress-circular><button class=\"refresh\" ng-click=\"update()\" ng-disabled=\"loading\" ng-hide=\"loading\"><i class=\"fa fa-refresh\"></i><md-tooltip>Atualizar</md-tooltip></button><div flex=\"\" ng-repeat=\"item in data\" class=\"data animate-repeat\" ng-if=\"!loading\"><h4>{{item.name}}</h4><span count-to=\"{{item.value}}\" value=\"0\" duration=\"4\"></span></div></div>");
-$templateCache.put("core/utils/directives/imageCutter/imageCutter.tpl.html","<div class=\"image-cutter\"><image-crop data-width=\"{{cutWidth}}\" data-height=\"{{cutHeight}}\" data-shape=\"{{cutShape}}\" data-step=\"cutStep\" data-result=\"cutResult\"></image-crop><div hide=\"\"><md-button class=\"refresh md-raised md-accent\" ng-click=\"cutResult=null;cutStep=1;\" aria-label=\"Recomeçar\"><i class=\"fa fa-refresh\"></i><md-tooltip>Recomeçar</md-tooltip></md-button></div><md-button class=\"md-fab md-accent\" aria-label=\"refresh\"><md-tooltip>Refresh</md-tooltip><i class=\"material-icons\">replay</i></md-button></div>");
+$templateCache.put("core/utils/directives/imageCutter/imageCutter.tpl.html","<div class=\"image-cutter-wrapper\"><ng-transclude ng-click=\"modal()\" ng-if=\"cutOnModal\"></ng-transclude><div class=\"image-cutter\"><image-crop data-width=\"{{cutWidth}}\" data-height=\"{{cutHeight}}\" data-shape=\"{{cutShape}}\" data-step=\"cutStep\" data-result=\"cutResult\"></image-crop><div hide=\"\"><md-button class=\"refresh md-raised\" ng-click=\"reboot()\" aria-label=\"Recomeçar\"><i class=\"fa fa-refresh\"></i><md-tooltip>Recomeçar</md-tooltip></md-button><div class=\"progress\" ng-show=\"busy\"><md-progress-circular class=\"md-hue-2\" md-mode=\"indeterminate\"></md-progress-circular></div></div></div></div>");
 $templateCache.put("core/utils/directives/leadForm/leadForm.tpl.html","<form class=\"lead-form\" name=\"leadForm\" novalidate=\"\"><md-input-container flex=\"\"><label>Seu nome</label> <input name=\"name\" ng-model=\"lead.name\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Email</label> <input name=\"email\" type=\"email\" ng-model=\"lead.email\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Empresa</label> <input name=\"company\" ng-model=\"lead.company\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Telefone</label> <input name=\"phone\" ng-model=\"lead.phone\" ui-br-phone-number=\"\" required=\"\"></md-input-container><md-button ng-click=\"register()\" ng-disabled=\"leadForm.$invalid\" class=\"md-primary\">{{label?label:\'Enviar\'}}</md-button><md-progress-circular md-diameter=\"20\" class=\"md-warn md-hue-3\" md-mode=\"indeterminate\" ng-class=\"{\'busy\':vm.busy}\"></md-progress-circular></form>");
 $templateCache.put("core/utils/directives/liveChips/liveChips.tpl.html","<md-chips ng-model=\"vm.selectedItems\" md-autocomplete-snap=\"\" md-require-match=\"\"><md-autocomplete md-selected-item=\"vm.selectedItem\" md-search-text=\"vm.searchText\" md-items=\"item in vm.querySearch(vm.searchText)\" md-item-text=\"item\" placeholder=\"{{vm.placeholder}}\"><span md-highlight-text=\"vm.searchText\">{{item}}</span></md-autocomplete><md-chip-template><span><a ng-class=\"{\'truncate\':truncateInput}\" title=\"{{$chip}}\">{{$chip}}</a></span></md-chip-template></md-chips><v-accordion ng-hide=\"hideOptions\" class=\"vAccordion--default\" layout-align=\"start start\" layout-align-sm=\"center start\" control=\"accordion\"><v-pane><v-pane-header class=\"border-bottom\"><div>Opções</div></v-pane-header><v-pane-content><md-list><md-list-item class=\"filter-opt\" ng-repeat=\"chip in items track by $index\"><div class=\"md-list-item-text compact\"><a ng-class=\"{\'truncate\':truncateOptions}\" title=\"{{chip}}\" ng-click=\"vm.applyRole(chip,accordion)\"><i class=\"fa fa-gear\"></i> {{chip}}</a></div></md-list-item></md-list></v-pane-content></v-pane></v-accordion>");
 $templateCache.put("core/utils/directives/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");}]);

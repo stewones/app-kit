@@ -1,25 +1,27 @@
-<div class="image-cutter">
-    <image-crop
-    data-width="{{cutWidth}}"
-    data-height="{{cutHeight}}"
-    data-shape="{{cutShape}}"
-    data-step="cutStep"
-    data-result="cutResult">
-    </image-crop>
-    <!-- hide container -->
-    <div hide>
-        <md-button class="refresh md-raised md-accent" ng-click="cutResult=null;cutStep=1;" aria-label="Recomeçar">
-            <i class="fa fa-refresh"></i>
-            <md-tooltip>
-                Recomeçar
-            </md-tooltip>
-        </md-button>
+<div class="image-cutter-wrapper">
+    <!-- transclusion -->
+    <ng-transclude ng-click="modal()" ng-if="cutOnModal"></ng-transclude>
+    <!-- /transclusion -->
+    <div class="image-cutter" >
+        <image-crop
+        data-width="{{cutWidth}}"
+        data-height="{{cutHeight}}"
+        data-shape="{{cutShape}}"
+        data-step="cutStep"
+        data-result="cutResult">
+        </image-crop>
+        <!-- hide container -->
+        <div hide>
+            <md-button class="refresh md-raised" ng-click="reboot()" aria-label="Recomeçar">
+                <i class="fa fa-refresh"></i>
+                <md-tooltip>
+                    Recomeçar
+                </md-tooltip>
+            </md-button>
+            <div class="progress" ng-show="busy">
+                <md-progress-circular class="md-hue-2" md-mode="indeterminate"></md-progress-circular>
+            </div>
+        </div>
+        <!-- /hide container -->
     </div>
-    <md-button class="md-fab md-accent" aria-label="refresh">
-        <md-tooltip>
-            Refresh
-        </md-tooltip>
-        <i class="material-icons">replay</i>
-    </md-button>
-    <!-- /hide container -->
 </div>

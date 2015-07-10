@@ -30,7 +30,7 @@
     "angular-slugify": "~1.0.0",
     "angular-mask": "~3.0.12",
     "angulartics": "~0.17.2",
-    "angular-image-crop": "*"
+    "angular-image-crop": "stewones/angular-image-crop#master"
   },
   "devDependencies": {
     "angular-mocks": "~1.3.4"
