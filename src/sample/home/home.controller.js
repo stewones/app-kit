@@ -3,8 +3,8 @@ angular.module('core.home').controller('HomeCtrl', /*@ngInject*/ function($rootS
     var vm = this;
     vm.endpointUrl = 'http://localhost:9000/api/users/avatar';
     vm.endpointSuccess = function(response) {
-        $mdDialog.hide();
-        vm.imageUrl = response.url;
+        
+        console.log(vm.imageUrl = response.url);
     }
     vm.endpointFail = function(response) {
         $page.toast('problema ao enviar imagem '+response)

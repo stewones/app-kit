@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function($http, $rootScope, $mdDialog) {
+angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function($http, $compile, $rootScope, $mdDialog) {
     return {
         scope: {
             endpointUrl: '@',
@@ -17,8 +17,8 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
         replace: true,
         //transclude: true,
         restrict: 'EA',
-        //controller: 'ImageCutterCtrl',
-        controllerAs: 'vm',
+        controller: 'ImageCutterAreaCtrl',
+        // controllerAs: 'vm',
         templateUrl: 'core/utils/directives/imageCutter/area/imageCutterArea.tpl.html',
         link: function($scope, $elem, $attr) {
             $scope.cutLabel = $scope.cutLabel ? $scope.cutLabel : 'Crop';
@@ -53,32 +53,24 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
                         /**
                          * Enviar para o server
                          */
-                        if ($scope.endpointUrl) {
-                            toggleBusy();
-                            //colocando em um intervalo de tempo pra pegar corretamente o resultado do cut
-                            var interval = setInterval(function() {
-                                var params = {
-                                        image: $scope.cutResult
-                                    }
-                                    //extendendo aos parametros da diretiva
-                                angular.extend(params, $scope.endpointParams);
-                                //send to server
-                                $http
-                                    .put($scope.endpointUrl, params)
-                                    .success(function(response) {
-                                        if (typeof $scope.endpointSuccess === 'function') $scope.endpointSuccess(response);
-                                        toggleBusy();
-                                    })
-                                    .error(function(response) {
-                                        if (typeof $scope.endpointFail === 'function') $scope.endpointFail(response);
-                                        toggleBusy();
-                                    })
-                                    //limpando intervalo de tempo pra não gerar loop infinito
-                                clearInterval(interval);
-                            }, 1000);
-                        }
+
+                        if (!$scope.cutOnModal || $scope.cutOnModal == 'false')
+                            $scope.send();
                     }
+
+
                 }
+            })
+            $rootScope.$on('ImageCutterToggleOpacity', function() {
+                toggleOpacity();
+            })
+
+            $rootScope.$on('ImageCutterReboot', function() {
+                reboot();
+            })
+
+            $rootScope.$on('ImageCutterToggleBusy', function() {
+                toggleBusy();
             })
 
             function toggleOpacity() {
@@ -88,6 +80,7 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
             function toggleBusy() {
                 $scope.busy = !$scope.busy;
                 if ($scope.busy === false) {
+                    //$compile($elem)($scope)
                     //re-reboot directive
                     reboot();
                 }
