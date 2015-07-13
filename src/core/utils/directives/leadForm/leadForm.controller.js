@@ -1,17 +1,21 @@
 'use strict';
-angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, $page, lodash, api) {
+angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, $page, $timeout, lodash, api) {
     var vm = this,
         _ = lodash;
+    $scope.lead = {};
     $scope.register = function() {
         vm.busy = true;
         var onSuccess = function() {
             vm.busy = false;
-            $page.toast($scope.lead.name + ' agradecemos o interesse, responderemos seu contato em breve.', 10000);
-            $scope.lead = {};
+            var name = $scope.lead.name ? $scope.lead.name : '';
+            $page.toast(name + ' seu contato foi enviado, agradecemos o interesse.', 10000);
+            $timeout(function() {
+                $scope.lead = {};
+            }, 500)
         }
         var onFail = function(response) {
             vm.busy = false;
-            $page.toast(response);
+            $page.toast(response.error ? response.error : response);
         }
         $http.post(api.url + '/api/leads', $scope.lead).success(onSuccess).error(onFail);
     }

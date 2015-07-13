@@ -1,18 +1,17 @@
 <form class="lead-form" name="leadForm" novalidate>
-    {{isDisabled('name')}}
-    <md-input-container flex>
+    <md-input-container flex ng-if="!isDisabled('name')">
     <label>Seu nome</label>
     <input name="name" ng-model="lead.name" required>
     </md-input-container>
     <md-input-container flex>
-    <label>Email</label>
+    <label>Melhor email</label>
     <input name="email" type="email" ng-model="lead.email" required>
     </md-input-container>
-    <md-input-container flex>
+    <md-input-container flex ng-if="!isDisabled('company')">
     <label>Empresa</label>
     <input name="company" ng-model="lead.company" required>
     </md-input-container>
-    <md-input-container flex>
+    <md-input-container flex ng-if="!isDisabled('phone')">
     <label>Telefone</label>
     <input name="phone" ng-model="lead.phone" ui-br-phone-number required>
     </md-input-container>
