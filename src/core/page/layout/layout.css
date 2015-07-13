@@ -12,7 +12,6 @@ a { outline: none }
 .bold { font-weight: bold; }
 .app-kit-font { font-family: 'Damion', cursive; font-size: 29px; font-weight: normal; /*color: rgb(0,150,136); */}
 ui-view { width: 100%; }
-button[disabled] { background-color: #ddd !important;}
 
 @media (max-width: 600px) {
 	a:hover { color: inherit !important; }
