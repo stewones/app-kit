@@ -2,7 +2,8 @@
 angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
     return {
         scope: {
-            label: '@'
+            label: '@',
+            dont: '='
         },
         templateUrl: 'core/utils/directives/leadForm/leadForm.tpl.html',
         controller: 'LeadFormCtrl',

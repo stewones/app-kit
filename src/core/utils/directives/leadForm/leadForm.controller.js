@@ -1,6 +1,7 @@
 'use strict';
-angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, api, $page) {
-    var vm = this;
+angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, $page, lodash, api) {
+    var vm = this,
+        _ = lodash;
     $scope.register = function() {
         vm.busy = true;
         var onSuccess = function() {
@@ -13,5 +14,9 @@ angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($
             $page.toast(response);
         }
         $http.post(api.url + '/api/leads', $scope.lead).success(onSuccess).error(onFail);
+    }
+
+    $scope.isDisabled = function(fieldName) {
+        return _.indexOf($scope.dont, fieldName) < 0 ? false : true;
     }
 });

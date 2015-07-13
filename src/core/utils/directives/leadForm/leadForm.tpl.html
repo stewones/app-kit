@@ -1,4 +1,5 @@
 <form class="lead-form" name="leadForm" novalidate>
+    {{isDisabled('name')}}
     <md-input-container flex>
     <label>Seu nome</label>
     <input name="name" ng-model="lead.name" required>
