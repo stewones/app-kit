@@ -2690,15 +2690,19 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
  * @element div
  * @param {object} config objeto de configurações do módulo login
  * @param {object} user objeto instância do usuário
+ * @param {string} template-url caminho para o template do formulário
  **/
 angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
     return {
         scope: {
             config: '=',
-            user: '='
+            user: '=',
+            templateUrl: '='
         },
         restrict: 'EA',
-        templateUrl: "core/login/form/loginForm.tpl.html",
+        templateUrl: function(elem, attr){
+            return attr.templateUrl ? attr.templateUrl : "core/login/form/loginForm.tpl.html";
+        },
         controller: '$LoginFormCtrl',
         controllerAs: 'vm',
         link: function() {}
