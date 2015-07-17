@@ -19,6 +19,7 @@
             <li ng-repeat="section in app.menu.sections" class="parent-list-item" ng-class="{'parentActive' : app.menu.isSectionSelected(section)}">
                 <h2 class="menu-heading" ng-if="section.type === 'heading'" id="heading_{{ section.name | nospace }}" layout="row">
                 <i  ng-if="section.icon" class="{{section.icon}}"></i>
+                <md-icon ng-if="section.iconMi" md-font-set="material-icons">{{section.icon}}</md-icon>
                 <my-svg-icon ng-if="section.iconSvg" class="ic_24px" icon="{{section.iconSvg}}" ></my-svg-icon>
                 <span>{{section.name}}</span>
                 </h2>

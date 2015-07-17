@@ -611,8 +611,6 @@ loader {
 menu-toggle div {
     text-transform: capitalize !important;
 }
-
-
 .menu-toggle-list {
     max-height: 999px;
     overflow: hidden;
@@ -635,7 +633,8 @@ menu-toggle div {
     font-size: 14px;
 }
 .app-menu li.parentActive, .app-menu li.parentActive .menu-toggle-list {
-  /*  background-color: rgba(255, 215, 150, 0.1);*/
+
+    /*  background-color: rgba(255, 215, 150, 0.1);*/
 }
 .app-menu, .app-menu ul {
     margin-top: 0;
@@ -671,32 +670,41 @@ menu-toggle div {
     display: block;
 }
 .app-menu .md-button:hover {
-/*    background-color: rgba(255, 215, 150, 0.5) !important;*/
+
+    /*    background-color: rgba(255, 215, 150, 0.5) !important;*/
 }
+
 /*.app-menu button.md-button-moz-focus-inner {
-    padding: 0;
+  padding: 0;
 }*/
-.app-menu .md-button { text-transform: none;}
-.app-menu .md-button.active {}
-
-.app-menu .title { text-transform: capitalize;}
-
-
-md-option {
-cursor: pointer;
-position: relative;
-display: -webkit-flex;
-display: -ms-flexbox;
-display: flex;
--webkit-align-items: center;
--ms-flex-align: center;
-align-items: center;
-width: auto;
-padding: 0 16px 0 16px;
-height: 34px;
+.app-menu .md-button {
+    text-transform: none;
 }
-
-
+.app-menu .md-button.active {
+}
+.app-menu .title {
+    text-transform: capitalize;
+}
+md-option {
+    cursor: pointer;
+    position: relative;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: auto;
+    padding: 0 16px 0 16px;
+    height: 34px;
+}
+menu-link .material-icons {
+    width: 12.4px;
+    font-size: 16px;
+    margin-left: -3px;
+    margin-right: 2px;
+    line-height: 22px;
+}
 menu-avatar { margin: 20px auto;}
 menu-avatar img { margin: 0 auto; width: 150px;height: 150px;border-radius: 50%;box-sizing: content-box; }
 menu-avatar p.name { margin: 20px auto 0px; }
