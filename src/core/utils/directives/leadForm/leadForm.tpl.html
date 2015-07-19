@@ -16,7 +16,7 @@
         <input name="phone" ng-model="lead.phone" ui-br-phone-number required>
     </md-input-container>
 <md-button ng-click="register()" ng-disabled="leadForm.$invalid" class="md-primary">{{label?label:'Enviar'}}</md-button>
-<md-progress-circular md-diameter="20" class="md-warn md-hue-3" md-mode="indeterminate" ng-class="{'busy':vm.busy}"></md-progress-circular>
+<md-progress-circular md-diameter="20" class="md-warn md-hue-3" md-mode="indeterminate" ng-if="vm.busy" ng-class="{'busy':vm.busy}"></md-progress-circular>
 <p class="lead-term">
 *nunca divulgaremos seus dados
 </p>
