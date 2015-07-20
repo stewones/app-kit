@@ -31,7 +31,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
              * @description 
              * destinado a mudança de password
              **/
-            this._password = 'lolggiziafkbase';
+            this._password = 'lolggiziafk';
             /**
              * @ngdoc object
              * @name core.account.service:$Account#__password
