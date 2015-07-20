@@ -14,6 +14,7 @@
             $appProvider.toolbarTitleUrl('toolbarTitle.tpl.html');
             $appProvider.logoWhite('https://livejob.s3.amazonaws.com/livejob-white.png');
             $loginProvider.templateUrl('login.tpl.html');
+            $loginProvider.lostTemplateUrl('login-lost.html')
   /*          $menuProvider.set({
                 name: 'Teste',
                 type: 'link',

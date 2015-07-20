@@ -54,7 +54,9 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
         url: '/login/lost/',
         views: {
             'content': {
-                templateUrl: 'core/login/register/lost.tpl.html',
+                templateUrl: /*@ngInject*/ function() {
+                    return $loginProvider.lostTemplateUrl()
+                },
                 controller: '$LostCtrl as vm'
             }
         },
