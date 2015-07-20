@@ -9,13 +9,15 @@
  * @param {string} firstName primeiro nome
  * @param {string} email email 
  * @param {string} facebook id do facebook
+ * @param {array} menu lista de itens do menu
  **/
 angular.module('core.utils').directive('toolbarAvatar', /*@ngInject*/ function() {
     return {
         scope: {
             firstName: '@',
             email: '@',
-            facebook: '@'
+            facebook: '@',
+            menu: '='
         },
         replace: true,
         //transclude: true,

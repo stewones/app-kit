@@ -6,5 +6,5 @@
         <toolbar-title hide-sm hide-md></toolbar-title>
     </div>
     <toolbar-title hide show-gt-md></toolbar-title>
-    <toolbar-avatar first-name="{{app.user.profile.firstName}}" email="{{app.user.email}}" facebook="{{app.user.facebook}}" ng-if="app.isAuthed()"></toolbar-avatar>
+    <toolbar-avatar first-name="{{app.user.profile.firstName}}" email="{{app.user.email}}" facebook="{{app.user.facebook}}" menu="[{title:'Home', href:'/', icon: 'fa-home'}, {title:'Conta', href:'/account/', icon: 'fa-street-view'}]" ng-if="app.isAuthed()"></toolbar-avatar>
 </div>
