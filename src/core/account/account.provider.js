@@ -33,6 +33,14 @@ angular.module('core.account').provider('$account',
          **/
         this._templateUrl = 'core/account/account.tpl.html';
         /**
+         * @ngdoc object
+         * @name core.account.$accountProvider#_confirmTemplateUrl
+         * @propertyOf core.account.$accountProvider
+         * @description 
+         * url do template para confirmação de conta
+         **/
+        this._confirmTemplateUrl = 'core/account/confirm.tpl.html';
+        /**
          * @ngdoc function
          * @name core.account.$accountProvider#$get
          * @propertyOf core.account.$accountProvider
@@ -55,6 +63,7 @@ angular.module('core.account').provider('$account',
                 return {
                     config: this._config,
                     templateUrl: this._templateUrl,
+                    confirmTemplateUrl: this._confirmTemplateUrl,
                     /**
                      * @ngdoc function
                      * @name core.account.$accountProvider#set
@@ -136,7 +145,25 @@ angular.module('core.account').provider('$account',
              * @param {string} val url do template
              **/
         this.templateUrl = function(val) {
-            if (val) return this._templateUrl = val;
-            else return this._templateUrl;
+                if (val) return this._templateUrl = val;
+                else return this._templateUrl;
+            }
+            /**
+             * @ngdoc function
+             * @name core.account.$accountProvider#confirmTemplateUrl
+             * @methodOf core.account.$accountProvider
+             * @description
+             * getter/setter para url do template de confirmação de conta
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($accountProvider) {     
+             *      $accountProvider.confirmTemplateUrl('app/account/my-account-confirm.html')
+             * })
+             * </pre>
+             * @param {string} val url do template
+             **/
+        this.confirmTemplateUrl = function(val) {
+            if (val) return this._confirmTemplateUrl = val;
+            else return this._confirmTemplateUrl;
         }
     });

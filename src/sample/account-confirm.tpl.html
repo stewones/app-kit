@@ -1,0 +1,31 @@
+<md-dialog class="account-confirm" aria-label="Confirme sua identidade">
+<md-toolbar>
+<div class="md-toolbar-tools">
+    <h5>Confirme sua identidade !!!</h5>
+    <span flex></span>
+    <md-button class="md-icon-button" ng-click="hide()">
+        <md-icon md-svg-src="/assets/images/icons/ic_close_24px.svg" aria-label="Fechar"></md-icon>
+    </md-button>
+</div>
+</md-toolbar>
+<md-dialog-content>
+<menu-avatar
+first-name="user.profile.firstName"
+last-name="user.profile.lastName"
+gender="user.profile.gender"
+facebook="user.facebook">
+</menu-avatar>
+<br />
+<form name="passwordForm">
+    <md-input-container>
+        <label>Senha</label>
+        <input type="password" ng-model="account.password" required>
+    </md-input-container>
+</form>
+</md-dialog-content>
+<div class="md-actions" layout="row">
+    <md-button ng-click="confirm()" class="md-primary" ng-disabled="passwordForm.$invalid||!passwordForm.$dirty">
+        Confirmar
+    </md-button>
+</div>
+</md-dialog>

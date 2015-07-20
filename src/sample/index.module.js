@@ -7,7 +7,7 @@
         /**
          * 1 - App Config
          */
-        .config( /*@ngInject*/ function($loginProvider, $appProvider, $stateProvider, $menuProvider) {
+        .config( /*@ngInject*/ function($loginProvider, $appProvider, $stateProvider, $menuProvider, $accountProvider) {
             //$appProvider.layoutUrl('layout.tpl.html');
             $appProvider.toolbarUrl('toolbar.tpl.html');
             //$appProvider.sidenavUrl('sidenav.tpl.html');
@@ -15,13 +15,14 @@
             $appProvider.logoWhite('https://livejob.s3.amazonaws.com/livejob-white.png');
             $loginProvider.templateUrl('login.tpl.html');
             $loginProvider.lostTemplateUrl('login-lost.html')
-  /*          $menuProvider.set({
-                name: 'Teste',
-                type: 'link',
-                icon: 'fa fa-street-view',
-                url: '/profile/',
-                state: 'app.profile'
-            });*/
+                /*          $menuProvider.set({
+                              name: 'Teste',
+                              type: 'link',
+                              icon: 'fa fa-street-view',
+                              url: '/profile/',
+                              state: 'app.profile'
+                          });*/
+            $accountProvider.confirmTemplateUrl('account-confirm.tpl.html')
         })
         /**
          * 2 - App Run
@@ -38,12 +39,16 @@
 
 
             //work with Event!
-            var eventInstance = new Event({_id: 123, title:'Awesome',desc:'Okd!!'});
+            var eventInstance = new Event({
+                _id: 123,
+                title: 'Awesome',
+                desc: 'Okd!!'
+            });
             //console.log(eventInstance);
             vm.event = eventInstance;
             //call instance behaviors
             //eventInstance.save();
-      
+
 
         });
 })();
