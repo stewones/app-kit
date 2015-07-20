@@ -1,9 +1,11 @@
 'use strict';
-angular.module('core.utils').controller('ToolbarAvatarCtrl', /*@ngInject*/ function($location) {
+angular.module('core.utils').controller('ToolbarAvatarCtrl', /*@ngInject*/ function($location, $timeout) {
     var vm = this;
     vm.logout = logout;
 
     function logout() {
-        $location.path('/logout/');
+        $timeout(function() {
+            $location.path('/logout/');
+        }, 1200);
     }
 })

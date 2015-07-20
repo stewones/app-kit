@@ -68,19 +68,6 @@ angular.module('core.app', [
     'core.account'
 ]);
 'use strict';
-angular.module('core.profile', [
-    'core.utils',
-    'core.user',
-    'core.menu',
-    'ui.router',
-    'vAccordion',
-    'ngLodash',
-    'ngMask',
-    'string',
-    'angularMoment',
-    'satellizer'
-])
-'use strict';
 angular.module('core.page', [
     'core.app',
     'core.menu',
@@ -94,6 +81,19 @@ angular.module('core.page', [
     'ui.utils.masks',
     'directives.inputMatch'
 ]);
+'use strict';
+angular.module('core.profile', [
+    'core.utils',
+    'core.user',
+    'core.menu',
+    'ui.router',
+    'vAccordion',
+    'ngLodash',
+    'ngMask',
+    'string',
+    'angularMoment',
+    'satellizer'
+])
 'use strict';
 angular.module('core.user', [
   'ui.router',
@@ -1657,114 +1657,6 @@ angular.module("app.setting", []).constant("setting", {
     ogTag: "app-kit"
 });
 'use strict';
-angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, $user, api, moment) {
-    /**
-     * @ngdoc service
-     * @name core.profile.$Profile
-     * @description 
-     * Comportamentos e estados de perfil do usuário
-     * @param {object} params Propriedades da instância
-     **/
-    var Profile = function(params) {
-            /**
-             * @ngdoc object
-             * @name core.profile.$Profile#params
-             * @propertyOf core.profile.$Profile
-             * @description 
-             * Propriedades da instância
-             **/
-            params = params ? params : {};
-            if (typeof params === 'object') {
-                for (var k in params) {
-                    if (params.hasOwnProperty(k)) {
-                        this[k] = params[k];
-                    }
-                }
-            }
-            /**
-             * @ngdoc object
-             * @name core.profile.$Profile#id
-             * @propertyOf core.profile.$Profile
-             * @description 
-             * Id do perfil
-             **/
-            this.id = params._id ? params._id : false;
-            /**
-             * @ngdoc object
-             * @name core.profile.$Profile#role
-             * @propertyOf core.profile.$Profile
-             * @description 
-             * Regra de apresentação
-             **/
-            this.role = params.role ? params.role : [];
-            /**
-             * @ngdoc object
-             * @name core.profile.$Profile#active
-             * @propertyOf core.profile.$Profile
-             * @description 
-             * Status do perfil
-             **/
-            this.active = params.active ? params.active : false;
-            /**
-             * @ngdoc object
-             * @name core.profile.$Profile#created
-             * @propertyOf core.profile.$Profile
-             * @description 
-             * Data de criação
-             **/
-            this.created = params.created ? params.created : moment().format();
-            /**
-             * @ngdoc object
-             * @name core.profile.$Profile#positions
-             * @propertyOf core.profile.$Profile
-             * @description 
-             * Posições de trabalho (@todo migrar para aplicações filhas)
-             **/
-            this.positions = params.role ? getWorkPosition(params.role) : [];
-        }
-        /**
-         * @ngdoc function
-         * @name core.profile.$Profile:save
-         * @methodOf core.profile.$Profile
-         * @description
-         * Salvar perfil
-         * @param {function} cbSuccess callback de sucesso
-         * @param {function} cbError callback de erro
-         */
-    Profile.prototype.save = function(cbSuccess, cbError) {
-            $page.load.init();
-            if (this.busy) return;
-            this.busy = true;
-            var url = api.url + '/api/profiles';
-            $http.put(url + '/' + this.id, this).success(function(response) {
-                $page.load.done();
-                this.busy = false;
-                $page.toast('Seu perfil foi atualizado, ' + response.firstName + '.');
-                if (cbSuccess)
-                    return cbSuccess(response);
-            }.bind(this)).error(function(response) {
-                $page.load.done();
-                this.busy = false;
-                $page.toast('Problema ao atualizar perfil');
-                if (cbError)
-                    return cbError(response);
-            }.bind(this));
-        }
-        /**
-         * @ngdoc function
-         * @name core.profile.$Profile:getWorkPosition
-         * @methodOf core.profile.$Profile
-         * @description
-         * Obter a lista de cargos (@todo migrar para aplicações filhas)
-         * @return {array} lista de cargos desejados
-         */
-    function getWorkPosition() {
-        var result = $user.instance().getWorkPosition($user.instance().current('company')._id);
-        return result.length ? result : [];
-    }
-    return Profile;
-})
-'use strict';
 /*global window*/
 angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     /**
@@ -2132,6 +2024,114 @@ angular.module('core.page').provider('$page',
         }
     }
 )
+'use strict';
+angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http, string, $page, $user, api, moment) {
+    /**
+     * @ngdoc service
+     * @name core.profile.$Profile
+     * @description 
+     * Comportamentos e estados de perfil do usuário
+     * @param {object} params Propriedades da instância
+     **/
+    var Profile = function(params) {
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#params
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Propriedades da instância
+             **/
+            params = params ? params : {};
+            if (typeof params === 'object') {
+                for (var k in params) {
+                    if (params.hasOwnProperty(k)) {
+                        this[k] = params[k];
+                    }
+                }
+            }
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#id
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Id do perfil
+             **/
+            this.id = params._id ? params._id : false;
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#role
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Regra de apresentação
+             **/
+            this.role = params.role ? params.role : [];
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#active
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Status do perfil
+             **/
+            this.active = params.active ? params.active : false;
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#created
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Data de criação
+             **/
+            this.created = params.created ? params.created : moment().format();
+            /**
+             * @ngdoc object
+             * @name core.profile.$Profile#positions
+             * @propertyOf core.profile.$Profile
+             * @description 
+             * Posições de trabalho (@todo migrar para aplicações filhas)
+             **/
+            this.positions = params.role ? getWorkPosition(params.role) : [];
+        }
+        /**
+         * @ngdoc function
+         * @name core.profile.$Profile:save
+         * @methodOf core.profile.$Profile
+         * @description
+         * Salvar perfil
+         * @param {function} cbSuccess callback de sucesso
+         * @param {function} cbError callback de erro
+         */
+    Profile.prototype.save = function(cbSuccess, cbError) {
+            $page.load.init();
+            if (this.busy) return;
+            this.busy = true;
+            var url = api.url + '/api/profiles';
+            $http.put(url + '/' + this.id, this).success(function(response) {
+                $page.load.done();
+                this.busy = false;
+                $page.toast('Seu perfil foi atualizado, ' + response.firstName + '.');
+                if (cbSuccess)
+                    return cbSuccess(response);
+            }.bind(this)).error(function(response) {
+                $page.load.done();
+                this.busy = false;
+                $page.toast('Problema ao atualizar perfil');
+                if (cbError)
+                    return cbError(response);
+            }.bind(this));
+        }
+        /**
+         * @ngdoc function
+         * @name core.profile.$Profile:getWorkPosition
+         * @methodOf core.profile.$Profile
+         * @description
+         * Obter a lista de cargos (@todo migrar para aplicações filhas)
+         * @return {array} lista de cargos desejados
+         */
+    function getWorkPosition() {
+        var result = $user.instance().getWorkPosition($user.instance().current('company')._id);
+        return result.length ? result : [];
+    }
+    return Profile;
+})
 'use strict';
 angular.module('core.user').provider('$user',
     /**
@@ -4157,12 +4157,14 @@ angular.module('core.utils').directive('optOut', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.utils').controller('ToolbarAvatarCtrl', /*@ngInject*/ function($location) {
+angular.module('core.utils').controller('ToolbarAvatarCtrl', /*@ngInject*/ function($location, $timeout) {
     var vm = this;
     vm.logout = logout;
 
     function logout() {
-        $location.path('/logout/');
+        $timeout(function() {
+            $location.path('/logout/');
+        }, 1200);
     }
 })
 'use strict';
@@ -4433,8 +4435,8 @@ $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoo
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
-$templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
