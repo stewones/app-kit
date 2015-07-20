@@ -927,7 +927,7 @@ angular.module('core.login').provider('$login',
  * Destruir sessão
  * @requires core.login.$user
  **/
-angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function(user) {
+angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function($user) {
     $user.instance().destroy();
 })
 'use strict';
