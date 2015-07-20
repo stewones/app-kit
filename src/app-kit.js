@@ -2572,6 +2572,72 @@ angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     }
 })
 'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires core.user.factory:$user
+ **/
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
+    var vm = this;
+    vm.login = login;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
+    function login(logon) {
+        $page.load.init();
+        var onSuccess = function(result) {
+            $page.load.done();
+            $user.instance().init(result.data.user, true);
+        }
+        var onError = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+        }
+        $auth.login({
+            email: logon.email,
+            password: logon.password
+        }).then(onSuccess, onError);
+    }
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ * @param {string} template-url caminho para o template do formulário
+ **/
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            config: '=',
+            user: '=',
+            templateUrl: '='
+        },
+        restrict: 'EA',
+        templateUrl: function(elem, attr){
+            return attr.templateUrl ? attr.templateUrl : "core/login/form/loginForm.tpl.html";
+        },
+        controller: '$LoginFormCtrl',
+        controllerAs: 'vm',
+        link: function() {}
+    }
+});
+'use strict';
 angular.module('facebook.login').config(function(FacebookProvider, setting) {
     FacebookProvider.init({
         version: 'v2.3',
@@ -2670,72 +2736,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
         me().then(onSuccess, onFail);
     }
 })
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginFormCtrl
- * @description 
- * Controlador do componente
- * @requires $scope
- * @requires $auth
- * @requires $mdToast
- * @requires core.user.factory:$user
- **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
-    var vm = this;
-    vm.login = login;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LoginFormCtrl#login
-     * @propertyOf core.login.controller:$LoginFormCtrl
-     * @description 
-     * Controlador do componente de login
-     * @param {string} logon objeto contendo as credenciais email e password
-     **/
-    function login(logon) {
-        $page.load.init();
-        var onSuccess = function(result) {
-            $page.load.done();
-            $user.instance().init(result.data.user, true);
-        }
-        var onError = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
-        }
-        $auth.login({
-            email: logon.email,
-            password: logon.password
-        }).then(onSuccess, onError);
-    }
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:loginForm
- * @restrict EA
- * @description 
- * Componente para o formulário de login
- * @element div
- * @param {object} config objeto de configurações do módulo login
- * @param {object} user objeto instância do usuário
- * @param {string} template-url caminho para o template do formulário
- **/
-angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            config: '=',
-            user: '=',
-            templateUrl: '='
-        },
-        restrict: 'EA',
-        templateUrl: function(elem, attr){
-            return attr.templateUrl ? attr.templateUrl : "core/login/form/loginForm.tpl.html";
-        },
-        controller: '$LoginFormCtrl',
-        controllerAs: 'vm',
-        link: function() {}
-    }
-});
 'use strict';
 /* global gapi */
 angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
@@ -4431,22 +4431,22 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
     }
 });
 angular.module("app.kit").run(["$templateCache", function($templateCache) {$templateCache.put("core/account/account.tpl.html","<md-content class=\"main-wrapper account anim-zoom-in md-padding\" layout=\"column\" flex=\"\"><div class=\"account-wrapper connections\"><h4><i class=\"fa fa-rss\"></i> Suas conexões <span ng-if=\"vm.account.role.length>1\">({{vm.account.role.length}})</span></h4><opt-out class=\"animate-repeat-opt-out\" ng-if=\"vm.account.role.length\" ng-repeat=\"item in vm.account.role\" item-id=\"item.company._id\" item-title=\"item.company.name\" item-title-tooltip=\"\'Ir para \'+item.company.name\" item-location=\"\'/\'+item.company.ref+\'/\'\" item-info=\"vm.optOutInfo(item)\" put-location=\"vm.optOutPutLocation\" put-params=\"vm.optOutPutParams\" alert-title=\"\'Desfazer conexão\'\" alert-info=\"\'Você será desconectado da empresa \'+item.company.name+\'.\'\" alert-ok=\"\'Ok, entendo.\'\" alert-cancel=\"\'Não, obrigado.\'\"></opt-out><div class=\"empty\" ng-if=\"!vm.account.role.length\"><small>Você não possui conexões.</small></div></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-at\"></i> Dados gerais</h4><form novalidate=\"\" name=\"vm.form.account\" class=\"md-whiteframe-z1\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Seu nome</label> <input name=\"firstName\" ng-model=\"vm.account.profile.firstName\" required=\"\"></md-input-container><md-input-container><label>Sobrenome</label> <input name=\"lastName\" ng-model=\"vm.account.profile.lastName\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Melhor email</label> <input name=\"email\" ng-model=\"vm.account.email\" type=\"email\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.saveAccount($event)\" ng-disabled=\"vm.account.busy||vm.form.account.$invalid||!vm.form.account.$dirty||vm.pristineAccount()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-unlock-alt\"></i> Alterar senha</h4><form name=\"vm.form.password\" class=\"md-whiteframe-z1\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Nova senha</label> <input type=\"password\" ng-model=\"vm.account._password\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Repetir nova senha</label> <input type=\"password\" ng-model=\"vm.account.__password\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.savePassword()\" ng-disabled=\"vm.account.busy||vm.form.password.$invalid||!vm.form.password.$dirty||(vm.account._password!=vm.account.__password)\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-remove\"><a ng-click=\"vm.deactivateAccount($event)\"><i class=\"fa fa-remove\"></i> Quero cancelar minha conta</a></div></md-content>");
-$templateCache.put("core/account/confirm.tpl.html","<md-dialog aria-label=\"Confirme sua identidade\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Confirme sua identidade</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><menu-avatar first-name=\"user.profile.firstName\" last-name=\"user.profile.lastName\" gender=\"user.profile.gender\" facebook=\"user.facebook\"></menu-avatar><br><form name=\"passwordForm\"><md-input-container><label>Senha</label> <input type=\"password\" ng-model=\"account.password\" required=\"\"></md-input-container></form></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"confirm()\" class=\"md-primary\" ng-disabled=\"passwordForm.$invalid||!passwordForm.$dirty\">Confirmar</md-button></div></md-dialog>");
+$templateCache.put("core/account/confirm.tpl.html","<md-dialog class=\"account-confirm\" aria-label=\"Confirme sua identidade\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Confirme sua identidade</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><menu-avatar first-name=\"user.profile.firstName\" last-name=\"user.profile.lastName\" gender=\"user.profile.gender\" facebook=\"user.facebook\"></menu-avatar><br><form name=\"passwordForm\"><md-input-container><label>Senha</label> <input type=\"password\" ng-model=\"account.password\" required=\"\"></md-input-container></form></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"confirm()\" class=\"md-primary\" ng-disabled=\"passwordForm.$invalid||!passwordForm.$dirty\">Confirmar</md-button></div></md-dialog>");
 $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"Desativação de conta\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Desativação de conta</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><strong>Prezad{{gender}} {{account.profile.firstName}}</strong><p>Conforme nossa política de usuários, não podemos apagar todos os seus dados, pois nem tudo está relacionado somente a você.<br>Iremos apagar suas conexões e o que mais for possível, além disso, você não receberá mais nenhuma oportunidade, ou notificação do LiveJob.</p><p>Deseja realmente prosseguir com a desativação de sua conta?</p></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"cancel()\" class=\"md-primary\">Não, obrigado.</md-button><md-button ng-click=\"confirm()\" class=\"md-primary\">Ok, entendo.</md-button></div></md-dialog>");
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
-$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
+$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state.current.name != \'app.profile\' && app.state.current.name != \'app.landing\'}\"></div></md-content></div>");
+$templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-facepile ng-if=\"app.user.current(\'company\').facebook && (app.state.current.name!=\'app.home\' && app.state.current.name!=\'app.account\') && app.enviroment !== \'development\' && !app.iframe\" hide-sm=\"\" width=\"304\" url=\"https://www.facebook.com/{{app.user.current(\'company\').facebook}}\" facepile=\"true\" hide-cover=\"false\" ng-hide=\"app.state.current.name===\'app.pages\'\"></menu-facepile><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu.sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu.isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu.isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting.copyright }} © {{ app.year }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
-$templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
 $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
