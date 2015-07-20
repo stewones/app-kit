@@ -951,3 +951,34 @@ live-chips .filter-opt .truncate { width: 155px !important;}
     opacity: 1;
     /*max-height:40px;*/
 }
+.toolbar-avatar menu-avatar img {
+    margin: 18px 0 0 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.toolbar-avatar .md-title {
+    margin-top: -18px;
+    height: 19px;
+    font-size: 14px;
+    margin-bottom: 0;
+    text-transform: capitalize;
+    text-align: right;
+}
+
+.toolbar-avatar .md-caption {
+    text-transform: lowercase;
+    font-size: 12px;
+    text-align: right;
+    height: 19px;
+    margin-top: -3px;
+}
+
+.toolbar-avatar md-menu-item {
+    height: 34px;
+}
+
+.toolbar-avatar button.logged-in-menu-button {
+    margin-top: -32px;
+    height: 95px;
+}

@@ -1,0 +1,31 @@
+<div class="toolbar-avatar">
+    <md-menu>
+    <md-button aria-label="Open phone interactions menu" ng-click="$mdOpenMenu()" class="logged-in-menu-button" ng-class="{'md-icon-button': app.mdMedia('sm')}">
+        <div layout="row" layout-align="end center" class="toolbar-login-info">
+            <div layout="column" layout-align="center" class="toolbar-login-content" show-gt-sm hide-sm>
+                <span class="md-title">{{firstName}}</span>
+                <span class="md-caption">{{email}}</span>
+            </div>
+            <div layout="row" layout-align="center center">
+                <menu-avatar facebook="facebook" md-menu-origin>
+                </menu-avatar>
+            </div>
+        </div>
+    </md-button>
+    <md-menu-content width="4">
+    <md-menu-item>
+    <md-button ng-href="profile">
+        <md-icon md-font-icon="fa fa-street-view" md-menu-align-target></md-icon>
+        Perfil
+    </md-button>
+    </md-menu-item>
+    <md-menu-divider></md-menu-divider>
+    <md-menu-item>
+    <md-button ng-click="vm.logout()">
+        <md-icon md-font-icon="fa fa-power-off" md-menu-align-target></md-icon>
+        Sair
+    </md-button>
+    </md-menu-item>
+    </md-menu-content>
+    </md-menu>
+</div>
