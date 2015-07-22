@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.account').service('$Account', /*@ngInject*/ function($http, $mdDialog, $page, api) {
+angular.module('core.account').service('$Account', /*@ngInject*/ function($http, $mdDialog, $page, $account, api) {
     /**
      * @ngdoc service
      * @name core.account.service:$Account
@@ -31,7 +31,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
              * @description 
              * destinado a mudança de password
              **/
-            this._password = 'lolggiziafkbase';
+            this._password = 'lolggiziafk';
             /**
              * @ngdoc object
              * @name core.account.service:$Account#__password
@@ -66,7 +66,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
         this.busy = true;
         var vm = this;
         $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, $user, $account, api) {
+            controller: /*@ngInject*/ function($scope, $mdDialog, $user, api) {
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
@@ -96,7 +96,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
                 $scope.user = $user.instance();
                 $scope.account = $account.instance();
             },
-            templateUrl: 'core/account/confirm.tpl.html',
+            templateUrl: $account.confirmTemplateUrl,
             parent: angular.element(document.body),
             //targetEvent: ev,
         }).then(function() {

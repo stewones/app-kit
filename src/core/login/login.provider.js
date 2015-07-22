@@ -31,6 +31,14 @@ angular.module('core.login').provider('$login',
          **/
         this._signupTemplateUrl = 'core/login/register/register.tpl.html';
         /**
+         * @ngdoc object
+         * @name core.login.$loginProvider#_lostTemplateUrl
+         * @propertyOf core.login.$loginProvider
+         * @description 
+         * url do template para recuperação de senha
+         **/
+        this._lostTemplateUrl = 'core/login/register/lost.tpl.html';
+        /**
          * @ngdoc function
          * @name core.login.$loginProvider#$get
          * @propertyOf core.login.$loginProvider
@@ -95,6 +103,24 @@ angular.module('core.login').provider('$login',
         this.templateUrl = function(val) {
                 if (val) return this._templateUrl = val;
                 else return this._templateUrl;
+            }
+            /**
+             * @ngdoc function
+             * @name core.login.$loginProvider#lostTemplateUrl
+             * @methodOf core.login.$loginProvider
+             * @description
+             * setter para url do template para recuperação de senha
+             * @example
+             * <pre>
+             * angular.module('myApp.module').config(function($loginProvider) {     
+             *      $loginProvider.lostTemplateUrl('app/login/my-login-lost.html')
+             * })
+             * </pre>
+             * @param {string} val url do template
+             **/
+        this.lostTemplateUrl = function(val) {
+                if (val) return this._lostTemplateUrl = val;
+                else return this._lostTemplateUrl;
             }
             /**
              * @ngdoc function
