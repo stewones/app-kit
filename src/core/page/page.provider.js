@@ -303,11 +303,12 @@ angular.module('core.page').provider('$page',
          * mostra uma mensagem de aviso
          * @param {string} msg mensagem
          * @param {integer} time tempo em milisegundos
+         * @param {string} position posição do alerta. default: 'bottom right'
          **/
         function toast($mdToast) {
-            return function(msg, time) {
+            return function(msg, time, position) {
                 time = time ? time : 5000;
-                $mdToast.show($mdToast.simple().content(msg).position('bottom right').hideDelay(time));
+                $mdToast.show($mdToast.simple().content(msg).position(position ? position : 'bottom right').hideDelay(time));
             }
         }
         //another type of load

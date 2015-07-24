@@ -14,5 +14,6 @@ angular.module('core.home').controller('HomeCtrl', /*@ngInject*/ function($rootS
 
     	vm.account.confirm();
     }
+    $page.toast('Oieee',10000,'top right')
 
 });
