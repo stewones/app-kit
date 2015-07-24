@@ -3720,7 +3720,7 @@ angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ funct
     }
 });
 'use strict';
-angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http) {
+angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
     var vm = this;
     vm.busy = false;
     vm.get = get;
@@ -3736,15 +3736,24 @@ angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($sco
             var onSuccess = function(response) {
                 vm.busy = false;
                 var addr = response.data;
-                $scope.address.street = addr.street;
-                $scope.address.district = addr.district;
-                $scope.address.city = addr.city;
-                $scope.address.state = addr.state;
+                if (addr.city || addr.state) {
+                    $scope.address.street = addr.street;
+                    $scope.address.district = addr.district;
+                    $scope.address.city = addr.city;
+                    $scope.address.state = addr.state;
+                } else {
+                    error();
+                }
             }
             var onError = function(response) {
                 vm.busy = false;
+                error();
             }
             $http.get(url + cep, {}).then(onSuccess, onError);
+        }
+
+        function error() {
+            return $page.toast('Não foi possível encontrar o endereço com este cep, por favor insira manualmente', 10000, 'top right');
         }
     }
 });
