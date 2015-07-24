@@ -17,5 +17,7 @@
     <br />
     <img width="300" ng-src="{{vm.imageUrl}}">
     <br /><br /><br /><br /><br /><br />
+    <ceper endpoint-url="{{vm.endpointCepUrl}}" ng-model="myCep" address="address"></ceper>
+    {{myCep}} - {{address}}
 </div>
 <lead-form layout="column" layout-sm="column" label="Ok, me avise" dont="['company','phone']"></lead-form>

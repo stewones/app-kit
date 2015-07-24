@@ -3720,6 +3720,61 @@ angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ funct
     }
 });
 'use strict';
+angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http) {
+    var vm = this;
+    vm.busy = false;
+    vm.get = get;
+
+    if ($scope.address || typeof $scope.address != 'object')
+        $scope.address = {};
+
+    function get() {
+        var cep = $scope.ngModel;
+        if (cep && cep.toString().length === 8) {
+            var url = $scope.endpointUrl
+            vm.busy = true;
+            var onSuccess = function(response) {
+                vm.busy = false;
+                var addr = response.data;
+                $scope.address.street = addr.street;
+                $scope.address.district = addr.district;
+                $scope.address.city = addr.city;
+                $scope.address.state = addr.state;
+            }
+            var onError = function(response) {
+                vm.busy = false;
+            }
+            $http.get(url + cep, {}).then(onSuccess, onError);
+        }
+    }
+});
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.utils.directive:ceper
+ * @restrict EA
+ * @description 
+ * Input para auto busca de cep
+ * @element div
+ * @param {object} ngModel model qye representa o campo numerico do cep
+ * @param {object} address model que representa os campos de endereço (street, district, city, state)
+ * @param {string} endpointUrl endereço do server que deverá responder o json no formato esperado
+ **/
+angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
+    return {
+        scope: {
+            ngModel: '=',
+            address: '=',
+            endpointUrl: '@'
+        },
+        replace: true,
+        restrict: 'EA',
+        controller: 'CeperCtrl',
+        controllerAs: 'vm',
+        templateUrl: 'core/utils/directives/ceper/ceper.tpl.html'
+    }
+});
+'use strict';
 angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, $auth, lodash) {
     var vm = this,
         _ = lodash;
@@ -4480,6 +4535,7 @@ $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"co
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
 $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
+$templateCache.put("core/utils/directives/ceper/ceper.tpl.html","<md-input-container class=\"ceper\" flex=\"\"><label><div clayout=\"row\"><label>Cep</label><md-progress-circular class=\"load\" md-mode=\"indeterminate\" md-diameter=\"18\" ng-show=\"vm.busy\"></md-progress-circular></div></label> <input type=\"number\" ng-model=\"ngModel\" ng-change=\"vm.get()\" required=\"\"></md-input-container>");
 $templateCache.put("core/utils/directives/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
 $templateCache.put("core/utils/directives/dashboardStats/dashboardStats.tpl.html","<div class=\"dashboard-stats bg margin md-whiteframe-z1 counter\" flex=\"\"><md-progress-circular ng-show=\"loading\" class=\"md-hue-2\" md-mode=\"indeterminate\"></md-progress-circular><button class=\"refresh\" ng-click=\"update()\" ng-disabled=\"loading\" ng-hide=\"loading\"><i class=\"fa fa-refresh\"></i><md-tooltip>Atualizar</md-tooltip></button><div flex=\"\" ng-repeat=\"item in data\" class=\"data animate-repeat\" ng-if=\"!loading\"><h4>{{item.name}}</h4><span count-to=\"{{item.value}}\" value=\"0\" duration=\"4\"></span></div></div>");
 $templateCache.put("core/utils/directives/imageCutter/imageCutter.tpl.html","<div class=\"image-cutter-wrapper\"><ng-transclude ng-click=\"modal($event)\" ng-if=\"cutOnModal===\'true\'\"></ng-transclude><image-cutter-area ng-if=\"cutOnModal != \'true\'\" endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></div>");

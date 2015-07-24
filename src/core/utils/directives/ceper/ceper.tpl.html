@@ -1,0 +1,8 @@
+<md-input-container class="ceper" flex>
+    <label>
+        <div clayout="row">
+            <label>Cep</label> <md-progress-circular class="load" md-mode="indeterminate" md-diameter="18" ng-show="vm.busy"></md-progress-circular>
+        </div>
+    </label>
+    <input type="number" ng-model="ngModel" ng-change="vm.get()" required>
+</md-input-container>
