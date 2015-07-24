@@ -16,8 +16,7 @@
     "angular-sanitize": "~1.3.x",
     "angular-ui-router": "~0.2.13",
     "angular-material": "master",
-    "angular": "~1.3.x",
-    "angular-input-masks": "~1.3.1",
+    "angular": "~1.4.x",
     "satellizer": "~0.9.4",
     "angular-input-match": "~0.0.2",
     "angular-directive.g-signin": "*",
@@ -30,13 +29,15 @@
     "angular-slugify": "~1.0.0",
     "angular-mask": "~3.0.12",
     "angulartics": "~0.17.2",
-    "angular-image-crop": "stewones/angular-image-crop#master"
+    "angular-image-crop": "stewones/angular-image-crop#master",
+    "angular-input-masks": "~2.0.0"
   },
   "devDependencies": {
     "angular-mocks": "~1.3.4"
   },
   "resolutions": {
     "angular": "~1.4.x",
-    "angular-animate": "~1.4.x"
+    "angular-animate": "~1.4.x",
+    "string-mask": "~0.2.0"
   }
 }
