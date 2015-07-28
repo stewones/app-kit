@@ -16,5 +16,6 @@ angular.module('core.app', [
     'core.login',
     'core.user',
     'core.profile',
-    'core.account'
+    'core.account',
+    'core.list'
 ]);
