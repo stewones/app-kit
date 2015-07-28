@@ -38,7 +38,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                 if (response.data.new) {
                     msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
                     if ($login.config.signupWelcome) {
-                        msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
+                        msg = $login.config.signupWelcome.replace('@firstName', response.data.user.profile.firstName).replace('@appName', setting.name);
                     }
                 }
                 $auth.setToken(response.data.token);
@@ -46,10 +46,10 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                 if (cbSuccess)
                     cbSuccess()
             }
-            var onFail = function(result) {
+            var onFail = function(response) {
                 $page.load.done();
                 $mdToast.show($mdToast.simple()
-                    .content(result.data ? result.data : 'server away')
+                    .content(response.data ? response.data : 'server away')
                     .position('bottom right')
                     .hideDelay(3000))
                 if (cbFail)
