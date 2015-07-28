@@ -35,9 +35,11 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                 $page.load.done();
                 var msg = false;
                 var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
-                if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
-                if ($login.config.signupWelcome) {
-                    msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
+                if (response.data.new) {
+                    msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+                    if ($login.config.signupWelcome) {
+                        msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
+                    }
                 }
                 $auth.setToken(response.data.token);
                 $user.instance().init(response.data.user, true, msg);
