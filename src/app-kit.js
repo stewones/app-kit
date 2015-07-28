@@ -2632,7 +2632,7 @@ angular.module('facebook.login').directive('facebookLogin', /*@ngInject*/ functi
     }
 })
 'use strict';
-angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, $user, $page, api, setting) {
+angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, $user, $page, $login, api, setting) {
     return {
         go: go
     }
@@ -2669,6 +2669,9 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                 var msg = false;
                 var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
                 if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+                if ($login.config.signupWelcome) {
+                    msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
+                }
                 $auth.setToken(response.data.token);
                 $user.instance().init(response.data.user, true, msg);
                 if (cbSuccess)
@@ -4548,8 +4551,8 @@ $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"co
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
 $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
-$templateCache.put("core/utils/directives/ceper/ceper.tpl.html","<md-input-container class=\"ceper\" flex=\"\"><label><div clayout=\"row\"><label>Cep</label><md-progress-circular class=\"load\" md-mode=\"indeterminate\" md-diameter=\"18\" ng-show=\"vm.busy\"></md-progress-circular></div></label> <input type=\"number\" ng-model=\"ngModel\" ng-change=\"vm.get()\" required=\"\"></md-input-container>");
 $templateCache.put("core/utils/directives/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
+$templateCache.put("core/utils/directives/ceper/ceper.tpl.html","<md-input-container class=\"ceper\" flex=\"\"><label><div clayout=\"row\"><label>Cep</label><md-progress-circular class=\"load\" md-mode=\"indeterminate\" md-diameter=\"18\" ng-show=\"vm.busy\"></md-progress-circular></div></label> <input type=\"number\" ng-model=\"ngModel\" ng-change=\"vm.get()\" required=\"\"></md-input-container>");
 $templateCache.put("core/utils/directives/dashboardStats/dashboardStats.tpl.html","<div class=\"dashboard-stats bg margin md-whiteframe-z1 counter\" flex=\"\"><md-progress-circular ng-show=\"loading\" class=\"md-hue-2\" md-mode=\"indeterminate\"></md-progress-circular><button class=\"refresh\" ng-click=\"update()\" ng-disabled=\"loading\" ng-hide=\"loading\"><i class=\"fa fa-refresh\"></i><md-tooltip>Atualizar</md-tooltip></button><div flex=\"\" ng-repeat=\"item in data\" class=\"data animate-repeat\" ng-if=\"!loading\"><h4>{{item.name}}</h4><span count-to=\"{{item.value}}\" value=\"0\" duration=\"4\"></span></div></div>");
 $templateCache.put("core/utils/directives/imageCutter/imageCutter.tpl.html","<div class=\"image-cutter-wrapper\"><ng-transclude ng-click=\"modal($event)\" ng-if=\"cutOnModal===\'true\'\"></ng-transclude><image-cutter-area ng-if=\"cutOnModal != \'true\'\" endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></div>");
 $templateCache.put("core/utils/directives/imageCutter/modal.tpl.html","<md-dialog class=\"image-cutter-wrapper\" aria-label=\"{{cutOnModalTitle}}\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>{{cutOnModalTitle}}</h5><span flex=\"\"></span><md-button class=\"close md-icon-button\" ng-click=\"hide()\"><i class=\"material-icons\">&#xE14C;</i></md-button></div></md-toolbar><md-dialog-content><image-cutter-area endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></md-dialog-content></md-dialog>");

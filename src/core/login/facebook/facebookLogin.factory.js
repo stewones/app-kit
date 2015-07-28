@@ -1,5 +1,5 @@
 'use strict';
-angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, $user, $page, api, setting) {
+angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, $user, $page, $login, api, setting) {
     return {
         go: go
     }
@@ -36,6 +36,9 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                 var msg = false;
                 var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
                 if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+                if ($login.config.signupWelcome) {
+                    msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
+                }
                 $auth.setToken(response.data.token);
                 $user.instance().init(response.data.user, true, msg);
                 if (cbSuccess)
