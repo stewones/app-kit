@@ -32,6 +32,12 @@ angular.module('core.account', [
 'use strict';
 angular.module('core.home', []);
 'use strict';
+angular.module('core.list', [
+    'core.app',
+    'ui.router',
+    'ngSanitize'
+]);
+'use strict';
 /**
     * @ngdoc overview
     * @name core.login
@@ -696,6 +702,289 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
 
     function bootstrap() {}
 });
+(function() {
+    'use strict';
+    angular.module('core.list').service('$List', service);
+
+    /*@ngInject*/
+    function service($http, $page, api, $utils, $state, $stateParams) {
+
+        /**
+         * @ngdoc service
+         * @name core.list.service:$List
+         * @description
+         * List with filters and next page button
+         * @example
+         * <pre>
+         * // Place this on your controller, where you're injected the List service
+         * // Instantiate a new object with scope, getFromSource and route/state name
+         * var list = new $List({
+         *     scope: $scope,
+         *     route: 'app.home',
+         *     getFromSource: function(totalPage, limit, filter){
+         *         return $http.get(api.url + '/api/events/', {
+         *             params: {
+         *                 skip: totalPage,
+         *                 limit: limit,
+         *                 filter: filter
+         *             }
+         *         }).then(success).catch(fail);
+         *     }
+         * });
+         *
+         * // Make the first request to populate the list
+         * // This will return a promise, so you can use get().then(success).catch(fail)
+         * list.get();
+         *
+         * </pre>
+         * @param {object} params Propriedades da instância
+         **/
+        var List = function(params) {
+            var self = this;
+
+            // Params to instantiate
+            params = params ? params : {};
+
+            ////////////////
+            // Properties //
+            ////////////////
+
+            /**
+             * @ngdoc object
+             * @name core.list.service:$List#scope
+             * @propertyOf core.list.service:$List
+             * @description
+             * Parent controller scope
+             **/
+            self.scope = {};
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List#getFromSource
+             * @propertyOf core.list.service:$List
+             * @description
+             * Method to handle http call, must return a promise
+             **/
+            self.getFromSource = false;
+
+            /**
+             * @ngdoc string
+             * @name core.list.service:$List#route
+             * @propertyOf core.list.service:$List
+             * @description
+             * Route/state to append query params
+             **/
+            self.route = 'app.home';
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List#states
+             * @propertyOf core.list.service:$List
+             * @description
+             * Output BR states for possible state filter
+             **/
+            self.states = $utils.brStates();
+
+            /**
+             * @ngdoc array
+             * @name core.list.service:$List#entries
+             * @propertyOf core.list.service:$List
+             * @description
+             * Entries array
+             **/
+            self.entries = [];
+
+            /**
+             * @ngdoc number
+             * @name core.list.service:$List#total
+             * @propertyOf core.list.service:$List
+             * @description
+             * Total entries
+             **/
+            self.total = 0;
+
+            /**
+             * @ngdoc number
+             * @name core.list.service:$List#totalPage
+             * @propertyOf core.list.service:$List
+             * @description
+             * Total entries displayed on the page, this will the skip prop on the server
+             **/
+            self.totalPage = 0;
+
+            /**
+             * @ngdoc number
+             * @name core.list.service:$List#limit
+             * @propertyOf core.list.service:$List
+             * @description
+             * Number of entries per page
+             **/
+            self.limit = 8;
+
+            /**
+             * @ngdoc boolean
+             * @name core.list.service:$List#hasNextButton
+             * @propertyOf core.list.service:$List
+             * @description
+             * State to display/hide next button
+             **/
+            self.hasNextButton = false;
+
+            /**
+             * @ngdoc object
+             * @name core.list.service:$List#filter
+             * @propertyOf core.list.service:$List
+             * @description
+             * Filter object
+             **/
+            self.filter = {};
+
+            ///////////////////////
+            // Extend properties //
+            ///////////////////////
+
+            // Extend class with custom params
+            angular.extend(self, params);
+
+            // Extend filters with $stateParams
+            angular.extend(self.filter, $stateParams);
+
+            // Watch for changes in the filter
+            self.scope.$watch('vm.list.filter', filterWatch, true);
+
+            /////////////
+            // Methods //
+            /////////////
+
+            // Public
+            self.get = get;
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:get
+             * @methodOf core.list.service:$List
+             * @description
+             * Update route/state query params, get from the source
+             * @example
+             * <pre>
+             * var list = new $List();
+             * list.get();
+             * </pre>
+             */
+            function get() {
+                // Update query params, silent redirect(no refresh)
+                $state.go(self.route, updateQueryParams(), {
+                    notify: false
+                });
+
+                // Change url
+                return self.getFromSource(self.totalPage, self.limit, self.filter).then(getSuccess);
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:getSuccess
+             * @methodOf core.list.service:$List
+             * @description
+             * Handle get() successful return, concat entries, update totals and update next button state
+             */
+            function getSuccess(data) {
+                // Push new result
+                self.entries = self.entries.concat(data.entries);
+
+                // Update totals
+                updateTotals(data.total, data.totalPage);
+
+                // Update next button
+                updateNextButton();
+
+                // Return event
+                return self.entries;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:updateTotals
+             * @methodOf core.list.service:$List
+             * @description
+             * Update total entries and total on the page
+             */
+            function updateTotals(total, totalPage) {
+                self.total = total;
+                self.totalPage += totalPage;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:updateNextButton
+             * @methodOf core.list.service:$List
+             * @description
+             * Update next button state
+             */
+            function updateNextButton() {
+                var result = (self.total > self.totalPage);
+
+                self.hasNextButton = result;
+                return result;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:updateQueryParams
+             * @methodOf core.list.service:$List
+             * @description
+             * Update url query params according to filters
+             */
+            function updateQueryParams() {
+                var obj = {};
+
+                // Add current filters
+                angular.extend(obj, self.filter);
+
+                // Then add page entries number
+                angular.extend(obj, {
+                    page: self.totalPage
+                });
+
+                return obj;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:filterChanged
+             * @methodOf core.list.service:$List
+             * @description
+             * Handle change on the filter object, reset main props(entries, total, totalPage and hasNextButton) and do call get()
+             */
+            function filterChanged() {
+                // Reset props
+                self.entries = [];
+                self.total = 0;
+                self.totalPage = 0;
+                self.hasNextButton = false;
+
+                // Get entries
+                get();
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:updateQueryParams
+             * @methodOf core.list.service:$List
+             * @description
+             * Filter watch action
+             */
+            function filterWatch(nv, ov) {
+                if (nv != ov) {
+                    filterChanged();
+                }
+            }
+        }
+
+        return List;
+    }
+
+})();
 'use strict';
 angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
@@ -4527,13 +4816,13 @@ $templateCache.put("core/account/confirm.tpl.html","<md-dialog class=\"account-c
 $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"Desativação de conta\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Desativação de conta</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><strong>Prezad{{gender}} {{account.profile.firstName}}</strong><p>Conforme nossa política de usuários, não podemos apagar todos os seus dados, pois nem tudo está relacionado somente a você.<br>Iremos apagar suas conexões e o que mais for possível, além disso, você não receberá mais nenhuma oportunidade, ou notificação do LiveJob.</p><p>Deseja realmente prosseguir com a desativação de sua conta?</p></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"cancel()\" class=\"md-primary\">Não, obrigado.</md-button><md-button ng-click=\"confirm()\" class=\"md-primary\">Ok, entendo.</md-button></div></md-dialog>");
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
-$templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
+$templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\n    min-height: 10px !important; height: 10px !important;\n}*/\n</style>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
-$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\nbody, html {  overflow: auto;}\n</style>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
-$templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\nbody, html {  overflow: auto;}\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
-$templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\nbody, html {  overflow: auto;}\n</style>");
 $templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state.current.name != \'app.profile\' && app.state.current.name != \'app.landing\'}\"></div></md-content></div>");
 $templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");
