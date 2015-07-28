@@ -882,6 +882,7 @@ angular.module('core.login').provider('$login',
              *          configA: 54,
              *          configB: '=D'
              *      })
+             *     $loginProvider.config('signupWelcome','Olá @firstName, você entrou para a @appName');
              * })
              * </pre>
              * @param {string} key chave
@@ -2316,7 +2317,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
                 var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
                     roleForCompany = false;
                 if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
-                if (roleForCompany ? params[roleForCompany].role.length : params.role.length) {
+                if (roleForCompany && params[roleForCompany].role ? params[roleForCompany].role.length : params.role.length) {
                     this.current('company', getCompany(this));
                     this.current('companies', getCompanies(this));
                 }
@@ -2827,15 +2828,19 @@ angular.module('google.login').directive('googleLogin', /*@ngInject*/ function()
     }
 })
 'use strict';
-angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, setting) {
+angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, $login, setting) {
     $scope.register = register;
     $scope.sign = {};
 
     function register(sign) {
         $page.load.init();
         var onSuccess = function(result) {
+            var msg = 'Olá ' + result.data.user.profile.firstName + ', você entrou para o ' + setting.name;
+            if ($login.config.signupWelcome) {
+                msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
+            }
             $page.load.done();
-            $user.instance().init(result.data.user, true, 'Olá ' + result.data.user.profile.firstName + ', você entrou para o ' + setting.name, 10000);
+            $user.instance().init(result.data.user, true, msg, 10000);
         }
         var onError = function(result) {
             $page.load.done();
@@ -2849,7 +2854,6 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
             provider: 'local'
         }).then(onSuccess, onError);
     }
-
 })
 'use strict';
 /**

@@ -1,13 +1,17 @@
 'use strict';
-angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, setting) {
+angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, $login, setting) {
     $scope.register = register;
     $scope.sign = {};
 
     function register(sign) {
         $page.load.init();
         var onSuccess = function(result) {
+            var msg = 'Olá ' + result.data.user.profile.firstName + ', você entrou para o ' + setting.name;
+            if ($login.config.signupWelcome) {
+                msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
+            }
             $page.load.done();
-            $user.instance().init(result.data.user, true, 'Olá ' + result.data.user.profile.firstName + ', você entrou para o ' + setting.name, 10000);
+            $user.instance().init(result.data.user, true, msg, 10000);
         }
         var onError = function(result) {
             $page.load.done();
@@ -21,5 +25,4 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
             provider: 'local'
         }).then(onSuccess, onError);
     }
-
 })

@@ -60,7 +60,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
                 var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
                     roleForCompany = false;
                 if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
-                if (roleForCompany ? params[roleForCompany].role.length : params.role.length) {
+                if (roleForCompany && params[roleForCompany].role ? params[roleForCompany].role.length : params.role.length) {
                     this.current('company', getCompany(this));
                     this.current('companies', getCompanies(this));
                 }

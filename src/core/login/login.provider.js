@@ -77,6 +77,7 @@ angular.module('core.login').provider('$login',
              *          configA: 54,
              *          configB: '=D'
              *      })
+             *     $loginProvider.config('signupWelcome','Olá @firstName, você entrou para a @appName');
              * })
              * </pre>
              * @param {string} key chave
