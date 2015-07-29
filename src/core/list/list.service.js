@@ -146,7 +146,7 @@
             angular.extend(self.filter, $stateParams);
 
             // Watch for changes in the filter
-            self.scope.$watch('vm.list.filter', filterWatch, true);
+            if(self.scope.length) self.scope.$watch('vm.list.filter', filterWatch, true);
 
             /////////////
             // Methods //
@@ -154,6 +154,7 @@
 
             // Public
             self.get = get;
+            self.search = search;
 
             /**
              * @ngdoc function
@@ -196,6 +197,23 @@
 
                 // Return event
                 return self.entries;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:search
+             * @methodOf core.list.service:$List
+             * @description
+             * Transition to search route with the term specified
+             * @example
+             * <pre>
+             * var list = new $List();
+             * list.search();
+             * </pre>
+             */
+            function search() {
+                // Update query params, silent redirect(no refresh)
+                $state.go(self.route, updateQueryParams());
             }
 
             /**
