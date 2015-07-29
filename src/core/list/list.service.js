@@ -106,7 +106,7 @@
              * @description
              * Total entries displayed on the page, this will the skip prop on the server
              **/
-            self.totalPage = 0;
+            self.totalPage = $stateParams.page ? Number($stateParams.page) : 0;
 
             /**
              * @ngdoc number
