@@ -840,6 +840,15 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
              **/
             self.filter = {};
 
+            /**
+             * @ngdoc boolean
+             * @name core.list.service:$List#disableTransition
+             * @propertyOf core.list.service:$List
+             * @description
+             * Filter object
+             **/
+            self.disableTransition = false;
+
             ///////////////////////
             // Extend properties //
             ///////////////////////
@@ -851,7 +860,7 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
             angular.extend(self.filter, $stateParams);
 
             // Watch for changes in the filter
-            if(self.scope) self.scope.$watch('vm.list.filter', filterWatch, true);
+            if (self.scope) self.scope.$watch('vm.list.filter', filterWatch, true);
 
             /////////////
             // Methods //
@@ -875,9 +884,10 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
              */
             function get() {
                 // Update query params, silent redirect(no refresh)
-                $state.go(self.route, updateQueryParams(), {
-                    notify: false
-                });
+                if (!self.disableTransition)
+                    $state.go(self.route, updateQueryParams(), {
+                        notify: false
+                    });
 
                 // Change url
                 return self.getFromSource(self.totalPage, self.limit, self.filter).then(getSuccess);
@@ -2380,11 +2390,7 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
              **/
             params = params ? params : {};
             if (typeof params === 'object') {
-                for (var k in params) {
-                    if (params.hasOwnProperty(k)) {
-                        this[k] = params[k];
-                    }
-                }
+                angular.extend(this, params);
             }
             /**
              * @ngdoc object
@@ -2615,11 +2621,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
     User.prototype.init = function(params, alert, message) {
             //set params
             if (typeof params === 'object') {
-                for (var k in params) {
-                    if (params.hasOwnProperty(k)) {
-                        this[k] = params[k];
-                    }
-                }
+                angular.extend(this, params);
             }
             if (params._id) {
                 var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',

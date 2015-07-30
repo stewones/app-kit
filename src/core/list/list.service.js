@@ -135,6 +135,15 @@
              **/
             self.filter = {};
 
+            /**
+             * @ngdoc boolean
+             * @name core.list.service:$List#disableTransition
+             * @propertyOf core.list.service:$List
+             * @description
+             * Filter object
+             **/
+            self.disableTransition = false;
+
             ///////////////////////
             // Extend properties //
             ///////////////////////
@@ -146,7 +155,7 @@
             angular.extend(self.filter, $stateParams);
 
             // Watch for changes in the filter
-            if(self.scope) self.scope.$watch('vm.list.filter', filterWatch, true);
+            if (self.scope) self.scope.$watch('vm.list.filter', filterWatch, true);
 
             /////////////
             // Methods //
@@ -170,9 +179,10 @@
              */
             function get() {
                 // Update query params, silent redirect(no refresh)
-                $state.go(self.route, updateQueryParams(), {
-                    notify: false
-                });
+                if (!self.disableTransition)
+                    $state.go(self.route, updateQueryParams(), {
+                        notify: false
+                    });
 
                 // Change url
                 return self.getFromSource(self.totalPage, self.limit, self.filter).then(getSuccess);
