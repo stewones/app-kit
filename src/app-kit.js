@@ -757,7 +757,7 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
              * @description
              * Parent controller scope
              **/
-            self.scope = {};
+            self.scope = false;
 
             /**
              * @ngdoc function
@@ -851,7 +851,7 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
             angular.extend(self.filter, $stateParams);
 
             // Watch for changes in the filter
-            if(self.scope.length) self.scope.$watch('vm.list.filter', filterWatch, true);
+            if(self.scope) self.scope.$watch('vm.list.filter', filterWatch, true);
 
             /////////////
             // Methods //
@@ -2380,7 +2380,11 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
              **/
             params = params ? params : {};
             if (typeof params === 'object') {
-                angular.extend(this, params);
+                for (var k in params) {
+                    if (params.hasOwnProperty(k)) {
+                        this[k] = params[k];
+                    }
+                }
             }
             /**
              * @ngdoc object
@@ -2611,7 +2615,11 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
     User.prototype.init = function(params, alert, message) {
             //set params
             if (typeof params === 'object') {
-                angular.extend(this, params);
+                for (var k in params) {
+                    if (params.hasOwnProperty(k)) {
+                        this[k] = params[k];
+                    }
+                }
             }
             if (params._id) {
                 var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
