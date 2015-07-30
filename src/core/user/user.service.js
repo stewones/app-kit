@@ -50,11 +50,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
     User.prototype.init = function(params, alert, message) {
             //set params
             if (typeof params === 'object') {
-                for (var k in params) {
-                    if (params.hasOwnProperty(k)) {
-                        this[k] = params[k];
-                    }
-                }
+                angular.extend(this, params);
             }
             if (params._id) {
                 var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
