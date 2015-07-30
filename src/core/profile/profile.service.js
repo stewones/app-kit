@@ -17,11 +17,7 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
              **/
             params = params ? params : {};
             if (typeof params === 'object') {
-                for (var k in params) {
-                    if (params.hasOwnProperty(k)) {
-                        this[k] = params[k];
-                    }
-                }
+                angular.extend(this, params);
             }
             /**
              * @ngdoc object

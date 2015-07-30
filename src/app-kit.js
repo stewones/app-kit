@@ -2072,11 +2072,7 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
              **/
             params = params ? params : {};
             if (typeof params === 'object') {
-                for (var k in params) {
-                    if (params.hasOwnProperty(k)) {
-                        this[k] = params[k];
-                    }
-                }
+                angular.extend(this, params);
             }
             /**
              * @ngdoc object
@@ -2307,11 +2303,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
     User.prototype.init = function(params, alert, message) {
             //set params
             if (typeof params === 'object') {
-                for (var k in params) {
-                    if (params.hasOwnProperty(k)) {
-                        this[k] = params[k];
-                    }
-                }
+                angular.extend(this, params);
             }
             if (params._id) {
                 var gender = (params.profile && params.profile.gender === 'F') ? 'a' : 'o',
@@ -2601,6 +2593,72 @@ angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     }
 })
 'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires core.user.factory:$user
+ **/
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
+    var vm = this;
+    vm.login = login;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
+    function login(logon) {
+        $page.load.init();
+        var onSuccess = function(result) {
+            $page.load.done();
+            $user.instance().init(result.data.user, true);
+        }
+        var onError = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+        }
+        $auth.login({
+            email: logon.email,
+            password: logon.password
+        }).then(onSuccess, onError);
+    }
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ * @param {string} template-url caminho para o template do formulário
+ **/
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            config: '=',
+            user: '=',
+            templateUrl: '='
+        },
+        restrict: 'EA',
+        templateUrl: function(elem, attr){
+            return attr.templateUrl ? attr.templateUrl : "core/login/form/loginForm.tpl.html";
+        },
+        controller: '$LoginFormCtrl',
+        controllerAs: 'vm',
+        link: function() {}
+    }
+});
+'use strict';
 angular.module('facebook.login').config(function(FacebookProvider, setting) {
     FacebookProvider.init({
         version: 'v2.3',
@@ -2766,72 +2824,6 @@ angular.module('google.login').directive('googleLogin', /*@ngInject*/ function()
         controllerAs: 'google'
     }
 })
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginFormCtrl
- * @description 
- * Controlador do componente
- * @requires $scope
- * @requires $auth
- * @requires $mdToast
- * @requires core.user.factory:$user
- **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
-    var vm = this;
-    vm.login = login;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LoginFormCtrl#login
-     * @propertyOf core.login.controller:$LoginFormCtrl
-     * @description 
-     * Controlador do componente de login
-     * @param {string} logon objeto contendo as credenciais email e password
-     **/
-    function login(logon) {
-        $page.load.init();
-        var onSuccess = function(result) {
-            $page.load.done();
-            $user.instance().init(result.data.user, true);
-        }
-        var onError = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
-        }
-        $auth.login({
-            email: logon.email,
-            password: logon.password
-        }).then(onSuccess, onError);
-    }
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:loginForm
- * @restrict EA
- * @description 
- * Componente para o formulário de login
- * @element div
- * @param {object} config objeto de configurações do módulo login
- * @param {object} user objeto instância do usuário
- * @param {string} template-url caminho para o template do formulário
- **/
-angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            config: '=',
-            user: '=',
-            templateUrl: '='
-        },
-        restrict: 'EA',
-        templateUrl: function(elem, attr){
-            return attr.templateUrl ? attr.templateUrl : "core/login/form/loginForm.tpl.html";
-        },
-        controller: '$LoginFormCtrl',
-        controllerAs: 'vm',
-        link: function() {}
-    }
-});
 'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, $login, setting) {
     $scope.register = register;
