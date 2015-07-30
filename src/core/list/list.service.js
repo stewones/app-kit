@@ -52,7 +52,7 @@
              * @description
              * Parent controller scope
              **/
-            self.scope = {};
+            self.scope = false;
 
             /**
              * @ngdoc function
@@ -146,7 +146,7 @@
             angular.extend(self.filter, $stateParams);
 
             // Watch for changes in the filter
-            if(self.scope.length) self.scope.$watch('vm.list.filter', filterWatch, true);
+            if(self.scope) self.scope.$watch('vm.list.filter', filterWatch, true);
 
             /////////////
             // Methods //
