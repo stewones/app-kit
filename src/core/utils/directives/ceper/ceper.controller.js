@@ -4,7 +4,7 @@ angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($sco
     vm.busy = false;
     vm.get = get;
 
-    if ($scope.address || typeof $scope.address != 'object')
+    if (!$scope.address || typeof $scope.address != 'object')
         $scope.address = {};
 
     function get() {
