@@ -13,5 +13,6 @@ angular.module('core.home').controller('HomeCtrl', /*@ngInject*/ function($rootS
     vm.confirmAccount = function() {
         vm.account.confirm();
     }
+    $scope.myCep = 29126145;
     $page.toast('Oieee', 10000, 'top right');
 });
