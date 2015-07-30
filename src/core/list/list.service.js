@@ -222,6 +222,9 @@
              * </pre>
              */
             function search() {
+                // Reset main props
+                resetList();
+
                 // Update query params, silent redirect(no refresh)
                 $state.go(self.route, updateQueryParams());
             }
@@ -282,10 +285,7 @@
              */
             function filterChanged() {
                 // Reset props
-                self.entries = [];
-                self.total = 0;
-                self.totalPage = 0;
-                self.hasNextButton = false;
+                resetList();
 
                 // Get entries
                 get();
@@ -302,6 +302,21 @@
                 if (nv != ov) {
                     filterChanged();
                 }
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:resetList
+             * @methodOf core.list.service:$List
+             * @description
+             * Reset main properties of the list
+             */
+            function resetList() {
+                // Reset props
+                self.entries = [];
+                self.total = 0;
+                self.totalPage = 0;
+                self.hasNextButton = false;
             }
         }
 

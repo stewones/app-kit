@@ -927,6 +927,9 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
              * </pre>
              */
             function search() {
+                // Reset main props
+                resetList();
+
                 // Update query params, silent redirect(no refresh)
                 $state.go(self.route, updateQueryParams());
             }
@@ -987,10 +990,7 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
              */
             function filterChanged() {
                 // Reset props
-                self.entries = [];
-                self.total = 0;
-                self.totalPage = 0;
-                self.hasNextButton = false;
+                resetList();
 
                 // Get entries
                 get();
@@ -1007,6 +1007,21 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($page
                 if (nv != ov) {
                     filterChanged();
                 }
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:resetList
+             * @methodOf core.list.service:$List
+             * @description
+             * Reset main properties of the list
+             */
+            function resetList() {
+                // Reset props
+                self.entries = [];
+                self.total = 0;
+                self.totalPage = 0;
+                self.hasNextButton = false;
             }
         }
 
@@ -2911,6 +2926,72 @@ angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     }
 })
 'use strict';
+/**
+ * @ngdoc object
+ * @name core.login.controller:$LoginFormCtrl
+ * @description 
+ * Controlador do componente
+ * @requires $scope
+ * @requires $auth
+ * @requires $mdToast
+ * @requires core.user.factory:$user
+ **/
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
+    var vm = this;
+    vm.login = login;
+    /**
+     * @ngdoc function
+     * @name core.login.controller:$LoginFormCtrl#login
+     * @propertyOf core.login.controller:$LoginFormCtrl
+     * @description 
+     * Controlador do componente de login
+     * @param {string} logon objeto contendo as credenciais email e password
+     **/
+    function login(logon) {
+        $page.load.init();
+        var onSuccess = function(result) {
+            $page.load.done();
+            $user.instance().init(result.data.user, true);
+        }
+        var onError = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+        }
+        $auth.login({
+            email: logon.email,
+            password: logon.password
+        }).then(onSuccess, onError);
+    }
+})
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.login.directive:loginForm
+ * @restrict EA
+ * @description 
+ * Componente para o formulário de login
+ * @element div
+ * @param {object} config objeto de configurações do módulo login
+ * @param {object} user objeto instância do usuário
+ * @param {string} template-url caminho para o template do formulário
+ **/
+angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            config: '=',
+            user: '=',
+            templateUrl: '='
+        },
+        restrict: 'EA',
+        templateUrl: function(elem, attr){
+            return attr.templateUrl ? attr.templateUrl : "core/login/form/loginForm.tpl.html";
+        },
+        controller: '$LoginFormCtrl',
+        controllerAs: 'vm',
+        link: function() {}
+    }
+});
+'use strict';
 angular.module('facebook.login').config(function(FacebookProvider, setting) {
     FacebookProvider.init({
         version: 'v2.3',
@@ -3014,72 +3095,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
         me().then(onSuccess, onFail);
     }
 })
-'use strict';
-/**
- * @ngdoc object
- * @name core.login.controller:$LoginFormCtrl
- * @description 
- * Controlador do componente
- * @requires $scope
- * @requires $auth
- * @requires $mdToast
- * @requires core.user.factory:$user
- **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
-    var vm = this;
-    vm.login = login;
-    /**
-     * @ngdoc function
-     * @name core.login.controller:$LoginFormCtrl#login
-     * @propertyOf core.login.controller:$LoginFormCtrl
-     * @description 
-     * Controlador do componente de login
-     * @param {string} logon objeto contendo as credenciais email e password
-     **/
-    function login(logon) {
-        $page.load.init();
-        var onSuccess = function(result) {
-            $page.load.done();
-            $user.instance().init(result.data.user, true);
-        }
-        var onError = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
-        }
-        $auth.login({
-            email: logon.email,
-            password: logon.password
-        }).then(onSuccess, onError);
-    }
-})
-'use strict';
-/**
- * @ngdoc directive
- * @name core.login.directive:loginForm
- * @restrict EA
- * @description 
- * Componente para o formulário de login
- * @element div
- * @param {object} config objeto de configurações do módulo login
- * @param {object} user objeto instância do usuário
- * @param {string} template-url caminho para o template do formulário
- **/
-angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            config: '=',
-            user: '=',
-            templateUrl: '='
-        },
-        restrict: 'EA',
-        templateUrl: function(elem, attr){
-            return attr.templateUrl ? attr.templateUrl : "core/login/form/loginForm.tpl.html";
-        },
-        controller: '$LoginFormCtrl',
-        controllerAs: 'vm',
-        link: function() {}
-    }
-});
 'use strict';
 /* global gapi */
 angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
@@ -4863,8 +4878,8 @@ $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"co
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
 $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
-$templateCache.put("core/utils/directives/ceper/ceper.tpl.html","<md-input-container class=\"ceper\" flex=\"\"><label><div clayout=\"row\"><label>Cep</label><md-progress-circular class=\"load\" md-mode=\"indeterminate\" md-diameter=\"18\" ng-show=\"vm.busy\"></md-progress-circular></div></label> <input type=\"number\" ng-model=\"ngModel\" ng-change=\"vm.get()\" required=\"\"></md-input-container>");
 $templateCache.put("core/utils/directives/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
+$templateCache.put("core/utils/directives/ceper/ceper.tpl.html","<md-input-container class=\"ceper\" flex=\"\"><label><div clayout=\"row\"><label>Cep</label><md-progress-circular class=\"load\" md-mode=\"indeterminate\" md-diameter=\"18\" ng-show=\"vm.busy\"></md-progress-circular></div></label> <input type=\"number\" ng-model=\"ngModel\" ng-change=\"vm.get()\" required=\"\"></md-input-container>");
 $templateCache.put("core/utils/directives/dashboardStats/dashboardStats.tpl.html","<div class=\"dashboard-stats bg margin md-whiteframe-z1 counter\" flex=\"\"><md-progress-circular ng-show=\"loading\" class=\"md-hue-2\" md-mode=\"indeterminate\"></md-progress-circular><button class=\"refresh\" ng-click=\"update()\" ng-disabled=\"loading\" ng-hide=\"loading\"><i class=\"fa fa-refresh\"></i><md-tooltip>Atualizar</md-tooltip></button><div flex=\"\" ng-repeat=\"item in data\" class=\"data animate-repeat\" ng-if=\"!loading\"><h4>{{item.name}}</h4><span count-to=\"{{item.value}}\" value=\"0\" duration=\"4\"></span></div></div>");
 $templateCache.put("core/utils/directives/imageCutter/imageCutter.tpl.html","<div class=\"image-cutter-wrapper\"><ng-transclude ng-click=\"modal($event)\" ng-if=\"cutOnModal===\'true\'\"></ng-transclude><image-cutter-area ng-if=\"cutOnModal != \'true\'\" endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></div>");
 $templateCache.put("core/utils/directives/imageCutter/modal.tpl.html","<md-dialog class=\"image-cutter-wrapper\" aria-label=\"{{cutOnModalTitle}}\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>{{cutOnModalTitle}}</h5><span flex=\"\"></span><md-button class=\"close md-icon-button\" ng-click=\"hide()\"><i class=\"material-icons\">&#xE14C;</i></md-button></div></md-toolbar><md-dialog-content><image-cutter-area endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></md-dialog-content></md-dialog>");
