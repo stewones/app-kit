@@ -22,7 +22,8 @@
 }
 
 .account-remove {
-    margin-top: -15px;
+    margin-top: 0px;
+    text-align: center;
 }
 
 .account-remove a {

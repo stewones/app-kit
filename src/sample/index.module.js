@@ -22,7 +22,7 @@
                               url: '/profile/',
                               state: 'app.profile'
                           });*/
-            $accountProvider.confirmTemplateUrl('account-confirm.tpl.html');
+            //$accountProvider.confirmTemplateUrl('account-confirm.tpl.html');
             $loginProvider.config('signupWelcome','Olá @firstName, você entrou para a @appName');
         })
         /**

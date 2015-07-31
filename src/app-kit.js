@@ -656,6 +656,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
                 $scope.account = $account.instance();
                 $scope.forgotPassword = function() {
                     $user.instance().destroy();
+                    $mdDialog.cancel();
                     $timeout(function() {
                         $state.go('app.login-lost')
                     }, 500);
@@ -3037,6 +3038,68 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
     }
 })
 'use strict';
+/* global gapi */
+angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
+    var vm = this;
+    vm.clientId = setting.google.clientId;
+    vm.language = setting.google.language;
+    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
+        // Send login to server or save into cookie
+        gapi.client.load('plus', 'v1', apiClientLoaded);
+    });
+    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
+        // @todo Auth failure or signout detected
+    });
+
+    function apiClientLoaded() {
+        gapi.client.plus.people.get({
+            userId: 'me'
+        })
+            .execute(handleResponse);
+    }
+
+    function handleResponse(glUser) {
+        login(glUser);
+    }
+
+    function login(glUser) {
+        $page.load.init();
+        var onSuccess = function(response) {
+            $page.load.done();
+            var msg = false;
+            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
+            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+            $auth.setToken(response.data.token);
+            $user.instance().init(response.data.user, true, msg);
+        }
+        var onFail = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple()
+                .content(result.data ? result.data : 'server away')
+                .position('bottom right')
+                .hideDelay(3000))
+        }
+        $http.post(api.url + '/auth/google', {
+            provider: 'google',
+            id: glUser.id,
+            firstName: glUser.name.givenName,
+            lastName: glUser.name.familyName,
+            email: glUser.emails[0].value,
+            gender: glUser.gender
+        })
+            .then(onSuccess, onFail);
+    }
+
+})
+'use strict';
+angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/login/google/googleLogin.tpl.html",
+        controller: 'GoogleLoginCtrl',
+        controllerAs: 'google'
+    }
+})
+'use strict';
 /**
  * @ngdoc object
  * @name core.login.controller:$LoginFormCtrl
@@ -3102,68 +3165,6 @@ angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
         link: function() {}
     }
 });
-'use strict';
-/* global gapi */
-angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
-    var vm = this;
-    vm.clientId = setting.google.clientId;
-    vm.language = setting.google.language;
-    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
-        // Send login to server or save into cookie
-        gapi.client.load('plus', 'v1', apiClientLoaded);
-    });
-    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
-        // @todo Auth failure or signout detected
-    });
-
-    function apiClientLoaded() {
-        gapi.client.plus.people.get({
-            userId: 'me'
-        })
-            .execute(handleResponse);
-    }
-
-    function handleResponse(glUser) {
-        login(glUser);
-    }
-
-    function login(glUser) {
-        $page.load.init();
-        var onSuccess = function(response) {
-            $page.load.done();
-            var msg = false;
-            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
-            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
-            $auth.setToken(response.data.token);
-            $user.instance().init(response.data.user, true, msg);
-        }
-        var onFail = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple()
-                .content(result.data ? result.data : 'server away')
-                .position('bottom right')
-                .hideDelay(3000))
-        }
-        $http.post(api.url + '/auth/google', {
-            provider: 'google',
-            id: glUser.id,
-            firstName: glUser.name.givenName,
-            lastName: glUser.name.familyName,
-            email: glUser.emails[0].value,
-            gender: glUser.gender
-        })
-            .then(onSuccess, onFail);
-    }
-
-})
-'use strict';
-angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/login/google/googleLogin.tpl.html",
-        controller: 'GoogleLoginCtrl',
-        controllerAs: 'google'
-    }
-})
 'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, $login, setting) {
     $scope.register = register;
@@ -4125,6 +4126,59 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
     }
 });
 'use strict';
+//https://github.com/sparkalow/angular-count-to
+angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
+    return {
+        replace: false,
+        scope: true,
+        link: function(scope, element, attrs) {
+            var e = element[0];
+            var num, refreshInterval, duration, steps, step, countTo, value, increment;
+            var calculate = function() {
+                refreshInterval = 30;
+                step = 0;
+                scope.timoutId = null;
+                countTo = parseInt(attrs.countTo) || 0;
+                scope.value = parseInt(attrs.value, 10) || 0;
+                duration = (parseFloat(attrs.duration) * 1000) || 0;
+                steps = Math.ceil(duration / refreshInterval);
+                increment = ((countTo - scope.value) / steps);
+                num = scope.value;
+            }
+            var tick = function() {
+                scope.timoutId = $timeout(function() {
+                    num += increment;
+                    step++;
+                    if (step >= steps) {
+                        $timeout.cancel(scope.timoutId);
+                        num = countTo;
+                        e.textContent = countTo;
+                    } else {
+                        e.textContent = Math.round(num);
+                        tick();
+                    }
+                }, refreshInterval);
+            }
+            var start = function() {
+                if (scope.timoutId) {
+                    $timeout.cancel(scope.timoutId);
+                }
+                calculate();
+                tick();
+            }
+            attrs.$observe('countTo', function(val) {
+                if (val) {
+                    start();
+                }
+            });
+            attrs.$observe('value', function(val) {
+                start();
+            });
+            return true;
+        }
+    }
+});
+'use strict';
 angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, $auth, lodash) {
     var vm = this,
         _ = lodash;
@@ -4182,59 +4236,6 @@ angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function(
         controller: 'CompanyChooserCtrl',
         controllerAs: 'vm',
         templateUrl: 'core/utils/directives/companyChooser/companyChooser.tpl.html'
-    }
-});
-'use strict';
-//https://github.com/sparkalow/angular-count-to
-angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
-    return {
-        replace: false,
-        scope: true,
-        link: function(scope, element, attrs) {
-            var e = element[0];
-            var num, refreshInterval, duration, steps, step, countTo, value, increment;
-            var calculate = function() {
-                refreshInterval = 30;
-                step = 0;
-                scope.timoutId = null;
-                countTo = parseInt(attrs.countTo) || 0;
-                scope.value = parseInt(attrs.value, 10) || 0;
-                duration = (parseFloat(attrs.duration) * 1000) || 0;
-                steps = Math.ceil(duration / refreshInterval);
-                increment = ((countTo - scope.value) / steps);
-                num = scope.value;
-            }
-            var tick = function() {
-                scope.timoutId = $timeout(function() {
-                    num += increment;
-                    step++;
-                    if (step >= steps) {
-                        $timeout.cancel(scope.timoutId);
-                        num = countTo;
-                        e.textContent = countTo;
-                    } else {
-                        e.textContent = Math.round(num);
-                        tick();
-                    }
-                }, refreshInterval);
-            }
-            var start = function() {
-                if (scope.timoutId) {
-                    $timeout.cancel(scope.timoutId);
-                }
-                calculate();
-                tick();
-            }
-            attrs.$observe('countTo', function(val) {
-                if (val) {
-                    start();
-                }
-            });
-            attrs.$observe('value', function(val) {
-                start();
-            });
-            return true;
-        }
     }
 });
 'use strict';
@@ -4864,14 +4865,14 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
     }
 });
 angular.module("app.kit").run(["$templateCache", function($templateCache) {$templateCache.put("core/account/account.tpl.html","<md-content class=\"main-wrapper account anim-zoom-in md-padding\" layout=\"column\" flex=\"\"><div class=\"account-wrapper connections\"><h4><i class=\"fa fa-rss\"></i> Suas conexões <span ng-if=\"vm.account.role.length>1\">({{vm.account.role.length}})</span></h4><opt-out class=\"animate-repeat-opt-out\" ng-if=\"vm.account.role.length\" ng-repeat=\"item in vm.account.role\" item-id=\"item.company._id\" item-title=\"item.company.name\" item-title-tooltip=\"\'Ir para \'+item.company.name\" item-location=\"\'/\'+item.company.ref+\'/\'\" item-info=\"vm.optOutInfo(item)\" put-location=\"vm.optOutPutLocation\" put-params=\"vm.optOutPutParams\" alert-title=\"\'Desfazer conexão\'\" alert-info=\"\'Você será desconectado da empresa \'+item.company.name+\'.\'\" alert-ok=\"\'Ok, entendo.\'\" alert-cancel=\"\'Não, obrigado.\'\"></opt-out><div class=\"empty\" ng-if=\"!vm.account.role.length\"><small>Você não possui conexões.</small></div></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-at\"></i> Dados gerais</h4><form novalidate=\"\" name=\"vm.form.account\" class=\"md-whiteframe-z1\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Seu nome</label> <input name=\"firstName\" ng-model=\"vm.account.profile.firstName\" required=\"\"></md-input-container><md-input-container><label>Sobrenome</label> <input name=\"lastName\" ng-model=\"vm.account.profile.lastName\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Melhor email</label> <input name=\"email\" ng-model=\"vm.account.email\" type=\"email\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.saveAccount($event)\" ng-disabled=\"vm.account.busy||vm.form.account.$invalid||!vm.form.account.$dirty||vm.pristineAccount()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-unlock-alt\"></i> Alterar senha</h4><form name=\"vm.form.password\" class=\"md-whiteframe-z1\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Nova senha</label> <input type=\"password\" ng-model=\"vm.account._password\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Repetir nova senha</label> <input type=\"password\" ng-model=\"vm.account.__password\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.savePassword()\" ng-disabled=\"vm.account.busy||vm.form.password.$invalid||!vm.form.password.$dirty||(vm.account._password!=vm.account.__password)\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-remove\"><a ng-click=\"vm.deactivateAccount($event)\"><i class=\"fa fa-remove\"></i> Quero cancelar minha conta</a></div></md-content>");
-$templateCache.put("core/account/confirm.tpl.html","<md-dialog class=\"account-confirm\" aria-label=\"Confirme sua identidade\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Confirme sua identidade</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><menu-avatar first-name=\"user.profile.firstName\" last-name=\"user.profile.lastName\" gender=\"user.profile.gender\" facebook=\"user.facebook\"></menu-avatar><br><form name=\"passwordForm\"><md-input-container><label>Senha</label> <input type=\"password\" ng-model=\"account.password\" required=\"\"></md-input-container></form></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"confirm()\" class=\"md-primary\" ng-disabled=\"passwordForm.$invalid||!passwordForm.$dirty\">Confirmar</md-button></div></md-dialog>");
+$templateCache.put("core/account/confirm.tpl.html","<md-dialog class=\"account-confirm\" aria-label=\"Confirme sua identidade\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Confirme sua identidade</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><menu-avatar first-name=\"user.profile.firstName\" last-name=\"user.profile.lastName\" gender=\"user.profile.gender\" facebook=\"user.facebook\"></menu-avatar><br><form name=\"passwordForm\"><md-input-container><label>Senha</label> <input type=\"password\" ng-model=\"account.password\" required=\"\"></md-input-container><div class=\"account-remove\"><a ng-click=\"forgotPassword()\"><i class=\"fa fa-support\"></i> Não lembro minha senha</a></div></form></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"confirm()\" class=\"md-primary\" ng-disabled=\"passwordForm.$invalid||!passwordForm.$dirty\">Confirmar</md-button></div></md-dialog>");
 $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"Desativação de conta\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Desativação de conta</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><strong>Prezad{{gender}} {{account.profile.firstName}}</strong><p>Conforme nossa política de usuários, não podemos apagar todos os seus dados, pois nem tudo está relacionado somente a você.<br>Iremos apagar suas conexões e o que mais for possível, além disso, você não receberá mais nenhuma oportunidade, ou notificação do LiveJob.</p><p>Deseja realmente prosseguir com a desativação de sua conta?</p></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"cancel()\" class=\"md-primary\">Não, obrigado.</md-button><md-button ng-click=\"confirm()\" class=\"md-primary\">Ok, entendo.</md-button></div></md-dialog>");
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
-$templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
