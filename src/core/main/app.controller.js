@@ -64,6 +64,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     });
     $rootScope.$on('$Unauthorized', function() {
         $user.instance().destroy();
+        $scope.$Unauthorized = true;
     });
     //
     // BOOTSTRAP
