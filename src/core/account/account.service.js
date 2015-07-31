@@ -66,7 +66,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
         this.busy = true;
         var vm = this;
         $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, $user, api) {
+            controller: /*@ngInject*/ function($scope, $mdDialog, $user, $timeout, api) {
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
@@ -95,6 +95,12 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
                 };
                 $scope.user = $user.instance();
                 $scope.account = $account.instance();
+                $scope.forgotPassword = function() {
+                    $user.instance().destroy();
+                    $timeout(function() {
+                        $state.go('app.login-lost')
+                    }, 500);
+                }
             },
             templateUrl: $account.confirmTemplateUrl,
             parent: angular.element(document.body),
