@@ -1,5 +1,5 @@
 'use strict';
-angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth, $mdToast, $http, Facebook, $user, $page, $login, api, setting) {
+angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($rootScope, $auth, $mdToast, $http, Facebook, $user, $page, $login, api, setting) {
     return {
         go: go
     }
@@ -45,6 +45,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($auth
                 $user.instance().init(response.data.user, true, msg);
                 if (cbSuccess)
                     cbSuccess()
+                $rootScope.$emit('$LoginSuccess', response);
             }
             var onFail = function(response) {
                 $page.load.done();

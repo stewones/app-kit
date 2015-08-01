@@ -9,7 +9,7 @@
  * @requires $mdToast
  * @requires core.user.factory:$user
  **/
-angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($scope, $auth, $page, $mdToast, $user) {
+angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function($rootScope, $scope, $auth, $page, $mdToast, $user) {
     var vm = this;
     vm.login = login;
     /**
@@ -25,6 +25,7 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         var onSuccess = function(result) {
             $page.load.done();
             $user.instance().init(result.data.user, true);
+            $rootScope.$emit('$LoginSuccess', response);
         }
         var onError = function(result) {
             $page.load.done();
