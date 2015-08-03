@@ -156,6 +156,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($state, $htt
             $auth.logout();
             $page.load.done();
             if (alert) $page.toast('Você saiu', 3000);
+            $rootScope.$emit('$UserLeft');
         }
         /**
          * @ngdoc function
