@@ -13,7 +13,7 @@
  * @param {object} endpointParams parametros a serem enviados ao server
  * @param {function} callbackSuccess callback de sucesso
  **/
-angular.module('cart.module').directive('addrForm', /*@ngInject*/ function() {
+angular.module('core.utils').directive('addrForm', /*@ngInject*/ function() {
     return {
         scope: {
             ngModel: '=',
