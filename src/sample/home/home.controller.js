@@ -16,3 +16,9 @@ angular.module('core.home').controller('HomeCtrl', /*@ngInject*/ function($rootS
     $scope.myCep = 29126145;
     $page.toast('Oieee', 10000, 'top right');
 });
+
+'use strict';
+angular.module('core.home').controller('BodyCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $page, $mdDialog, $Account, setting, api) {
+    var vm = this;
+
+});

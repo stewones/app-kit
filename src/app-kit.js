@@ -3071,68 +3071,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
     }
 })
 'use strict';
-/* global gapi */
-angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
-    var vm = this;
-    vm.clientId = setting.google.clientId;
-    vm.language = setting.google.language;
-    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
-        // Send login to server or save into cookie
-        gapi.client.load('plus', 'v1', apiClientLoaded);
-    });
-    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
-        // @todo Auth failure or signout detected
-    });
-
-    function apiClientLoaded() {
-        gapi.client.plus.people.get({
-            userId: 'me'
-        })
-            .execute(handleResponse);
-    }
-
-    function handleResponse(glUser) {
-        login(glUser);
-    }
-
-    function login(glUser) {
-        $page.load.init();
-        var onSuccess = function(response) {
-            $page.load.done();
-            var msg = false;
-            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
-            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
-            $auth.setToken(response.data.token);
-            $user.instance().init(response.data.user, true, msg);
-        }
-        var onFail = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple()
-                .content(result.data ? result.data : 'server away')
-                .position('bottom right')
-                .hideDelay(3000))
-        }
-        $http.post(api.url + '/auth/google', {
-            provider: 'google',
-            id: glUser.id,
-            firstName: glUser.name.givenName,
-            lastName: glUser.name.familyName,
-            email: glUser.emails[0].value,
-            gender: glUser.gender
-        })
-            .then(onSuccess, onFail);
-    }
-
-})
-'use strict';
-angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/login/google/googleLogin.tpl.html",
-        controller: 'GoogleLoginCtrl',
-        controllerAs: 'google'
-    }
-})
-'use strict';
 /**
  * @ngdoc object
  * @name core.login.controller:$LoginFormCtrl
@@ -3200,6 +3138,68 @@ angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
     }
 });
 'use strict';
+/* global gapi */
+angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
+    var vm = this;
+    vm.clientId = setting.google.clientId;
+    vm.language = setting.google.language;
+    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
+        // Send login to server or save into cookie
+        gapi.client.load('plus', 'v1', apiClientLoaded);
+    });
+    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
+        // @todo Auth failure or signout detected
+    });
+
+    function apiClientLoaded() {
+        gapi.client.plus.people.get({
+            userId: 'me'
+        })
+            .execute(handleResponse);
+    }
+
+    function handleResponse(glUser) {
+        login(glUser);
+    }
+
+    function login(glUser) {
+        $page.load.init();
+        var onSuccess = function(response) {
+            $page.load.done();
+            var msg = false;
+            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
+            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+            $auth.setToken(response.data.token);
+            $user.instance().init(response.data.user, true, msg);
+        }
+        var onFail = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple()
+                .content(result.data ? result.data : 'server away')
+                .position('bottom right')
+                .hideDelay(3000))
+        }
+        $http.post(api.url + '/auth/google', {
+            provider: 'google',
+            id: glUser.id,
+            firstName: glUser.name.givenName,
+            lastName: glUser.name.familyName,
+            email: glUser.emails[0].value,
+            gender: glUser.gender
+        })
+            .then(onSuccess, onFail);
+    }
+
+})
+'use strict';
+angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/login/google/googleLogin.tpl.html",
+        controller: 'GoogleLoginCtrl',
+        controllerAs: 'google'
+    }
+})
+'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, $login, setting) {
     $scope.register = register;
     $scope.sign = {};
@@ -3249,12 +3249,6 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
         },
         controller: 'RegisterFormCtrl',
         controlerAs: 'vm'
-    }
-})
-'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
     }
 })
 'use strict';
@@ -3546,7 +3540,7 @@ angular.module('core.menu').directive('menuLink', /*@ngInject*/ function() {
         link: function($scope, $element) {
             var controller = $element.parent().controller();
             $scope.isSelected = function() {
-                return controller.menu.isSelected($scope.section);
+                return controller.menu ? controller.menu.isSelected($scope.section):'';
             };
         }
     };
@@ -3580,6 +3574,12 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
+'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
  'use strict';
  /* global moment */
  /**

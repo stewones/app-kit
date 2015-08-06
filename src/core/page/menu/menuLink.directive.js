@@ -10,7 +10,7 @@ angular.module('core.menu').directive('menuLink', /*@ngInject*/ function() {
         link: function($scope, $element) {
             var controller = $element.parent().controller();
             $scope.isSelected = function() {
-                return controller.menu.isSelected($scope.section);
+                return controller.menu ? controller.menu.isSelected($scope.section):'';
             };
         }
     };
