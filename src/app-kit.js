@@ -32,12 +32,6 @@ angular.module('core.account', [
 'use strict';
 angular.module('core.home', []);
 'use strict';
-angular.module('core.list', [
-    'core.app',
-    'ui.router',
-    'ngSanitize'
-]);
-'use strict';
 /**
     * @ngdoc overview
     * @name core.login
@@ -52,6 +46,12 @@ angular.module('core.login', [
     'satellizer',
     'google.login',
     'facebook.login'
+]);
+'use strict';
+angular.module('core.list', [
+    'core.app',
+    'ui.router',
+    'ngSanitize'
 ]);
 'use strict';
 /**
@@ -718,332 +718,6 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($root
 
     function bootstrap() {}
 });
-(function() {
-    'use strict';
-    angular.module('core.list').service('$List', service);
-
-    /*@ngInject*/
-    function service($http, $page, api, $utils, $state, $stateParams) {
-
-        /**
-         * @ngdoc service
-         * @name core.list.service:$List
-         * @description
-         * List with filters and next page button
-         * @example
-         * <pre>
-         * // Place this on your controller, where you're injected the List service
-         * // Instantiate a new object with scope, getFromSource and route/state name
-         * var list = new $List({
-         *     scope: $scope,
-         *     route: 'app.home',
-         *     getFromSource: function(totalPage, limit, filter){
-         *         return $http.get(api.url + '/api/events/', {
-         *             params: {
-         *                 skip: totalPage,
-         *                 limit: limit,
-         *                 filter: filter
-         *             }
-         *         }).then(success).catch(fail);
-         *     }
-         * });
-         *
-         * // Make the first request to populate the list
-         * // This will return a promise, so you can use get().then(success).catch(fail)
-         * list.get();
-         *
-         * </pre>
-         * @param {object} params Propriedades da instância
-         **/
-        var List = function(params) {
-            var self = this;
-
-            // Params to instantiate
-            params = params ? params : {};
-
-            ////////////////
-            // Properties //
-            ////////////////
-
-            /**
-             * @ngdoc object
-             * @name core.list.service:$List#scope
-             * @propertyOf core.list.service:$List
-             * @description
-             * Parent controller scope
-             **/
-            self.scope = false;
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List#getFromSource
-             * @propertyOf core.list.service:$List
-             * @description
-             * Method to handle http call, must return a promise
-             **/
-            self.getFromSource = false;
-
-            /**
-             * @ngdoc string
-             * @name core.list.service:$List#route
-             * @propertyOf core.list.service:$List
-             * @description
-             * Route/state to append query params
-             **/
-            self.route = 'app.home';
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List#states
-             * @propertyOf core.list.service:$List
-             * @description
-             * Output BR states for possible state filter
-             **/
-            self.states = $utils.brStates();
-
-            /**
-             * @ngdoc array
-             * @name core.list.service:$List#entries
-             * @propertyOf core.list.service:$List
-             * @description
-             * Entries array
-             **/
-            self.entries = [];
-
-            /**
-             * @ngdoc number
-             * @name core.list.service:$List#total
-             * @propertyOf core.list.service:$List
-             * @description
-             * Total entries
-             **/
-            self.total = 0;
-
-            /**
-             * @ngdoc number
-             * @name core.list.service:$List#totalPage
-             * @propertyOf core.list.service:$List
-             * @description
-             * Total entries displayed on the page, this will the skip prop on the server
-             **/
-            self.totalPage = $stateParams.page ? Number($stateParams.page) : 0;
-
-            /**
-             * @ngdoc number
-             * @name core.list.service:$List#limit
-             * @propertyOf core.list.service:$List
-             * @description
-             * Number of entries per page
-             **/
-            self.limit = 8;
-
-            /**
-             * @ngdoc boolean
-             * @name core.list.service:$List#hasNextButton
-             * @propertyOf core.list.service:$List
-             * @description
-             * State to display/hide next button
-             **/
-            self.hasNextButton = false;
-
-            /**
-             * @ngdoc object
-             * @name core.list.service:$List#filter
-             * @propertyOf core.list.service:$List
-             * @description
-             * Filter object
-             **/
-            self.filter = {};
-
-            /**
-             * @ngdoc boolean
-             * @name core.list.service:$List#disableTransition
-             * @propertyOf core.list.service:$List
-             * @description
-             * Filter object
-             **/
-            self.disableTransition = false;
-
-            ///////////////////////
-            // Extend properties //
-            ///////////////////////
-
-            // Extend class with custom params
-            angular.extend(self, params);
-
-            // Extend filters with $stateParams
-            angular.extend(self.filter, $stateParams);
-
-            // Watch for changes in the filter
-            if (self.scope) self.scope.$watch('vm.list.filter', filterWatch, true);
-
-            /////////////
-            // Methods //
-            /////////////
-
-            // Public
-            self.get = get;
-            self.search = search;
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:get
-             * @methodOf core.list.service:$List
-             * @description
-             * Update route/state query params, get from the source
-             * @example
-             * <pre>
-             * var list = new $List();
-             * list.get();
-             * </pre>
-             */
-            function get() {
-                // Update query params, silent redirect(no refresh)
-                if (!self.disableTransition)
-                    $state.go(self.route, updateQueryParams(), {
-                        notify: false
-                    });
-
-                // Change url
-                return self.getFromSource(self.totalPage, self.limit, self.filter).then(getSuccess);
-            }
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:getSuccess
-             * @methodOf core.list.service:$List
-             * @description
-             * Handle get() successful return, concat entries, update totals and update next button state
-             */
-            function getSuccess(data) {
-                // Push new result
-                self.entries = self.entries.concat(data.entries);
-
-                // Update totals
-                updateTotals(data.total, data.totalPage);
-
-                // Update next button
-                updateNextButton();
-
-                // Return event
-                return self.entries;
-            }
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:search
-             * @methodOf core.list.service:$List
-             * @description
-             * Transition to search route with the term specified
-             * @example
-             * <pre>
-             * var list = new $List();
-             * list.search();
-             * </pre>
-             */
-            function search() {
-                // Reset main props
-                resetList();
-
-                // Update query params, silent redirect(no refresh)
-                $state.go(self.route, updateQueryParams());
-            }
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:updateTotals
-             * @methodOf core.list.service:$List
-             * @description
-             * Update total entries and total on the page
-             */
-            function updateTotals(total, totalPage) {
-                self.total = total;
-                self.totalPage += totalPage;
-            }
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:updateNextButton
-             * @methodOf core.list.service:$List
-             * @description
-             * Update next button state
-             */
-            function updateNextButton() {
-                var result = (self.total > self.totalPage);
-
-                self.hasNextButton = result;
-                return result;
-            }
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:updateQueryParams
-             * @methodOf core.list.service:$List
-             * @description
-             * Update url query params according to filters
-             */
-            function updateQueryParams() {
-                var obj = {};
-
-                // Add current filters
-                angular.extend(obj, self.filter);
-
-                // Then add page entries number
-                angular.extend(obj, {
-                    page: self.totalPage
-                });
-
-                return obj;
-            }
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:filterChanged
-             * @methodOf core.list.service:$List
-             * @description
-             * Handle change on the filter object, reset main props(entries, total, totalPage and hasNextButton) and do call get()
-             */
-            function filterChanged() {
-                // Reset props
-                resetList();
-
-                // Get entries
-                get();
-            }
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:updateQueryParams
-             * @methodOf core.list.service:$List
-             * @description
-             * Filter watch action
-             */
-            function filterWatch(nv, ov) {
-                if (nv != ov) {
-                    filterChanged();
-                }
-            }
-
-            /**
-             * @ngdoc function
-             * @name core.list.service:$List:resetList
-             * @methodOf core.list.service:$List
-             * @description
-             * Reset main properties of the list
-             */
-            function resetList() {
-                // Reset props
-                self.entries = [];
-                self.total = 0;
-                self.totalPage = 0;
-                self.hasNextButton = false;
-            }
-        }
-
-        return List;
-    }
-
-})();
 'use strict';
 angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
@@ -1370,6 +1044,332 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
         }).success(onSuccess).error(onError);
     }
 })
+(function() {
+    'use strict';
+    angular.module('core.list').service('$List', service);
+
+    /*@ngInject*/
+    function service($http, $page, api, $utils, $state, $stateParams) {
+
+        /**
+         * @ngdoc service
+         * @name core.list.service:$List
+         * @description
+         * List with filters and next page button
+         * @example
+         * <pre>
+         * // Place this on your controller, where you're injected the List service
+         * // Instantiate a new object with scope, getFromSource and route/state name
+         * var list = new $List({
+         *     scope: $scope,
+         *     route: 'app.home',
+         *     getFromSource: function(totalPage, limit, filter){
+         *         return $http.get(api.url + '/api/events/', {
+         *             params: {
+         *                 skip: totalPage,
+         *                 limit: limit,
+         *                 filter: filter
+         *             }
+         *         }).then(success).catch(fail);
+         *     }
+         * });
+         *
+         * // Make the first request to populate the list
+         * // This will return a promise, so you can use get().then(success).catch(fail)
+         * list.get();
+         *
+         * </pre>
+         * @param {object} params Propriedades da instância
+         **/
+        var List = function(params) {
+            var self = this;
+
+            // Params to instantiate
+            params = params ? params : {};
+
+            ////////////////
+            // Properties //
+            ////////////////
+
+            /**
+             * @ngdoc object
+             * @name core.list.service:$List#scope
+             * @propertyOf core.list.service:$List
+             * @description
+             * Parent controller scope
+             **/
+            self.scope = false;
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List#getFromSource
+             * @propertyOf core.list.service:$List
+             * @description
+             * Method to handle http call, must return a promise
+             **/
+            self.getFromSource = false;
+
+            /**
+             * @ngdoc string
+             * @name core.list.service:$List#route
+             * @propertyOf core.list.service:$List
+             * @description
+             * Route/state to append query params
+             **/
+            self.route = 'app.home';
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List#states
+             * @propertyOf core.list.service:$List
+             * @description
+             * Output BR states for possible state filter
+             **/
+            self.states = $utils.brStates();
+
+            /**
+             * @ngdoc array
+             * @name core.list.service:$List#entries
+             * @propertyOf core.list.service:$List
+             * @description
+             * Entries array
+             **/
+            self.entries = [];
+
+            /**
+             * @ngdoc number
+             * @name core.list.service:$List#total
+             * @propertyOf core.list.service:$List
+             * @description
+             * Total entries
+             **/
+            self.total = 0;
+
+            /**
+             * @ngdoc number
+             * @name core.list.service:$List#totalPage
+             * @propertyOf core.list.service:$List
+             * @description
+             * Total entries displayed on the page, this will the skip prop on the server
+             **/
+            self.totalPage = $stateParams.page ? Number($stateParams.page) : 0;
+
+            /**
+             * @ngdoc number
+             * @name core.list.service:$List#limit
+             * @propertyOf core.list.service:$List
+             * @description
+             * Number of entries per page
+             **/
+            self.limit = 8;
+
+            /**
+             * @ngdoc boolean
+             * @name core.list.service:$List#hasNextButton
+             * @propertyOf core.list.service:$List
+             * @description
+             * State to display/hide next button
+             **/
+            self.hasNextButton = false;
+
+            /**
+             * @ngdoc object
+             * @name core.list.service:$List#filter
+             * @propertyOf core.list.service:$List
+             * @description
+             * Filter object
+             **/
+            self.filter = {};
+
+            /**
+             * @ngdoc boolean
+             * @name core.list.service:$List#disableTransition
+             * @propertyOf core.list.service:$List
+             * @description
+             * Filter object
+             **/
+            self.disableTransition = false;
+
+            ///////////////////////
+            // Extend properties //
+            ///////////////////////
+
+            // Extend class with custom params
+            angular.extend(self, params);
+
+            // Extend filters with $stateParams
+            angular.extend(self.filter, $stateParams);
+
+            // Watch for changes in the filter
+            if (self.scope) self.scope.$watch('vm.list.filter', filterWatch, true);
+
+            /////////////
+            // Methods //
+            /////////////
+
+            // Public
+            self.get = get;
+            self.search = search;
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:get
+             * @methodOf core.list.service:$List
+             * @description
+             * Update route/state query params, get from the source
+             * @example
+             * <pre>
+             * var list = new $List();
+             * list.get();
+             * </pre>
+             */
+            function get() {
+                // Update query params, silent redirect(no refresh)
+                if (!self.disableTransition)
+                    $state.go(self.route, updateQueryParams(), {
+                        notify: false
+                    });
+
+                // Change url
+                return self.getFromSource(self.totalPage, self.limit, self.filter).then(getSuccess);
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:getSuccess
+             * @methodOf core.list.service:$List
+             * @description
+             * Handle get() successful return, concat entries, update totals and update next button state
+             */
+            function getSuccess(data) {
+                // Push new result
+                self.entries = self.entries.concat(data.entries);
+
+                // Update totals
+                updateTotals(data.total, data.totalPage);
+
+                // Update next button
+                updateNextButton();
+
+                // Return event
+                return self.entries;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:search
+             * @methodOf core.list.service:$List
+             * @description
+             * Transition to search route with the term specified
+             * @example
+             * <pre>
+             * var list = new $List();
+             * list.search();
+             * </pre>
+             */
+            function search() {
+                // Reset main props
+                resetList();
+
+                // Update query params, silent redirect(no refresh)
+                $state.go(self.route, updateQueryParams());
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:updateTotals
+             * @methodOf core.list.service:$List
+             * @description
+             * Update total entries and total on the page
+             */
+            function updateTotals(total, totalPage) {
+                self.total = total;
+                self.totalPage += totalPage;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:updateNextButton
+             * @methodOf core.list.service:$List
+             * @description
+             * Update next button state
+             */
+            function updateNextButton() {
+                var result = (self.total > self.totalPage);
+
+                self.hasNextButton = result;
+                return result;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:updateQueryParams
+             * @methodOf core.list.service:$List
+             * @description
+             * Update url query params according to filters
+             */
+            function updateQueryParams() {
+                var obj = {};
+
+                // Add current filters
+                angular.extend(obj, self.filter);
+
+                // Then add page entries number
+                angular.extend(obj, {
+                    page: self.totalPage
+                });
+
+                return obj;
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:filterChanged
+             * @methodOf core.list.service:$List
+             * @description
+             * Handle change on the filter object, reset main props(entries, total, totalPage and hasNextButton) and do call get()
+             */
+            function filterChanged() {
+                // Reset props
+                resetList();
+
+                // Get entries
+                get();
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:updateQueryParams
+             * @methodOf core.list.service:$List
+             * @description
+             * Filter watch action
+             */
+            function filterWatch(nv, ov) {
+                if (nv != ov) {
+                    filterChanged();
+                }
+            }
+
+            /**
+             * @ngdoc function
+             * @name core.list.service:$List:resetList
+             * @methodOf core.list.service:$List
+             * @description
+             * Reset main properties of the list
+             */
+            function resetList() {
+                // Reset props
+                self.entries = [];
+                self.total = 0;
+                self.totalPage = 0;
+                self.hasNextButton = false;
+            }
+        }
+
+        return List;
+    }
+
+})();
 'use strict';
 angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, setting, api) {
     //
@@ -3071,9 +3071,9 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
      **/
     function login(logon) {
         $page.load.init();
-        var onSuccess = function(result) {
+        var onSuccess = function(response) {
             $page.load.done();
-            $user.instance().init(result.data.user, true);
+            $user.instance().init(response.data.user, true);
             $rootScope.$emit('$LoginSuccess', response);
         }
         var onError = function(result) {
@@ -4139,17 +4139,6 @@ angular.module('core.utils').directive('addrForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
-    return {
-        restrict: 'EA',
-        link: /*@ngInject*/ function($scope) {
-            $timeout(function() {
-                $scope.$emit('reset');
-            }, 5000)
-        }
-    }
-});
-'use strict';
 angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
     var vm = this;
     vm.busy = false;
@@ -4211,6 +4200,17 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         controller: 'CeperCtrl',
         controllerAs: 'vm',
         templateUrl: 'core/utils/directives/ceper/ceper.tpl.html'
+    }
+});
+'use strict';
+angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
+    return {
+        restrict: 'EA',
+        link: /*@ngInject*/ function($scope) {
+            $timeout(function() {
+                $scope.$emit('reset');
+            }, 5000)
+        }
     }
 });
 'use strict';
@@ -5083,16 +5083,16 @@ $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoo
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
-$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
+$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state.current.name != \'app.profile\' && app.state.current.name != \'app.landing\'}\"></div></md-content></div>");
-$templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-facepile ng-if=\"app.user.current(\'company\').facebook && (app.state.current.name!=\'app.home\' && app.state.current.name!=\'app.account\') && app.enviroment !== \'development\' && !app.iframe\" hide-sm=\"\" width=\"304\" url=\"https://www.facebook.com/{{app.user.current(\'company\').facebook}}\" facepile=\"true\" hide-cover=\"false\" ng-hide=\"app.state.current.name===\'app.pages\'\"></menu-facepile><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu.sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu.isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu.isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting.copyright }} © {{ app.year }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
+$templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
 $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
