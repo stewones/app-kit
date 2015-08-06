@@ -90,7 +90,7 @@ angular.module('core.app').provider('$app',
          * </pre>
          * @return {object} Retorna um objeto contendo valores das propriedades.
          **/
-        this.$get = this.get = function() {
+        this.$get = this.get = /*@ngInject*/ function($window, setting) {
             return {
                 config: this._config,
                 layoutUrl: this._layoutUrl,
@@ -98,7 +98,30 @@ angular.module('core.app').provider('$app',
                 toolbarTitleUrl: this._toolbarTitleUrl,
                 sidenavUrl: this._sidenavUrl,
                 logoWhite: this._logoWhite,
-                logo: this._logo
+                logo: this._logo,
+                /**
+                 * @ngdoc method
+                 * @name app.kit.$appProvider#storage
+                 * @methodOf app.kit.$appProvider
+                 * @description
+                 * Carregar/persistir dados
+                 * @param {string} type tipo da persistência (local/session)
+                 * @return {object} getter/setter para persistência de dados
+                 **/
+                storage: function(type) {
+                    var where = (type === 'local') ? 'localStorage' : 'sessionStorage';
+                    return {
+                        set: function(item) {
+                            return $window[where].setItem(setting.slug + '.app', angular.toJson(item));
+                        },
+                        get: function() {
+                            return angular.fromJson($window[where].getItem(setting.slug + '.app'));
+                        },
+                        destroy: function() {
+                            $window[where].removeItem(setting.slug + '.app');
+                        }
+                    }
+                }
             }
         }
 
@@ -237,6 +260,6 @@ angular.module('core.app').provider('$app',
         this.sidenavUrl = function(val) {
             if (val) return this._sidenavUrl = val;
             else return this._sidenavUrl;
-        }
+        };
     }
 )
