@@ -178,11 +178,9 @@
              * </pre>
              */
             function get() {
-                // Update query params, silent redirect(no refresh)
+                // Update query params, silent redirect(no refresh) / required config on state: 'reloadOnSearch : false'
                 if (!self.disableTransition)
-                    $state.go(self.route, updateQueryParams(), {
-                        notify: false
-                    });
+                    $location.search(updateQueryParams());
 
                 // Change url
                 return self.getFromSource(self.totalPage, self.limit, self.filter).then(getSuccess);
