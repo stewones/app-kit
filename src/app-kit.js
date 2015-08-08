@@ -625,7 +625,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
         this.busy = true;
         var vm = this;
         $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, $user, $timeout, api) {
+            controller: /*@ngInject*/ function($scope, $mdDialog, $user, $timeout, $state, api) {
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
@@ -4162,17 +4162,6 @@ angular.module('core.utils').directive('addrForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
-    return {
-        restrict: 'EA',
-        link: /*@ngInject*/ function($scope) {
-            $timeout(function() {
-                $scope.$emit('reset');
-            }, 5000)
-        }
-    }
-});
-'use strict';
 angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
     var vm = this;
     vm.busy = false;
@@ -4234,6 +4223,17 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         controller: 'CeperCtrl',
         controllerAs: 'vm',
         templateUrl: 'core/utils/directives/ceper/ceper.tpl.html'
+    }
+});
+'use strict';
+angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
+    return {
+        restrict: 'EA',
+        link: /*@ngInject*/ function($scope) {
+            $timeout(function() {
+                $scope.$emit('reset');
+            }, 5000)
+        }
     }
 });
 'use strict';

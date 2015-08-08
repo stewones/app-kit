@@ -66,7 +66,7 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
         this.busy = true;
         var vm = this;
         $mdDialog.show({
-            controller: /*@ngInject*/ function($scope, $mdDialog, $user, $timeout, api) {
+            controller: /*@ngInject*/ function($scope, $mdDialog, $user, $timeout, $state, api) {
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
