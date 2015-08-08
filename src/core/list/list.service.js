@@ -3,7 +3,7 @@
     angular.module('core.list').service('$List', service);
 
     /*@ngInject*/
-    function service($http, $page, api, $utils, $state, $stateParams) {
+    function service($http, $page, api, $utils, $state, $stateParams, $location) {
 
         /**
          * @ngdoc service
