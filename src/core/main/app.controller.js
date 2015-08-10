@@ -97,7 +97,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         //
         // Zerar o $rootScope.$Unauthorized
         //
-        $rootScope = false;
+        $rootScope.$Unauthorized = false;
     });
 
     //
