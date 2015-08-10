@@ -1371,7 +1371,7 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
     }
 })
 'use strict';
-angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, setting, api) {
+angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, enviroment, setting, api) {
     //
     // States & Routes
     //    
@@ -1458,6 +1458,13 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $urlMatc
     });
     $userProvider.setting('logoutStateRedirect', 'app.home');
     $userProvider.setting('roleForCompany', 'profile');
+    //
+    // Debug handle
+    //
+    if (enviroment === 'production')
+        $logProvider.debugEnabled(false);
+    else
+        $logProvider.debugEnabled(true);
 });
 'use strict';
 /* global moment */
@@ -3252,6 +3259,12 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
+'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -3574,12 +3587,6 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
-'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
  'use strict';
  /* global moment */
  /**
@@ -4162,6 +4169,17 @@ angular.module('core.utils').directive('addrForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
+angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
+    return {
+        restrict: 'EA',
+        link: /*@ngInject*/ function($scope) {
+            $timeout(function() {
+                $scope.$emit('reset');
+            }, 5000)
+        }
+    }
+});
+'use strict';
 angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
     var vm = this;
     vm.busy = false;
@@ -4223,17 +4241,6 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         controller: 'CeperCtrl',
         controllerAs: 'vm',
         templateUrl: 'core/utils/directives/ceper/ceper.tpl.html'
-    }
-});
-'use strict';
-angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
-    return {
-        restrict: 'EA',
-        link: /*@ngInject*/ function($scope) {
-            $timeout(function() {
-                $scope.$emit('reset');
-            }, 5000)
-        }
     }
 });
 'use strict';
@@ -5117,8 +5124,8 @@ $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-facepile ng-if=\"app.user.current(\'company\').facebook && (app.state.current.name!=\'app.home\' && app.state.current.name!=\'app.account\') && app.enviroment !== \'development\' && !app.iframe\" hide-sm=\"\" width=\"304\" url=\"https://www.facebook.com/{{app.user.current(\'company\').facebook}}\" facepile=\"true\" hide-cover=\"false\" ng-hide=\"app.state.current.name===\'app.pages\'\"></menu-facepile><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu.sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu.isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu.isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting.copyright }} © {{ app.year }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu.open()\" ng-if=\"app.isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state.current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
-$templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
+$templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
 $templateCache.put("core/utils/directives/addrForm/addrForm.tpl.html","<form name=\"handleForm\" class=\"addr-form\"><div layout=\"row\" layout-sm=\"column\"><ceper endpoint-url=\"{{vm.endpointCepUrl}}\" ng-model=\"ngModel.cep\" address=\"ngModel\"></ceper><md-input-container flex=\"\"><label>Endereço</label> <input ng-model=\"ngModel.street\" required=\"\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Número</label> <input type=\"number\" ng-model=\"ngModel.num\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Bairro</label> <input ng-model=\"ngModel.district\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Complemento</label> <input ng-model=\"ngModel.comp\" md-maxlength=\"50\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Cidade</label> <input ng-model=\"ngModel.city\" required=\"\"></md-input-container><md-select ng-model=\"ngModel.state\" placeholder=\"Estado\" flex=\"\" required=\"\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.states\">{{ opt.name }}</md-option></md-select></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-if=\"endpointUrl\" ng-click=\"vm.save()\" ng-disabled=\"vm.busy||handleForm.$invalid||!handleForm.$dirty||vm.pristine()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form>");

@@ -707,6 +707,8 @@ html menu-link .material-icons {
     line-height: 22px;
     color: inherit;
 }
+menu-facepile { min-height: 225px; }
+menu-facepile .loading { margin: 50px auto; }
 menu-avatar { margin: 20px auto;}
 menu-avatar img { margin: 0 auto; width: 150px;height: 150px;border-radius: 50%;box-sizing: content-box; }
 menu-avatar p.name { margin: 20px auto 0px; }
@@ -716,8 +718,6 @@ menu-avatar md-select md-select-label { font-size: 12px !important; }
 menu-avatar .avatar-wrapper { max-width: 270px; }
 
 menu-avatar .md-select-label {  padding-top: 0; margin-top: 15px; margin: 15px auto;}
-menu-facepile { min-height: 225px; }
-menu-facepile .loading { margin: 50px auto; }
 ul.top-menu {
     list-style-type: none;
     margin: 0;

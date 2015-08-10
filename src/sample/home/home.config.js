@@ -1,6 +1,6 @@
 'use strict';
 /*global window*/
-angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $logProvider, $urlRouterProvider, $locationProvider) {
     //
     // States & Routes
     //
@@ -13,7 +13,7 @@ angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $urlR
             }
         },
         resolve: {
-     
+
         }
     });
     //$urlRouterProvider.otherwise('/login');
