@@ -71,7 +71,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             locationRedirect: $location.url()
         });
         $user.instance().destroy();
-        $scope.$Unauthorized = true;
+        $rootScope.$Unauthorized = true;
     });
 
     //
