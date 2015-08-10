@@ -1,3 +1,4 @@
+.main-wrapper.home { padding: 10px 25px; }
 /*.account .head-bg md-input-container label:not(.md-no-float) {
     color: #C5CAE9
 }*/
@@ -55,7 +56,6 @@
     text-align: left !important;
     margin: 10px
 }
-.main-wrapper.home { padding: 10px 25px; }
 md-content .login {
     max-width: 800px;
     margin: 0 auto 20px;
@@ -707,8 +707,6 @@ html menu-link .material-icons {
     line-height: 22px;
     color: inherit;
 }
-menu-facepile { min-height: 225px; }
-menu-facepile .loading { margin: 50px auto; }
 menu-avatar { margin: 20px auto;}
 menu-avatar img { margin: 0 auto; width: 150px;height: 150px;border-radius: 50%;box-sizing: content-box; }
 menu-avatar p.name { margin: 20px auto 0px; }
@@ -718,6 +716,8 @@ menu-avatar md-select md-select-label { font-size: 12px !important; }
 menu-avatar .avatar-wrapper { max-width: 270px; }
 
 menu-avatar .md-select-label {  padding-top: 0; margin-top: 15px; margin: 15px auto;}
+menu-facepile { min-height: 225px; }
+menu-facepile .loading { margin: 50px auto; }
 ul.top-menu {
     list-style-type: none;
     margin: 0;
@@ -883,37 +883,6 @@ live-chips .filter-opt a:hover { text-decoration: underline;}
 live-chips .filter-opt .truncate { width: 155px !important;}
 .opacity-9 { opacity: .9 }
 .opacity-1 { opacity: 1 }
-.toolbar-avatar menu-avatar img {
-    margin: 18px 0 0 10px;
-    width: 50px;
-    height: 50px;
-}
-
-.toolbar-avatar .md-title {
-    margin-top: -18px;
-    height: 19px;
-    font-size: 14px;
-    margin-bottom: 0;
-    text-transform: capitalize;
-    text-align: right;
-}
-
-.toolbar-avatar .md-caption {
-    text-transform: lowercase;
-    font-size: 12px;
-    text-align: right;
-    height: 19px;
-    margin-top: -3px;
-}
-
-.toolbar-avatar md-menu-item {
-    height: 34px;
-}
-
-.toolbar-avatar button.logged-in-menu-button {
-    margin-top: -32px;
-    height: 95px;
-}
 .opt-out {
     margin: 10px 10px 30px 0;
     background-color: #fff;
@@ -988,4 +957,35 @@ live-chips .filter-opt .truncate { width: 155px !important;}
 .animate-repeat-opt-out.ng-leave, .animate-repeat-opt-out.ng-move.ng-move-active, .animate-repeat-opt-out.ng-enter.ng-enter-active {
     opacity: 1;
     /*max-height:40px;*/
+}
+.toolbar-avatar menu-avatar img {
+    margin: 18px 0 0 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.toolbar-avatar .md-title {
+    margin-top: -18px;
+    height: 19px;
+    font-size: 14px;
+    margin-bottom: 0;
+    text-transform: capitalize;
+    text-align: right;
+}
+
+.toolbar-avatar .md-caption {
+    text-transform: lowercase;
+    font-size: 12px;
+    text-align: right;
+    height: 19px;
+    margin-top: -3px;
+}
+
+.toolbar-avatar md-menu-item {
+    height: 34px;
+}
+
+.toolbar-avatar button.logged-in-menu-button {
+    margin-top: -32px;
+    height: 95px;
 }

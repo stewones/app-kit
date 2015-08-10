@@ -3,7 +3,7 @@
 /**
  * @ngdoc object
  * @name app.kit.controller:$AppCtrl
- * @description 
+ * @description
  * Controlador da aplicação
  * @requires setting
  * @requires environment
@@ -65,7 +65,37 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     $rootScope.$on('$Unauthorized', function() {
         $user.instance().destroy();
         $scope.$Unauthorized = true;
+        //
+        // Persistir o local atual
+        // para redirecionamento após o login
+        //
+        $app.storage('session').set({
+            locationRedirect: $location.url()
+        });
     });
+
+    //
+    // Comportamentos para quando o usuário entrar
+    //
+    $rootScope.$on('$LoginSuccess', function(ev, response) {
+        //
+        // Redirecionar usuario para alguma rota pre-estabelecida
+        //
+        var appSession = $app.storage('session').get();
+        if (appSession && appSession.locationRedirect && appSession.locationRedirect != '/login/') {
+            //
+            // Redirecionar o caboclo
+            //
+            $location.path(appSession.locationRedirect);
+            //
+            // Resetar o locationRedirect
+            //
+            $app.storage('session').set({
+                locationRedirect: ''
+            })
+        }
+    });
+
     //
     // BOOTSTRAP
     //  
