@@ -1,4 +1,3 @@
-.main-wrapper.home { padding: 10px 25px; }
 /*.account .head-bg md-input-container label:not(.md-no-float) {
     color: #C5CAE9
 }*/
@@ -56,6 +55,7 @@
     text-align: left !important;
     margin: 10px
 }
+.main-wrapper.home { padding: 10px 25px; }
 md-content .login {
     max-width: 800px;
     margin: 0 auto 20px;

@@ -63,8 +63,6 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         }
     });
     $rootScope.$on('$Unauthorized', function() {
-        $user.instance().destroy();
-        $scope.$Unauthorized = true;
         //
         // Persistir o local atual
         // para redirecionamento após o login
@@ -72,6 +70,8 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         $app.storage('session').set({
             locationRedirect: $location.url()
         });
+        $user.instance().destroy();
+        $scope.$Unauthorized = true;
     });
 
     //
