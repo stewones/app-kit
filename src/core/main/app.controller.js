@@ -70,8 +70,8 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         $app.storage('session').set({
             locationRedirect: $location.url()
         });
-        $user.instance().destroy();
         $rootScope.$Unauthorized = true;
+        $user.instance().destroy();
     });
 
     //
@@ -94,6 +94,10 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
                 locationRedirect: ''
             })
         }
+        //
+        // Zerar o $rootScope.$Unauthorized
+        //
+        $rootScope = false;
     });
 
     //
