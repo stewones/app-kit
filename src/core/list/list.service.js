@@ -3,7 +3,7 @@
     angular.module('core.list').service('$List', service);
 
     /*@ngInject*/
-    function service($http, $page, api, $utils, $state, $stateParams) {
+    function service($http, $page, api, $utils, $state, $stateParams, $location) {
 
         /**
          * @ngdoc service
@@ -178,11 +178,9 @@
              * </pre>
              */
             function get() {
-                // Update query params, silent redirect(no refresh)
+                // Update query params, silent redirect(no refresh) / required config on state: 'reloadOnSearch : false'
                 if (!self.disableTransition)
-                    $state.go(self.route, updateQueryParams(), {
-                        notify: false
-                    });
+                    $location.search(updateQueryParams());
 
                 // Change url
                 return self.getFromSource(self.totalPage, self.limit, self.filter).then(getSuccess);
