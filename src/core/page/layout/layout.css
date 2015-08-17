@@ -61,7 +61,7 @@ md-option { height: 30px !important; }
 
 .main-wrapper { margin: 12px auto; padding: 10px 15px; max-width: 960px !important;  overflow: hidden !important; }
 
-.main-content { outline:none; overflow: auto; background-color: #eee !important; margin-top: 3px; margin-bottom: -26px;}
+.main-content { outline:none; overflow: auto; background-color: #eee; margin-top: 3px; margin-bottom: -26px;}
 
 .md-subheader.md-default-theme { background: transparent; }
 
