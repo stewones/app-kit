@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.home').controller('HomeCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $page, $mdDialog, $Account, setting, api) {
+angular.module('core.home').controller('HomeCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $page, $mdDialog, $Account, setting, api, events, $utils) {
     var vm = this;
     vm.endpointUrl = 'http://localhost:9000/api/users/avatar';
     vm.endpointCepUrl = api.url + '/api/cep/';
@@ -15,6 +15,10 @@ angular.module('core.home').controller('HomeCtrl', /*@ngInject*/ function($rootS
     }
     $scope.myCep = 29126145;
     $page.toast('Oieee', 10000, 'top right');
+
+    // List
+    vm.listSource = events.getEvents;
+    vm.listBrStates = $utils.brStates();
 });
 
 'use strict';

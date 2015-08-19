@@ -718,6 +718,132 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($root
 
     function bootstrap() {}
 });
+'use strict';
+angular.module('core.list').controller('ListCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location, $timeout) {
+    var vm = this;
+
+    // Props
+    vm.entries = [];
+    vm.total = 0;
+    vm.totalDisplay = 0;
+    vm.page = $stateParams.page ? Number($stateParams.page) : 1;
+    vm.limit = 8;
+    vm.loadMoreBtn = false;
+    vm.filter = {};
+    vm.disableTransition = false;
+
+    // Extend filters with $stateParams
+    angular.extend(vm.filter, $stateParams);
+
+    // Watch for changes in the filter
+    $scope.$watch('vm.filter', filterWatch, true);
+
+    // Handle entries update
+    $scope.$on('entriesUpdated', entriesUpdated);
+
+    // Handle goToNextPage
+    $scope.$on('goToNextPage', goToNextPage);
+
+    function search() {
+        // Reset main props
+        resetList();
+
+        // Update query params, silent redirect(no refresh)
+        $state.go(vm.route, updateQueryParams());
+    }
+
+    function updateTotals(total) {
+        vm.total = total;
+        vm.totalDisplay = vm.entries.length;
+    }
+
+    function updateLoadMoreBtn() {
+        var result = (vm.total > vm.totalDisplay);
+
+        vm.loadMoreBtn = result;
+        return result;
+    }
+
+    function filterWatch(nv, ov) {
+        if (nv != ov) {
+            filterUpdated();
+        }
+    }
+
+    function filterUpdated() {
+        // Reset props
+        resetList();
+
+        // Update query params
+        var updatedQueryParams = updateQueryParams();
+
+        // Silent redirect(no refresh) / required config on state: 'reloadOnSearch : false'
+        if (!vm.disableTransition)
+            $location.search(updatedQueryParams);
+
+        // Timeout broadcast for next digest
+        $timeout(function() {
+            // Broadcast event down to responsible directive
+            // to get new entries according to filters
+            $scope.$broadcast('filterUpdated', vm.filter);
+        });
+    }
+
+    function updateQueryParams() {
+        var obj = {};
+
+        // Add current filters
+        angular.extend(obj, vm.filter);
+
+        // Then add page entries number
+        angular.extend(obj, {
+            page: vm.page
+        });
+
+        return obj;
+    }
+
+    function entriesUpdated(e, data) {
+        // Update totals
+        updateTotals(data.total);
+
+        // Update page
+        vm.page = data.nextPage;
+
+        // Update next button
+        updateLoadMoreBtn();
+    }
+
+    // Verificar possibilidade de ter essas props aqui e manipular a lista por aqui mesmo,
+    // no controller principal, teremos essas props tbm mas apenas para fins informativos(exibir para o usuário)
+    function resetList() {
+        // Reset props
+        vm.entries = [];
+        vm.total = 0;
+        vm.totalDisplay = 0;
+        vm.page = 1;
+        vm.loadMoreBtn = false;
+    }
+
+    function goToNextPage() {
+        if (!vm.disableTransition)
+            $location.search(updateQueryParams());
+    }
+})
+'use strict';
+angular.module('core.list').directive('list', /*@ngInject*/ function() {
+    return {
+        scope: {},
+        controller: 'ListCtrl',
+        controllerAs: 'vm',
+        bindToController: {
+            listSource: '=',
+            listRoute: '@',
+            listBrStates: '='
+        },
+        templateUrl: 'core/list/list.tpl.html'
+    };
+});
 (function() {
     'use strict';
     angular.module('core.list').service('$List', service);
@@ -3005,6 +3131,135 @@ angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     }
 })
 'use strict';
+angular.module('core.list').controller('ListContentCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location, $timeout) {
+    var vm = this;
+
+    vm.get = get;
+    vm.firstQuery = true;
+
+    // Handle filter update
+    $scope.$on('filterUpdated', get);
+
+    // Handle goToNextPage
+    $scope.$on('goToNextPage', get);
+
+    get();
+
+    function get() {
+        var filters = {
+            firstQuery: vm.firstQuery ? true : false
+        };
+
+        angular.extend(filters, vm.listFilters);
+
+        // Set to false after first time
+        if (vm.firstQuery) vm.firstQuery = false;
+
+        // Get from the source(http) and return promise
+        return vm.listSource(vm.listPage, vm.listLimit, filters).then(getSuccess);
+    }
+
+    function getConfig(page, limit) {
+        return {
+            page: page,
+            limit: limit
+        };
+    }
+
+    function getSuccess(data) {
+        // Push new result
+        vm.listEntries = vm.listEntries.concat(data.entries);
+
+        // Timeout emit for next digest(this/listEntries x listCtrl/entries)
+        $timeout(function() {
+            // Emmit changes to main list controller
+            // Update totals and next button
+            $scope.$emit('entriesUpdated', data);
+        });
+
+        // Return event
+        return data;
+    }
+})
+'use strict';
+angular.module('core.list').directive('listContent', /*@ngInject*/ function() {
+    return {
+        scope: {},
+        controller: 'ListContentCtrl',
+        controllerAs: 'vm',
+        bindToController: {
+            listFilters: '=',
+            listBrStates: '=',
+            listEntries: '=',
+            listSource: '=',
+            listTotal: '=',
+            listTotalDisplay: '=',
+            listPage: '=',
+            listLimit: '=',
+            listLoadMoreBtn: '=',
+        },
+        templateUrl: 'core/list/content/listContent.tpl.html'        
+    };
+});
+'use strict';
+angular.module('core.list').controller('ListFilterBoxCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location) {
+    var vm = this;
+})
+'use strict';
+angular.module('core.list').directive('listFilterBox', /*@ngInject*/ function() {
+    return {
+        scope: {},
+        controller: 'ListFilterBoxCtrl',
+        controllerAs: 'vm',
+        bindToController: {
+            listFilters: '=',
+            listBrStates: '='
+        },
+        templateUrl: 'core/list/filter-box/listFilterBox.tpl.html'
+    };
+});
+'use strict';
+angular.module('core.list').controller('ListLoadMoreCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location) {
+    var vm = this;
+
+    vm.goToNextPage = goToNextPage;
+
+    // Go to next page
+    function goToNextPage() {
+        // Emit event up to responsible directive
+        // will update entries and url with the new page
+        $scope.$emit('goToNextPage');
+    }
+});
+'use strict';
+angular.module('core.list').directive('listLoadMore', /*@ngInject*/ function() {
+    return {
+        scope: {},
+        controller: 'ListLoadMoreCtrl',
+        controllerAs: 'vm',
+        bindToController: {
+            listFilters: '='
+        },
+        templateUrl: 'core/list/load-more/listLoadMore.tpl.html'
+    };
+});
+'use strict';
+angular.module('core.list').controller('ListSearchBoxCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location) {
+    
+})
+'use strict';
+angular.module('core.list').directive('listSearchBox', /*@ngInject*/ function() {
+    return {
+        scope: {},
+        controller: 'ListSearchBoxCtrl',
+        controllerAs: 'vm',
+        bindToController: {
+            listFilters: '='
+        },
+        templateUrl: 'core/list/search-box/listSearchBox.tpl.html'
+    };
+});
+'use strict';
 angular.module('facebook.login').config(function(FacebookProvider, setting) {
     FacebookProvider.init({
         version: 'v2.3',
@@ -5149,14 +5404,19 @@ angular.module("app.kit").run(["$templateCache", function($templateCache) {$temp
 $templateCache.put("core/account/confirm.tpl.html","<md-dialog class=\"account-confirm\" aria-label=\"Confirme sua identidade\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Confirme sua identidade</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><menu-avatar first-name=\"user.profile.firstName\" last-name=\"user.profile.lastName\" gender=\"user.profile.gender\" facebook=\"user.facebook\"></menu-avatar><br><form name=\"passwordForm\"><md-input-container><label>Senha</label> <input type=\"password\" ng-model=\"account.password\" required=\"\"></md-input-container><div class=\"account-remove\"><a ng-click=\"forgotPassword()\"><i class=\"fa fa-support\"></i> Não lembro minha senha</a></div></form></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"confirm()\" class=\"md-primary\" ng-disabled=\"passwordForm.$invalid||!passwordForm.$dirty\">Confirmar</md-button></div></md-dialog>");
 $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"Desativação de conta\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Desativação de conta</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><strong>Prezad{{gender}} {{account.profile.firstName}}</strong><p>Conforme nossa política de usuários, não podemos apagar todos os seus dados, pois nem tudo está relacionado somente a você.<br>Iremos apagar suas conexões e o que mais for possível, além disso, você não receberá mais nenhuma oportunidade, ou notificação do LiveJob.</p><p>Deseja realmente prosseguir com a desativação de sua conta?</p></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"cancel()\" class=\"md-primary\">Não, obrigado.</md-button><md-button ng-click=\"confirm()\" class=\"md-primary\">Ok, entendo.</md-button></div></md-dialog>");
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
+$templateCache.put("core/list/list.tpl.html","<div class=\"search anim-zoom-in md-padding\"><h2>Busca de eventos <small class=\"md-subhead\">Exibindo {{vm.totalDisplay}} resultados de {{vm.total}} encontrados</small></h2><div list-search-box=\"\" list-filters=\"vm.filter\" class=\"search-box\" layout-padding=\"\"></div><div class=\"listing\" layout=\"column\" layout-gt-md=\"row\"><div list-filter-box=\"\" list-filters=\"vm.filter\" list-br-states=\"vm.listBrStates\" class=\"filter\" flex-gt-md=\"25\"></div><div list-content=\"\" list-entries=\"vm.entries\" list-filters=\"vm.filter\" list-source=\"vm.listSource\" list-total=\"vm.total\" list-total-display=\"vm.totalDisplay\" list-page=\"vm.page\" list-limit=\"vm.limit\" list-load-more-btn=\"vm.loadMoreBtn\" class=\"list\" flex-gt-md=\"\"></div></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
-$templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
+$templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\n    min-height: 10px !important; height: 10px !important;\n}*/\n</style>");
+$templateCache.put("core/list/content/listContent.tpl.html","<div class=\"no-results\" ng-show=\"!vm.listEntries.length\"><md-icon md-font-set=\"material-icons\">announcement</md-icon>Nenhum resultado</div><md-list class=\"list-content md-whiteframe-z1\" ng-show=\"vm.listEntries.length\"><md-list-item class=\"md-3-line\" ng-repeat=\"item in vm.listEntries\"><img ng-src=\"{{item.image}}\" class=\"list-avatar\" alt=\"{{item.title}}\"><div class=\"md-list-item-text\"><div class=\"item-content\"><h3>{{item.title}}</h3><p><md-icon md-font-set=\"material-icons\">event</md-icon>{{item.startDate}}<md-icon md-font-set=\"material-icons\">alarm</md-icon>{{item.startTime}}</p><p><md-icon md-font-set=\"material-icons\">place</md-icon>{{item.address.bairro}}, {{item.address.city}} - {{item.address.state}}</p></div><div class=\"item-actions\"><a class=\"link\" ui-sref=\"app.event-page(item)\" title=\"configurações do evento\" tabindex=\"0\">Saiba mais <i class=\"material-icons\">info_outline</i></a></div></div></md-list-item><md-list-item list-load-more=\"\" ng-if=\"vm.listLoadMoreBtn\" class=\"load-more-btn\"></md-list-item></md-list>");
+$templateCache.put("core/list/filter-box/listFilterBox.tpl.html","<form name=\"vm.form\" layout-padding=\"\"><div class=\"group\" ng-if=\"vm.listBrStates\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">place</md-icon>Localização</h4><md-select placeholder=\"Estado\" class=\"state\" ng-model=\"vm.listFilters.state\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.listBrStates\">{{ opt.name }}</md-option></md-select></div><div class=\"group\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">event</md-icon>Periodo</h4><md-input-container><label>Data inicial</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.startDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container><md-input-container><label>Data final</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.endDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container></div></form>");
+$templateCache.put("core/list/load-more/listLoadMore.tpl.html","<div class=\"md-list-item-text list-more-wrapper\"><md-button class=\"md-primary list-more\" ng-click=\"vm.goToNextPage()\"><div layout=\"row\" layout-align=\"center\"><md-icon md-font-set=\"material-icons\">dialpad</md-icon><div>Mais resultados</div></div></md-button></div>");
+$templateCache.put("core/list/search-box/listSearchBox.tpl.html","<form name=\"vm.form\"><md-input-container md-no-float=\"\"><md-icon md-font-icon=\"fa fa-search\"></md-icon><input ng-model=\"vm.listFilters.term\" ng-model-options=\"{ updateOn: \'blur\' }\" ng-keyup=\"cancel($event)\" placeholder=\"Buscar eventos por titulo, empresas, etc..\"></md-input-container></form>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
-$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\nbody, html {  overflow: auto;}\n</style>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
-$templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\nbody, html {  overflow: auto;}\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
-$templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\nbody, html {  overflow: auto;}\n</style>");
 $templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state.current.name != \'app.profile\' && app.state.current.name != \'app.landing\'}\"></div></md-content></div>");
 $templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");

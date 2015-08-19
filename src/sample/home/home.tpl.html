@@ -1,23 +1,41 @@
 <div layout="column" class="home" layout-padding flex>
     <a
-    image-cutter
-    endpoint-url="{{vm.endpointUrl}}"
-    endpoint-success="vm.endpointSuccess"
-    endpoint-fail="vm.endpointFail"
-    cut-on-modal="true"
-    cut-on-modal-title="Oi, eu sou o Goku"
-    cut-width="120"
-    cut-height="20"
-    cut-shape="'square'"
-    cut-label="Cortar"
-    cut-result="vm.imageCropResult"
-    cut-step="vm.imageCropStep">
-    WHAT THE FUCKS ????
-    </a> - <a ng-click="vm.confirmAccount()">CONFIRMAR CONTA!!!</a>
-    <br />
-    <img width="300" ng-src="{{vm.imageUrl}}">
-    <br /><br /><br /><br /><br /><br />
-    <ceper endpoint-url="{{vm.endpointCepUrl}}" ng-model="myCep" address="address"></ceper>
-    {{myCep}} - {{address}}
-</div>
-<lead-form layout="column" layout-sm="column" label="Ok, me avise" dont="['company','phone']"></lead-form>
+        image-cutter
+        endpoint-url="{{vm.endpointUrl}}"
+        endpoint-success="vm.endpointSuccess"
+        endpoint-fail="vm.endpointFail"
+        cut-on-modal="true"
+        cut-on-modal-title="Oi, eu sou o Goku"
+        cut-width="120"
+        cut-height="20"
+        cut-shape="'square'"
+        cut-label="Cortar"
+        cut-result="vm.imageCropResult"
+        cut-step="vm.imageCropStep">
+        WHAT THE FUCKS ????
+        </a> - <a ng-click="vm.confirmAccount()">CONFIRMAR CONTA!!!</a>
+        <br />
+        <img width="300" ng-src="{{vm.imageUrl}}">
+        <br /><br /><br /><br /><br /><br />
+        <ceper endpoint-url="{{vm.endpointCepUrl}}" ng-model="myCep" address="address"></ceper>
+        {{myCep}} - {{address}}
+        
+        
+        <hr>
+        
+        <h2>Listagem</h2>
+        <list
+            list-source="vm.listSource"
+            list-route="app.home"
+            list-br-states="vm.listBrStates">
+        </list>
+    </div>
+    <lead-form layout="column" layout-sm="column" label="Ok, me avise" dont="['company','phone']"></lead-form>
+    
+    <style>
+    html, body {
+    overflow: auto;
+    overflow-x: auto;
+    overflow-y: auto;
+    }
+    </style>
