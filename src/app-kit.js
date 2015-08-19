@@ -1656,14 +1656,17 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             bootstrap();
         }
     });
-    $rootScope.$on('$Unauthorized', function() {
+    $rootScope.$on('$Unauthorized', function(ev, status) {
         //
         // Persistir o local atual
         // para redirecionamento após o login
+        // - somente se status 401
         //
-        $app.storage('session').set({
-            locationRedirect: $location.url()
-        });
+        if (status === 401) {
+            $app.storage('session').set({
+                locationRedirect: $location.url()
+            });
+        }
         $rootScope.$Unauthorized = true;
         $user.instance().destroy();
     });
@@ -4268,8 +4271,8 @@ angular.module('core.utils').factory('HttpInterceptor', /*@ngInject*/ function($
         },
         // optional method
         'responseError': function(rejection) {
-            if (rejection.status === 401) {
-                $rootScope.$emit('$Unauthorized');
+            if (rejection.status === 401 || rejection.status === 403) {
+                $rootScope.$emit('$Unauthorized', rejection.status);
             }
             // do something on error
             //if (canRecover(rejection)) {
