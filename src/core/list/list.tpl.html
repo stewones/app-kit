@@ -1,0 +1,39 @@
+<div class="search anim-zoom-in md-padding">
+    <h2>Busca de eventos <small class="md-subhead">Exibindo {{vm.totalDisplay}} resultados de {{vm.total}} encontrados</small></h2>
+    
+    <!-- Main search box -->
+    <div
+        list-search-box
+        list-filters="vm.filter"
+        class="search-box"
+        layout-padding>
+    </div>
+    
+    <!-- Listing -->
+    <div class="listing" layout="column" layout-gt-md="row">
+        
+        <!-- Filters -->
+        <div
+            list-filter-box
+            list-filters="vm.filter"
+            list-br-states="vm.listBrStates"
+            class="filter"
+            flex-gt-md="25">
+        </div>
+        
+        <!-- Entries -->
+        <div
+            list-content
+            list-entries="vm.entries"
+            list-filters="vm.filter"
+            list-source="vm.listSource"
+            list-total="vm.total"
+            list-total-display="vm.totalDisplay"
+            list-page="vm.page"
+            list-limit="vm.limit"
+            list-load-more-btn="vm.loadMoreBtn"
+            class="list"
+            flex-gt-md>
+        </div>
+    </div>
+</div>
