@@ -62,14 +62,17 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             bootstrap();
         }
     });
-    $rootScope.$on('$Unauthorized', function() {
+    $rootScope.$on('$Unauthorized', function(ev, status) {
         //
         // Persistir o local atual
         // para redirecionamento após o login
+        // - somente se status 401
         //
-        $app.storage('session').set({
-            locationRedirect: $location.url()
-        });
+        if (status === 401) {
+            $app.storage('session').set({
+                locationRedirect: $location.url()
+            });
+        }
         $rootScope.$Unauthorized = true;
         $user.instance().destroy();
     });
