@@ -5,7 +5,8 @@ angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $logP
     // States & Routes
     //
     $stateProvider.state('app.home', {
-        url: '/',
+        url: '/?term?state?page?startDate?endDate',
+        reloadOnSearch: false,
         views: {
             'content': {
                 templateUrl: 'sample/home/home.tpl.html',
