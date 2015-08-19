@@ -7,6 +7,8 @@ angular.module('core.list').directive('listLoadMore', /*@ngInject*/ function() {
         bindToController: {
             listFilters: '='
         },
-        templateUrl: 'core/list/load-more/listLoadMore.tpl.html'
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/list/load-more/listLoadMore.tpl.html';
+        }
     };
 });

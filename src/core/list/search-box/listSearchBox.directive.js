@@ -7,6 +7,8 @@ angular.module('core.list').directive('listSearchBox', /*@ngInject*/ function() 
         bindToController: {
             listFilters: '='
         },
-        templateUrl: 'core/list/search-box/listSearchBox.tpl.html'
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/list/search-box/listSearchBox.tpl.html';
+        }
     };
 });

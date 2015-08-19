@@ -4,6 +4,10 @@ angular.module('core.list').controller('ListContentCtrl', /*@ngInject*/ function
 
     vm.get = get;
     vm.firstQuery = true;
+    vm.listFilters = vm.listFilters ? vm.listFilters : {};
+    vm.listPage = vm.listPage ? vm.listPage : 1;
+    vm.listLimit = vm.listLimit ? vm.listLimit : 10;
+    vm.listEntries = vm.listEntries ? vm.listEntries : [];
 
     // Handle filter update
     $scope.$on('filterUpdated', get);

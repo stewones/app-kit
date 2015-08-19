@@ -8,6 +8,8 @@ angular.module('core.list').directive('listFilterBox', /*@ngInject*/ function() 
             listFilters: '=',
             listBrStates: '='
         },
-        templateUrl: 'core/list/filter-box/listFilterBox.tpl.html'
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/list/filter-box/listFilterBox.tpl.html';
+        }
     };
 });
