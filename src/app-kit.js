@@ -3131,6 +3131,23 @@ angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     }
 })
 'use strict';
+angular.module('core.list').controller('ListFilterBoxCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location) {
+    var vm = this;
+})
+'use strict';
+angular.module('core.list').directive('listFilterBox', /*@ngInject*/ function() {
+    return {
+        scope: {},
+        controller: 'ListFilterBoxCtrl',
+        controllerAs: 'vm',
+        bindToController: {
+            listFilters: '=',
+            listBrStates: '='
+        },
+        templateUrl: 'core/list/filter-box/listFilterBox.tpl.html'
+    };
+});
+'use strict';
 angular.module('core.list').controller('ListContentCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location, $timeout) {
     var vm = this;
 
@@ -3199,23 +3216,6 @@ angular.module('core.list').directive('listContent', /*@ngInject*/ function() {
             listLoadMoreBtn: '=',
         },
         templateUrl: 'core/list/content/listContent.tpl.html'        
-    };
-});
-'use strict';
-angular.module('core.list').controller('ListFilterBoxCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location) {
-    var vm = this;
-})
-'use strict';
-angular.module('core.list').directive('listFilterBox', /*@ngInject*/ function() {
-    return {
-        scope: {},
-        controller: 'ListFilterBoxCtrl',
-        controllerAs: 'vm',
-        bindToController: {
-            listFilters: '=',
-            listBrStates: '='
-        },
-        templateUrl: 'core/list/filter-box/listFilterBox.tpl.html'
     };
 });
 'use strict';
@@ -3365,68 +3365,6 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
     }
 })
 'use strict';
-/* global gapi */
-angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
-    var vm = this;
-    vm.clientId = setting.google.clientId;
-    vm.language = setting.google.language;
-    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
-        // Send login to server or save into cookie
-        gapi.client.load('plus', 'v1', apiClientLoaded);
-    });
-    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
-        // @todo Auth failure or signout detected
-    });
-
-    function apiClientLoaded() {
-        gapi.client.plus.people.get({
-            userId: 'me'
-        })
-            .execute(handleResponse);
-    }
-
-    function handleResponse(glUser) {
-        login(glUser);
-    }
-
-    function login(glUser) {
-        $page.load.init();
-        var onSuccess = function(response) {
-            $page.load.done();
-            var msg = false;
-            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
-            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
-            $auth.setToken(response.data.token);
-            $user.instance().init(response.data.user, true, msg);
-        }
-        var onFail = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple()
-                .content(result.data ? result.data : 'server away')
-                .position('bottom right')
-                .hideDelay(3000))
-        }
-        $http.post(api.url + '/auth/google', {
-            provider: 'google',
-            id: glUser.id,
-            firstName: glUser.name.givenName,
-            lastName: glUser.name.familyName,
-            email: glUser.emails[0].value,
-            gender: glUser.gender
-        })
-            .then(onSuccess, onFail);
-    }
-
-})
-'use strict';
-angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/login/google/googleLogin.tpl.html",
-        controller: 'GoogleLoginCtrl',
-        controllerAs: 'google'
-    }
-})
-'use strict';
 /**
  * @ngdoc object
  * @name core.login.controller:$LoginFormCtrl
@@ -3493,6 +3431,68 @@ angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
         link: function() {}
     }
 });
+'use strict';
+/* global gapi */
+angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
+    var vm = this;
+    vm.clientId = setting.google.clientId;
+    vm.language = setting.google.language;
+    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
+        // Send login to server or save into cookie
+        gapi.client.load('plus', 'v1', apiClientLoaded);
+    });
+    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
+        // @todo Auth failure or signout detected
+    });
+
+    function apiClientLoaded() {
+        gapi.client.plus.people.get({
+            userId: 'me'
+        })
+            .execute(handleResponse);
+    }
+
+    function handleResponse(glUser) {
+        login(glUser);
+    }
+
+    function login(glUser) {
+        $page.load.init();
+        var onSuccess = function(response) {
+            $page.load.done();
+            var msg = false;
+            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
+            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+            $auth.setToken(response.data.token);
+            $user.instance().init(response.data.user, true, msg);
+        }
+        var onFail = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple()
+                .content(result.data ? result.data : 'server away')
+                .position('bottom right')
+                .hideDelay(3000))
+        }
+        $http.post(api.url + '/auth/google', {
+            provider: 'google',
+            id: glUser.id,
+            firstName: glUser.name.givenName,
+            lastName: glUser.name.familyName,
+            email: glUser.emails[0].value,
+            gender: glUser.gender
+        })
+            .then(onSuccess, onFail);
+    }
+
+})
+'use strict';
+angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/login/google/googleLogin.tpl.html",
+        controller: 'GoogleLoginCtrl',
+        controllerAs: 'google'
+    }
+})
 'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, $login, setting) {
     $scope.register = register;
@@ -4255,7 +4255,7 @@ angular.module('core.utils').factory('HttpInterceptor', /*@ngInject*/ function($
         // optional method
         'responseError': function(rejection) {
             if (rejection.status === 401 || rejection.status === 403) {
-                $rootScope.$emit('$Unauthorized');
+                $rootScope.$emit('$Unauthorized', rejection.status);
             }
             // do something on error
             //if (canRecover(rejection)) {
@@ -5075,25 +5075,6 @@ angular.module('core.utils').directive('moipCcForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
-/* jshint undef: false, unused: false */
-angular.module('core.utils').directive('onScrollApplyOpacity', /*@ngInject*/ function() {
-    //
-    // Essa diretiva é um hack pra resolver um bug de scroll nos botões de ação que contem wrapper com margin-top negativa
-    //
-    return {
-        link: function(scope, elem) {
-            elem.bind('scroll', function() {
-                var element = angular.element(document.getElementsByClassName('content-action-wrapper')[0]);
-                element.addClass('opacity-9');
-                var timeout = setInterval(function() {
-                    element.removeClass('opacity-9');
-                    clearInterval(timeout);
-                }, 1000);
-            })
-        }
-    }
-})
-'use strict';
 angular.module('core.utils').controller('OptOutCtrl', /*@ngInject*/ function($scope, $location, $mdDialog) {
     $scope.callAction = function(ev) {
         var confirm = $mdDialog.confirm().parent(angular.element(document.body)).title($scope.alertTitle).content($scope.alertInfo).ariaLabel($scope.alertTitle).ok($scope.alertOk).cancel($scope.alertCancel).targetEvent(ev);
@@ -5124,6 +5105,25 @@ angular.module('core.utils').directive('optOut', /*@ngInject*/ function() {
         controller: 'OptOutCtrl',
         controllerAs: 'vm',
         replace: true
+    }
+})
+'use strict';
+/* jshint undef: false, unused: false */
+angular.module('core.utils').directive('onScrollApplyOpacity', /*@ngInject*/ function() {
+    //
+    // Essa diretiva é um hack pra resolver um bug de scroll nos botões de ação que contem wrapper com margin-top negativa
+    //
+    return {
+        link: function(scope, elem) {
+            elem.bind('scroll', function() {
+                var element = angular.element(document.getElementsByClassName('content-action-wrapper')[0]);
+                element.addClass('opacity-9');
+                var timeout = setInterval(function() {
+                    element.removeClass('opacity-9');
+                    clearInterval(timeout);
+                }, 1000);
+            })
+        }
     }
 })
 'use strict';
@@ -5406,17 +5406,17 @@ $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"D
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
 $templateCache.put("core/list/list.tpl.html","<div class=\"search anim-zoom-in md-padding\"><h2>Busca de eventos <small class=\"md-subhead\">Exibindo {{vm.totalDisplay}} resultados de {{vm.total}} encontrados</small></h2><div list-search-box=\"\" list-filters=\"vm.filter\" class=\"search-box\" layout-padding=\"\"></div><div class=\"listing\" layout=\"column\" layout-gt-md=\"row\"><div list-filter-box=\"\" list-filters=\"vm.filter\" list-br-states=\"vm.listBrStates\" class=\"filter\" flex-gt-md=\"25\"></div><div list-content=\"\" list-entries=\"vm.entries\" list-filters=\"vm.filter\" list-source=\"vm.listSource\" list-total=\"vm.total\" list-total-display=\"vm.totalDisplay\" list-page=\"vm.page\" list-limit=\"vm.limit\" list-load-more-btn=\"vm.loadMoreBtn\" class=\"list\" flex-gt-md=\"\"></div></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
-$templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\n    min-height: 10px !important; height: 10px !important;\n}*/\n</style>");
+$templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/list/content/listContent.tpl.html","<div class=\"no-results\" ng-show=\"!vm.listEntries.length\"><md-icon md-font-set=\"material-icons\">announcement</md-icon>Nenhum resultado</div><md-list class=\"list-content md-whiteframe-z1\" ng-show=\"vm.listEntries.length\"><md-list-item class=\"md-3-line\" ng-repeat=\"item in vm.listEntries\"><img ng-src=\"{{item.image}}\" class=\"list-avatar\" alt=\"{{item.title}}\"><div class=\"md-list-item-text\"><div class=\"item-content\"><h3>{{item.title}}</h3><p><md-icon md-font-set=\"material-icons\">event</md-icon>{{item.startDate}}<md-icon md-font-set=\"material-icons\">alarm</md-icon>{{item.startTime}}</p><p><md-icon md-font-set=\"material-icons\">place</md-icon>{{item.address.bairro}}, {{item.address.city}} - {{item.address.state}}</p></div><div class=\"item-actions\"><a class=\"link\" ui-sref=\"app.event-page(item)\" title=\"configurações do evento\" tabindex=\"0\">Saiba mais <i class=\"material-icons\">info_outline</i></a></div></div></md-list-item><md-list-item list-load-more=\"\" ng-if=\"vm.listLoadMoreBtn\" class=\"load-more-btn\"></md-list-item></md-list>");
 $templateCache.put("core/list/filter-box/listFilterBox.tpl.html","<form name=\"vm.form\" layout-padding=\"\"><div class=\"group\" ng-if=\"vm.listBrStates\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">place</md-icon>Localização</h4><md-select placeholder=\"Estado\" class=\"state\" ng-model=\"vm.listFilters.state\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.listBrStates\">{{ opt.name }}</md-option></md-select></div><div class=\"group\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">event</md-icon>Periodo</h4><md-input-container><label>Data inicial</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.startDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container><md-input-container><label>Data final</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.endDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container></div></form>");
 $templateCache.put("core/list/load-more/listLoadMore.tpl.html","<div class=\"md-list-item-text list-more-wrapper\"><md-button class=\"md-primary list-more\" ng-click=\"vm.goToNextPage()\"><div layout=\"row\" layout-align=\"center\"><md-icon md-font-set=\"material-icons\">dialpad</md-icon><div>Mais resultados</div></div></md-button></div>");
 $templateCache.put("core/list/search-box/listSearchBox.tpl.html","<form name=\"vm.form\"><md-input-container md-no-float=\"\"><md-icon md-font-icon=\"fa fa-search\"></md-icon><input ng-model=\"vm.listFilters.term\" ng-model-options=\"{ updateOn: \'blur\' }\" ng-keyup=\"cancel($event)\" placeholder=\"Buscar eventos por titulo, empresas, etc..\"></md-input-container></form>");
+$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
-$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\nbody, html {  overflow: auto;}\n</style>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
-$templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\nbody, html {  overflow: auto;}\n</style>");
+$templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
-$templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\nbody, html {  overflow: auto;}\n</style>");
+$templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state.current.name != \'app.profile\' && app.state.current.name != \'app.landing\'}\"></div></md-content></div>");
 $templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");
