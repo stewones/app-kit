@@ -5,6 +5,7 @@ angular.module('core.list').directive('listSearchBox', /*@ngInject*/ function() 
         controller: 'ListSearchBoxCtrl',
         controllerAs: 'vm',
         bindToController: {
+            listRoute: '=',
             listFilters: '='
         },
         templateUrl: function(elem, attr) {
