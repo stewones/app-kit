@@ -36,7 +36,7 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
         var onFail = function(result) {
             $page.load.done();
             $mdToast.show($mdToast.simple()
-                .content(result.data ? result.data : 'server away')
+                .content(result.data && result.data.error ? result.data.error : 'error')
                 .position('bottom right')
                 .hideDelay(3000))
         }

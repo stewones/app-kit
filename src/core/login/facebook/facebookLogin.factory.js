@@ -50,7 +50,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
             var onFail = function(response) {
                 $page.load.done();
                 $mdToast.show($mdToast.simple()
-                    .content(response.data ? response.data : 'server away')
+                    .content(response.data && result.data.error ? response.data.error : 'error')
                     .position('bottom right')
                     .hideDelay(3000))
                 if (cbFail)

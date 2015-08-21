@@ -29,7 +29,7 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         }
         var onError = function(result) {
             $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(3000))
         }
         $auth.login({
             email: logon.email,

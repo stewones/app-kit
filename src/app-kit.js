@@ -3379,7 +3379,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
             var onFail = function(response) {
                 $page.load.done();
                 $mdToast.show($mdToast.simple()
-                    .content(response.data ? response.data : 'server away')
+                    .content(response.data && result.data.error ? response.data.error : 'error')
                     .position('bottom right')
                     .hideDelay(3000))
                 if (cbFail)
@@ -3432,7 +3432,7 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         }
         var onError = function(result) {
             $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.message ? result.data.message : 'server away').position('bottom right').hideDelay(3000))
+            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(3000))
         }
         $auth.login({
             email: logon.email,
@@ -3506,7 +3506,7 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
         var onFail = function(result) {
             $page.load.done();
             $mdToast.show($mdToast.simple()
-                .content(result.data ? result.data : 'server away')
+                .content(result.data && result.data.error ? result.data.error : 'error')
                 .position('bottom right')
                 .hideDelay(3000))
         }
@@ -3547,7 +3547,7 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
         }
         var onError = function(result) {
             $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'server away').position('bottom right').hideDelay(10000))
+            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(10000))
         }
         $auth.signup({
             firstName: sign.firstName,
@@ -3580,12 +3580,6 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
         },
         controller: 'RegisterFormCtrl',
         controlerAs: 'vm'
-    }
-})
-'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
     }
 })
 'use strict';
@@ -3911,6 +3905,12 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
+'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
  'use strict';
  /* global moment */
  /**
@@ -5444,8 +5444,8 @@ $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoo
 $templateCache.put("core/list/list.tpl.html","<div class=\"search anim-zoom-in md-padding\"><h2>Busca de eventos <small class=\"md-subhead\">Exibindo {{vm.totalDisplay}} resultados de {{vm.total}} encontrados</small></h2><div list-search-box=\"\" list-filters=\"vm.filter\" class=\"search-box\" layout-padding=\"\"></div><div class=\"listing\" layout=\"column\" layout-gt-md=\"row\"><div list-filter-box=\"\" list-filters=\"vm.filter\" list-br-states=\"vm.listBrStates\" class=\"filter\" flex-gt-md=\"25\"></div><div list-content=\"\" list-entries=\"vm.entries\" list-filters=\"vm.filter\" list-source=\"vm.listSource\" list-total=\"vm.total\" list-total-display=\"vm.totalDisplay\" list-page=\"vm.page\" list-limit=\"vm.limit\" list-load-more-btn=\"vm.loadMoreBtn\" class=\"list\" flex-gt-md=\"\"></div></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
-$templateCache.put("core/list/filter-box/listFilterBox.tpl.html","<form name=\"vm.form\" layout-padding=\"\"><div class=\"group\" ng-if=\"vm.listBrStates\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">place</md-icon>Localização</h4><md-select placeholder=\"Estado\" class=\"state\" ng-model=\"vm.listFilters.state\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.listBrStates\">{{ opt.name }}</md-option></md-select></div><div class=\"group\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">event</md-icon>Periodo</h4><md-input-container><label>Data inicial</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.startDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container><md-input-container><label>Data final</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.endDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container></div></form>");
 $templateCache.put("core/list/content/listContent.tpl.html","<div class=\"no-results\" ng-show=\"!vm.listEntries.length\"><md-icon md-font-set=\"material-icons\">announcement</md-icon>Nenhum resultado</div><md-list class=\"list-content md-whiteframe-z1\" ng-show=\"vm.listEntries.length\"><md-list-item class=\"md-3-line\" ng-repeat=\"item in vm.listEntries\"><img ng-src=\"{{item.image}}\" class=\"list-avatar\" alt=\"{{item.title}}\"><div class=\"md-list-item-text\"><div class=\"item-content\"><h3>{{item.title}}</h3><p><md-icon md-font-set=\"material-icons\">event</md-icon>{{item.startDate}}<md-icon md-font-set=\"material-icons\">alarm</md-icon>{{item.startTime}}</p><p><md-icon md-font-set=\"material-icons\">place</md-icon>{{item.address.bairro}}, {{item.address.city}} - {{item.address.state}}</p></div><div class=\"item-actions\"><a class=\"link\" ui-sref=\"app.event-page(item)\" title=\"configurações do evento\" tabindex=\"0\">Saiba mais <i class=\"material-icons\">info_outline</i></a></div></div></md-list-item><md-list-item list-load-more=\"\" ng-if=\"vm.listLoadMoreBtn\" class=\"load-more-btn\"></md-list-item></md-list>");
+$templateCache.put("core/list/filter-box/listFilterBox.tpl.html","<form name=\"vm.form\" layout-padding=\"\"><div class=\"group\" ng-if=\"vm.listBrStates\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">place</md-icon>Localização</h4><md-select placeholder=\"Estado\" class=\"state\" ng-model=\"vm.listFilters.state\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.listBrStates\">{{ opt.name }}</md-option></md-select></div><div class=\"group\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">event</md-icon>Periodo</h4><md-input-container><label>Data inicial</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.startDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container><md-input-container><label>Data final</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.endDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container></div></form>");
 $templateCache.put("core/list/load-more/listLoadMore.tpl.html","<div class=\"md-list-item-text list-more-wrapper\"><md-button class=\"md-primary list-more\" ng-click=\"vm.goToNextPage()\"><div layout=\"row\" layout-align=\"center\"><md-icon md-font-set=\"material-icons\">dialpad</md-icon><div>Mais resultados</div></div></md-button></div>");
 $templateCache.put("core/list/search-box/listSearchBox.tpl.html","<form name=\"vm.form\"><md-input-container md-no-float=\"\"><md-icon md-font-icon=\"fa fa-search\"></md-icon><input ng-model=\"vm.listFilters.term\" ng-model-options=\"{ updateOn: \'blur\' }\" ng-keyup=\"cancel($event)\" placeholder=\"Buscar eventos por titulo, empresas, etc..\"></md-input-container></form>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");

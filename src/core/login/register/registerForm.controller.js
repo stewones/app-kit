@@ -15,7 +15,7 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
         }
         var onError = function(result) {
             $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'server away').position('bottom right').hideDelay(10000))
+            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(10000))
         }
         $auth.signup({
             firstName: sign.firstName,
