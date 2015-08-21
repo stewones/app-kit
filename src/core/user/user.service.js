@@ -224,8 +224,9 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($rootScope, 
     function getCompany(userInstance) {
         userInstance = userInstance ? userInstance : this;
         var roleForCompany = false;
+        var userInstanceRoleCompany = userInstance.role.length && userInstance.role[0].company ? userInstance.role[0].company : false;
         if ($user.setting.roleForCompany != 'user') roleForCompany = $user.setting.roleForCompany;
-        return roleForCompany ? userInstance[roleForCompany].role[0].company : userInstance.role[0].company;
+        return roleForCompany ? userInstance[roleForCompany].role[0].company : userInstanceRoleCompany;
     }
     return User;
 })
