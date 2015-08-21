@@ -15,6 +15,8 @@ angular.module('core.list').directive('listContent', /*@ngInject*/ function() {
             listLimit: '=',
             listLoadMoreBtn: '=',
         },
-        templateUrl: 'core/list/content/listContent.tpl.html'        
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/list/content/listContent.tpl.html';
+        }
     };
 });

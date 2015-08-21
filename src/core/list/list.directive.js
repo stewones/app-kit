@@ -9,6 +9,8 @@ angular.module('core.list').directive('list', /*@ngInject*/ function() {
             listRoute: '@',
             listBrStates: '='
         },
-        templateUrl: 'core/list/list.tpl.html'
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : "core/list/list.tpl.html";
+        }
     };
 });
