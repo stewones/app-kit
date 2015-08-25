@@ -51,7 +51,7 @@
     text-align: left !important;
     margin: 10px
 }*/
-/*.main-wrapper.home { padding: 10px 25px; }*/
+
 md-content .login {
     max-width: 800px;
     margin: 0 auto 20px;
@@ -129,7 +129,7 @@ login-form .help {
         box-shadow: none !important;
    }
 }
-.main-wrapper.page { padding: 10px 25px; }
+
 facebook-login {
     margin: 0 auto 2px;
 }
