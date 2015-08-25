@@ -3,7 +3,7 @@
     angular.module('app.seed').service('Event', /*@ngInject*/ function($http, $page, api) {
         /**
          * @ngdoc service
-         * @name events.module.service:Event
+         * @name app.seed.service:Event
          * @description 
          * Modulo de eventos
          * @param {object} params Propriedades da instância
