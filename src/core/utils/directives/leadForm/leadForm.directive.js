@@ -6,7 +6,7 @@ angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
             dont: '=',
             templateUrl: '='
         },
-        templateUrl: /*@ngInject*/ function($scope) {
+        templateUrl: /*@ngInject*/ function($elem, $scope) {
             return $scope.templateUrl ? $scope.templateUrl : 'core/utils/directives/leadForm/leadForm.tpl.html';
         },
         controller: 'LeadFormCtrl',

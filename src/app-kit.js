@@ -3583,12 +3583,6 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
-'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -3911,6 +3905,12 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
+'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
  'use strict';
  /* global moment */
  /**
@@ -4963,7 +4963,7 @@ angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
             dont: '=',
             templateUrl: '='
         },
-        templateUrl: /*@ngInject*/ function($scope) {
+        templateUrl: /*@ngInject*/ function($elem, $scope) {
             return $scope.templateUrl ? $scope.templateUrl : 'core/utils/directives/leadForm/leadForm.tpl.html';
         },
         controller: 'LeadFormCtrl',
