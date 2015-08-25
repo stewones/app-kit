@@ -3,9 +3,12 @@ angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
     return {
         scope: {
             label: '@',
-            dont: '='
+            dont: '=',
+            templateUrl: '='
         },
-        templateUrl: 'core/utils/directives/leadForm/leadForm.tpl.html',
+        templateUrl: /*@ngInject*/ function($scope) {
+            return $scope.templateUrl ? $scope.templateUrl : 'core/utils/directives/leadForm/leadForm.tpl.html';
+        },
         controller: 'LeadFormCtrl',
         controllerAs: 'vm',
         replace: true
