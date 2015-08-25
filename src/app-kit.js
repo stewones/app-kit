@@ -102,6 +102,8 @@ angular.module('core.profile', [
     'satellizer'
 ])
 'use strict';
+angular.module('core.utils', ['core.page', 'angularMoment', 'ImageCropper']);
+'use strict';
 angular.module('core.user', [
   'ui.router',
   'satellizer',
@@ -111,8 +113,6 @@ angular.module('core.user', [
   'core.page'
 ]);
 
-'use strict';
-angular.module('core.utils', ['core.page', 'angularMoment', 'ImageCropper']);
 'use strict';
 angular.module('facebook.login', [
     'facebook',
@@ -2700,6 +2700,118 @@ angular.module('core.profile').service('$Profile', /*@ngInject*/ function($http,
     return Profile;
 })
 'use strict';
+/* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
+angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
+    var vm = this;
+    return {
+        isImg: isImg,      
+        brStates: brStates,
+        age: age
+    }
+
+    function isImg(src) {
+        var deferred = $q.defer();
+        var image = new Image();
+        image.onerror = function() {
+            deferred.resolve(false);
+        };
+        image.onload = function() {
+            deferred.resolve(true);
+        };
+        image.src = src;
+        return deferred.promise;
+    }
+
+    function age(date) {
+        return moment(date).fromNow(true);
+    }
+
+    function brStates() {
+        return [{
+            value: "AC",
+            name: "Acre"
+        }, {
+            value: "AL",
+            name: "Alagoas"
+        }, {
+            value: "AM",
+            name: "Amazonas"
+        }, {
+            value: "AP",
+            name: "Amapá"
+        }, {
+            value: "BA",
+            name: "Bahia"
+        }, {
+            value: "CE",
+            name: "Ceará"
+        }, {
+            value: "DF",
+            name: "Distrito Federal"
+        }, {
+            value: "ES",
+            name: "Espírito Santo"
+        }, {
+            value: "GO",
+            name: "Goiás"
+        }, {
+            value: "MA",
+            name: "Maranhão"
+        }, {
+            value: "MT",
+            name: "Mato Grosso"
+        }, {
+            value: "MS",
+            name: "Mato Grosso do Sul"
+        }, {
+            value: "MG",
+            name: "Minas Gerais"
+        }, {
+            value: "PA",
+            name: "Pará"
+        }, {
+            value: "PB",
+            name: "Paraíba"
+        }, {
+            value: "PR",
+            name: "Paraná"
+        }, {
+            value: "PE",
+            name: "Pernambuco"
+        }, {
+            value: "PI",
+            name: "Piauí"
+        }, {
+            value: "RJ",
+            name: "Rio de Janeiro"
+        }, {
+            value: "RN",
+            name: "Rio Grande do Norte"
+        }, {
+            value: "RO",
+            name: "Rondônia"
+        }, {
+            value: "RS",
+            name: "Rio Grande do Sul"
+        }, {
+            value: "RR",
+            name: "Roraima"
+        }, {
+            value: "SC",
+            name: "Santa Catarina"
+        }, {
+            value: "SE",
+            name: "Sergipe"
+        }, {
+            value: "SP",
+            name: "São Paulo"
+        }, {
+            value: "TO",
+            name: "Tocantins"
+        }];
+    }
+})
+'use strict';
 angular.module('core.user').provider('$user',
     /**
      * @ngdoc object
@@ -3024,118 +3136,6 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($rootScope, 
         return roleForCompany ? userInstance[roleForCompany].role[0].company : userInstanceRoleCompany;
     }
     return User;
-})
-'use strict';
-/* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
-angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
-    var vm = this;
-    return {
-        isImg: isImg,      
-        brStates: brStates,
-        age: age
-    }
-
-    function isImg(src) {
-        var deferred = $q.defer();
-        var image = new Image();
-        image.onerror = function() {
-            deferred.resolve(false);
-        };
-        image.onload = function() {
-            deferred.resolve(true);
-        };
-        image.src = src;
-        return deferred.promise;
-    }
-
-    function age(date) {
-        return moment(date).fromNow(true);
-    }
-
-    function brStates() {
-        return [{
-            value: "AC",
-            name: "Acre"
-        }, {
-            value: "AL",
-            name: "Alagoas"
-        }, {
-            value: "AM",
-            name: "Amazonas"
-        }, {
-            value: "AP",
-            name: "Amapá"
-        }, {
-            value: "BA",
-            name: "Bahia"
-        }, {
-            value: "CE",
-            name: "Ceará"
-        }, {
-            value: "DF",
-            name: "Distrito Federal"
-        }, {
-            value: "ES",
-            name: "Espírito Santo"
-        }, {
-            value: "GO",
-            name: "Goiás"
-        }, {
-            value: "MA",
-            name: "Maranhão"
-        }, {
-            value: "MT",
-            name: "Mato Grosso"
-        }, {
-            value: "MS",
-            name: "Mato Grosso do Sul"
-        }, {
-            value: "MG",
-            name: "Minas Gerais"
-        }, {
-            value: "PA",
-            name: "Pará"
-        }, {
-            value: "PB",
-            name: "Paraíba"
-        }, {
-            value: "PR",
-            name: "Paraná"
-        }, {
-            value: "PE",
-            name: "Pernambuco"
-        }, {
-            value: "PI",
-            name: "Piauí"
-        }, {
-            value: "RJ",
-            name: "Rio de Janeiro"
-        }, {
-            value: "RN",
-            name: "Rio Grande do Norte"
-        }, {
-            value: "RO",
-            name: "Rondônia"
-        }, {
-            value: "RS",
-            name: "Rio Grande do Sul"
-        }, {
-            value: "RR",
-            name: "Roraima"
-        }, {
-            value: "SC",
-            name: "Santa Catarina"
-        }, {
-            value: "SE",
-            name: "Sergipe"
-        }, {
-            value: "SP",
-            name: "São Paulo"
-        }, {
-            value: "TO",
-            name: "Tocantins"
-        }];
-    }
 })
 'use strict';
 angular.module('core.list').controller('ListContentCtrl', /*@ngInject*/ function($scope, $stateParams, $state, $location, $timeout) {
@@ -3583,6 +3583,12 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
+'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -3905,12 +3911,6 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
-'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
  'use strict';
  /* global moment */
  /**
@@ -5554,7 +5554,7 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
         }
     }
 });
-angular.module("app.kit").run(["$templateCache", function($templateCache) {$templateCache.put("core/account/account.tpl.html","<md-content class=\"main-wrapper account anim-zoom-in md-padding\" layout=\"column\" flex=\"\"><div class=\"account-wrapper connections\"><h4><i class=\"fa fa-rss\"></i> Suas conexões <span ng-if=\"vm.account.role.length>1\">({{vm.account.role.length}})</span></h4><opt-out class=\"animate-repeat-opt-out\" ng-if=\"vm.account.role.length\" ng-repeat=\"item in vm.account.role\" item-id=\"item.company._id\" item-title=\"item.company.name\" item-title-tooltip=\"\'Ir para \'+item.company.name\" item-location=\"\'/\'+item.company.ref+\'/\'\" item-info=\"vm.optOutInfo(item)\" put-location=\"vm.optOutPutLocation\" put-params=\"vm.optOutPutParams\" alert-title=\"\'Desfazer conexão\'\" alert-info=\"\'Você será desconectado da empresa \'+item.company.name+\'.\'\" alert-ok=\"\'Ok, entendo.\'\" alert-cancel=\"\'Não, obrigado.\'\"></opt-out><div class=\"empty\" ng-if=\"!vm.account.role.length\"><small>Você não possui conexões.</small></div></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-at\"></i> Dados gerais</h4><form novalidate=\"\" name=\"vm.form.account\" class=\"md-whiteframe-z1\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Seu nome</label> <input name=\"firstName\" ng-model=\"vm.account.profile.firstName\" required=\"\"></md-input-container><md-input-container><label>Sobrenome</label> <input name=\"lastName\" ng-model=\"vm.account.profile.lastName\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Melhor email</label> <input name=\"email\" ng-model=\"vm.account.email\" type=\"email\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.saveAccount($event)\" ng-disabled=\"vm.account.busy||vm.form.account.$invalid||!vm.form.account.$dirty||vm.pristineAccount()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-unlock-alt\"></i> Alterar senha</h4><form name=\"vm.form.password\" class=\"md-whiteframe-z1\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Nova senha</label> <input type=\"password\" ng-model=\"vm.account._password\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Repetir nova senha</label> <input type=\"password\" ng-model=\"vm.account.__password\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.savePassword()\" ng-disabled=\"vm.account.busy||vm.form.password.$invalid||!vm.form.password.$dirty||(vm.account._password!=vm.account.__password)\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-remove\"><a ng-click=\"vm.deactivateAccount($event)\"><i class=\"fa fa-remove\"></i> Quero cancelar minha conta</a></div></md-content>");
+angular.module("app.kit").run(["$templateCache", function($templateCache) {$templateCache.put("core/account/account.tpl.html","<md-content class=\"main-wrapper account anim-zoom-in md-padding\" layout=\"column\" flex=\"\"><div class=\"account-wrapper connections\"><h4><i class=\"fa fa-rss\"></i> Suas conexões <span ng-if=\"vm.account.role.length>1\">({{vm.account.role.length}})</span></h4><opt-out class=\"animate-repeat-opt-out\" ng-if=\"vm.account.role.length\" ng-repeat=\"item in vm.account.role\" item-id=\"item.company._id\" item-title=\"item.company.name\" item-title-tooltip=\"\'Ir para \'+item.company.name\" item-location=\"\'/\'+item.company.ref+\'/\'\" item-info=\"vm.optOutInfo(item)\" put-location=\"vm.optOutPutLocation\" put-params=\"vm.optOutPutParams\" alert-title=\"\'Desfazer conexão\'\" alert-info=\"\'Você será desconectado da empresa \'+item.company.name+\'.\'\" alert-ok=\"\'Ok, entendo.\'\" alert-cancel=\"\'Não, obrigado.\'\"></opt-out><div class=\"empty\" ng-if=\"!vm.account.role.length\"><small>Você não possui conexões.</small></div></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-at\"></i> Dados gerais</h4><form class=\"account-form\" novalidate=\"\" name=\"vm.form.account\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Seu nome</label> <input name=\"firstName\" ng-model=\"vm.account.profile.firstName\" required=\"\"></md-input-container><md-input-container><label>Sobrenome</label> <input name=\"lastName\" ng-model=\"vm.account.profile.lastName\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Melhor email</label> <input name=\"email\" ng-model=\"vm.account.email\" type=\"email\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.saveAccount($event)\" ng-disabled=\"vm.account.busy||vm.form.account.$invalid||!vm.form.account.$dirty||vm.pristineAccount()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-wrapper\"><h4><i class=\"fa fa-unlock-alt\"></i> Alterar senha</h4><form class=\"account-form\" name=\"vm.form.password\"><div class=\"head-bg\" md-theme=\"default\" layout-padding=\"\" layout=\"row\" layout-sm=\"column\"><md-input-container><label>Nova senha</label> <input type=\"password\" ng-model=\"vm.account._password\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Repetir nova senha</label> <input type=\"password\" ng-model=\"vm.account.__password\" required=\"\"></md-input-container></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-click=\"vm.savePassword()\" ng-disabled=\"vm.account.busy||vm.form.password.$invalid||!vm.form.password.$dirty||(vm.account._password!=vm.account.__password)\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form></div><div class=\"account-remove\"><a ng-click=\"vm.deactivateAccount($event)\"><i class=\"fa fa-remove\"></i> Quero cancelar minha conta</a></div></md-content>");
 $templateCache.put("core/account/confirm.tpl.html","<md-dialog class=\"account-confirm\" aria-label=\"Confirme sua identidade\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Confirme sua identidade</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><menu-avatar first-name=\"user.profile.firstName\" last-name=\"user.profile.lastName\" gender=\"user.profile.gender\" facebook=\"user.facebook\"></menu-avatar><br><form name=\"passwordForm\"><md-input-container><label>Senha</label> <input type=\"password\" ng-model=\"account.password\" required=\"\"></md-input-container><div class=\"account-remove\"><a ng-click=\"forgotPassword()\"><i class=\"fa fa-support\"></i> Não lembro minha senha</a></div></form></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"confirm()\" class=\"md-primary\" ng-disabled=\"passwordForm.$invalid||!passwordForm.$dirty\">Confirmar</md-button></div></md-dialog>");
 $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"Desativação de conta\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>Desativação de conta</h5><span flex=\"\"></span><md-button class=\"md-icon-button\" ng-click=\"hide()\"><md-icon md-svg-src=\"/assets/images/icons/ic_close_24px.svg\" aria-label=\"Fechar\"></md-icon></md-button></div></md-toolbar><md-dialog-content><strong>Prezad{{gender}} {{account.profile.firstName}}</strong><p>Conforme nossa política de usuários, não podemos apagar todos os seus dados, pois nem tudo está relacionado somente a você.<br>Iremos apagar suas conexões e o que mais for possível, além disso, você não receberá mais nenhuma oportunidade, ou notificação do LiveJob.</p><p>Deseja realmente prosseguir com a desativação de sua conta?</p></md-dialog-content><div class=\"md-actions\" layout=\"row\"><md-button ng-click=\"cancel()\" class=\"md-primary\">Não, obrigado.</md-button><md-button ng-click=\"confirm()\" class=\"md-primary\">Ok, entendo.</md-button></div></md-dialog>");
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");

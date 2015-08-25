@@ -1,22 +1,18 @@
-/*.account .head-bg md-input-container label:not(.md-no-float) {
-    color: #C5CAE9
-}*/
-
-.account md-input-container {
+/*.account md-input-container {
     padding-bottom: 8px;
 }
 
-.account form {
+.account .account-form {
     background-color: #fff
 }
 
-.account form .save {
+.account .account-form .save {
     margin-top: -29px;
     position: absolute;
     right: 10px;
 }
 
-.account form .save i {
+.account .account-form .save i {
     font-size: 24px;
     margin-top: 13px;
 }
@@ -54,8 +50,8 @@
 .account-wrapper > h4 {
     text-align: left !important;
     margin: 10px
-}
-.main-wrapper.home { padding: 10px 25px; }
+}*/
+/*.main-wrapper.home { padding: 10px 25px; }*/
 md-content .login {
     max-width: 800px;
     margin: 0 auto 20px;
