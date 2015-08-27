@@ -150,6 +150,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($rootScope, 
      * @param {bool} alert mensagem de aviso (você saiu)
      */
     User.prototype.destroy = function(alert) {
+        $user.set({});
         removeStorageSession();
         removeStorageUser();
         $auth.removeToken();
