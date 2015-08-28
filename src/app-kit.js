@@ -3372,19 +3372,15 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
                     }
                 }
                 $auth.setToken(response.data.token);
-                $user.instance().init(response.data.user, true, msg);
-                if (cbSuccess)
-                    cbSuccess()
+                var userInstance = $user.instance();
+                if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true, msg);
+                if (cbSuccess) cbSuccess()
                 $rootScope.$emit('$LoginSuccess', response);
             }
             var onFail = function(response) {
                 $page.load.done();
-                $mdToast.show($mdToast.simple()
-                    .content(response.data && result.data.error ? response.data.error : 'error')
-                    .position('bottom right')
-                    .hideDelay(3000))
-                if (cbFail)
-                    cbFail()
+                $mdToast.show($mdToast.simple().content(response.data && result.data.error ? response.data.error : 'error').position('bottom right').hideDelay(3000))
+                if (cbFail) cbFail()
             }
             var gender = '';
             gender = fbUser.gender && fbUser.gender === 'female' ? 'F' : gender;
@@ -3428,7 +3424,8 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         $page.load.init();
         var onSuccess = function(response) {
             $page.load.done();
-            $user.instance().init(response.data.user, true);
+            var userInstance = $user.instance();
+            if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true);
             $rootScope.$emit('$LoginSuccess', response);
         }
         var onError = function(result) {
@@ -3486,8 +3483,7 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
     function apiClientLoaded() {
         gapi.client.plus.people.get({
             userId: 'me'
-        })
-            .execute(handleResponse);
+        }).execute(handleResponse);
     }
 
     function handleResponse(glUser) {
@@ -3502,14 +3498,12 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
             var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
             if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
             $auth.setToken(response.data.token);
-            $user.instance().init(response.data.user, true, msg);
+            var userInstance = $user.instance();
+            if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true, msg);
         }
         var onFail = function(result) {
             $page.load.done();
-            $mdToast.show($mdToast.simple()
-                .content(result.data && result.data.error ? result.data.error : 'error')
-                .position('bottom right')
-                .hideDelay(3000))
+            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(3000))
         }
         $http.post(api.url + '/auth/google', {
             provider: 'google',
@@ -3518,10 +3512,8 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
             lastName: glUser.name.familyName,
             email: glUser.emails[0].value,
             gender: glUser.gender
-        })
-            .then(onSuccess, onFail);
+        }).then(onSuccess, onFail);
     }
-
 })
 'use strict';
 angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
@@ -3544,7 +3536,8 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
                 msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
             }
             $page.load.done();
-            $user.instance().init(result.data.user, true, msg, 10000);
+            var userInstance = $user.instance();
+            if (typeof userInstance.init === 'function') $user.instance().init(result.data.user, true, msg, 10000);
         }
         var onError = function(result) {
             $page.load.done();
@@ -3581,12 +3574,6 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
         },
         controller: 'RegisterFormCtrl',
         controlerAs: 'vm'
-    }
-})
-'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
     }
 })
 'use strict';
@@ -3912,6 +3899,12 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
+'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
  'use strict';
  /* global moment */
  /**
@@ -4494,6 +4487,17 @@ angular.module('core.utils').directive('addrForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
+angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
+    return {
+        restrict: 'EA',
+        link: /*@ngInject*/ function($scope) {
+            $timeout(function() {
+                $scope.$emit('reset');
+            }, 5000)
+        }
+    }
+});
+'use strict';
 angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
     var vm = this;
     vm.busy = false;
@@ -4555,17 +4559,6 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         controller: 'CeperCtrl',
         controllerAs: 'vm',
         templateUrl: 'core/utils/directives/ceper/ceper.tpl.html'
-    }
-});
-'use strict';
-angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
-    return {
-        restrict: 'EA',
-        link: /*@ngInject*/ function($scope) {
-            $timeout(function() {
-                $scope.$emit('reset');
-            }, 5000)
-        }
     }
 });
 'use strict';

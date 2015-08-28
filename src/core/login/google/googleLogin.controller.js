@@ -15,8 +15,7 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
     function apiClientLoaded() {
         gapi.client.plus.people.get({
             userId: 'me'
-        })
-            .execute(handleResponse);
+        }).execute(handleResponse);
     }
 
     function handleResponse(glUser) {
@@ -31,14 +30,12 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
             var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
             if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
             $auth.setToken(response.data.token);
-            $user.instance().init(response.data.user, true, msg);
+            var userInstance = $user.instance();
+            if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true, msg);
         }
         var onFail = function(result) {
             $page.load.done();
-            $mdToast.show($mdToast.simple()
-                .content(result.data && result.data.error ? result.data.error : 'error')
-                .position('bottom right')
-                .hideDelay(3000))
+            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(3000))
         }
         $http.post(api.url + '/auth/google', {
             provider: 'google',
@@ -47,8 +44,6 @@ angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ funct
             lastName: glUser.name.familyName,
             email: glUser.emails[0].value,
             gender: glUser.gender
-        })
-            .then(onSuccess, onFail);
+        }).then(onSuccess, onFail);
     }
-
 })

@@ -24,7 +24,8 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         $page.load.init();
         var onSuccess = function(response) {
             $page.load.done();
-            $user.instance().init(response.data.user, true);
+            var userInstance = $user.instance();
+            if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true);
             $rootScope.$emit('$LoginSuccess', response);
         }
         var onError = function(result) {

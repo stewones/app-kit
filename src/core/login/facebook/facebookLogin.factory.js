@@ -42,19 +42,15 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
                     }
                 }
                 $auth.setToken(response.data.token);
-                $user.instance().init(response.data.user, true, msg);
-                if (cbSuccess)
-                    cbSuccess()
+                var userInstance = $user.instance();
+                if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true, msg);
+                if (cbSuccess) cbSuccess()
                 $rootScope.$emit('$LoginSuccess', response);
             }
             var onFail = function(response) {
                 $page.load.done();
-                $mdToast.show($mdToast.simple()
-                    .content(response.data && result.data.error ? response.data.error : 'error')
-                    .position('bottom right')
-                    .hideDelay(3000))
-                if (cbFail)
-                    cbFail()
+                $mdToast.show($mdToast.simple().content(response.data && result.data.error ? response.data.error : 'error').position('bottom right').hideDelay(3000))
+                if (cbFail) cbFail()
             }
             var gender = '';
             gender = fbUser.gender && fbUser.gender === 'female' ? 'F' : gender;
