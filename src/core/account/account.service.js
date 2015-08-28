@@ -96,7 +96,8 @@ angular.module('core.account').service('$Account', /*@ngInject*/ function($http,
                 $scope.user = $user.instance();
                 $scope.account = $account.instance();
                 $scope.forgotPassword = function() {
-                    $user.instance().destroy();
+                    var userInstance = $user.instance();
+                    if (typeof userInstance.destroy === 'function') $user.instance().destroy();
                     $mdDialog.cancel();
                     $timeout(function() {
                         $state.go('app.login-lost')

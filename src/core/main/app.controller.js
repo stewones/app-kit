@@ -74,9 +74,9 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             });
         }
         $rootScope.$Unauthorized = true;
-        $user.instance().destroy();
+        var userInstance = $user.instance();
+        if (typeof userInstance.destroy === 'function') $user.instance().destroy();
     });
-
     //
     // Comportamentos para quando o usuário entrar
     //
@@ -102,7 +102,6 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         //
         $rootScope.$Unauthorized = false;
     });
-
     //
     // BOOTSTRAP
     //  
@@ -134,7 +133,8 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     function logout() {
         $mdSidenav('left').close();
         $timeout(function() {
-            $user.instance().destroy(true);
+            var userInstance = $user.instance();
+            if (typeof userInstance.destroy === 'function') $user.instance().destroy(true);
             bootstrap(true);
         }, 500);
     }
