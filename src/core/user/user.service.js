@@ -202,6 +202,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($rootScope, 
 
     function removeStorageUser() {
         window.localStorage.removeItem(setting.slug + '.user');
+        window.localStorage.removeItem(setting.slug + '.session_token');
     }
 
     function getStorageSession() {
