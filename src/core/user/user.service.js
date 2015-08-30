@@ -215,6 +215,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($rootScope, 
 
     function removeStorageSession() {
         window.localStorage.removeItem(setting.slug + '.session');
+        window.localStorage.removeItem(setting.slug + '.app');
     }
 
     function getCompanies(userInstance) {
