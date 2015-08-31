@@ -4,5 +4,5 @@
             <label>Cep</label> <md-progress-circular class="load" md-mode="indeterminate" md-diameter="18" ng-show="vm.busy"></md-progress-circular>
         </div>
     </label>
-    <input type="number" ng-model="ngModel" ng-change="vm.get()" required>
+    <input type="number" min="8" max="8" ng-model="ngModel" ng-change="vm.get()" required>
 </md-input-container>
