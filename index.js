@@ -1,3 +1,3 @@
 module.exports = {
-    Commission: require('./src/core/utils/services/commission/commission')
+    Commission: require('./src/core/utils/services/commission/Commission')
 };
