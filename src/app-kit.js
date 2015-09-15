@@ -733,8 +733,6 @@ angular.module('core.list').controller('ListCtrl', /*@ngInject*/ function($scope
     vm.filter = vm.listFilters ? vm.listFilters : {};
     vm.disableTransition = false;
 
-    console.log('filter', vm.filter);
-
     // Extend filters with $stateParams
     angular.extend(vm.filter, $stateParams);
 
@@ -4699,6 +4697,54 @@ angular.module('core.utils').directive('contactForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
+angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+            data: '=',
+            url: '=',
+            post: '='
+        },
+        templateUrl: 'core/utils/directives/dashboardStats/dashboardStats.tpl.html',
+        link: function() {},
+        controller: /*@ngInject*/ function($scope, $http) {
+            bootstrap();
+            $scope.update = update;
+            $scope.$watch('post', function(nv, ov) {
+                if (nv != ov) {
+                    bootstrap();
+                }
+            }, true);
+
+            function bootstrap() {
+                $scope.loading = true;
+                var onSuccess = function(response) {
+                    $scope.loading = false;
+                    for (var k in response.data) {
+                        if (response.data.hasOwnProperty(k)) {
+                            $scope.data.forEach(function(row, i) {
+                                if (row.slug === k) {
+                                    $scope.data[i].value = response.data[k];
+                                }
+                            })
+                        }
+                    }
+                }
+                var onFail = function(response) {
+                    $scope.loading = false;
+                    $scope.error = response && response.data ? response.data : 'erro no servidor';
+                }
+                $http.post($scope.url, $scope.post).then(onSuccess, onFail);
+            }
+
+            function update() {
+                bootstrap();
+            }
+        }
+    }
+})
+'use strict';
 //https://github.com/sparkalow/angular-count-to
 angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
     return {
@@ -4751,75 +4797,6 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
         }
     }
 });
-'use strict';
-angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
-    return {
-        restrict: 'EA',
-        replace: true,
-        scope: {
-            data: '=',
-            url: '=',
-            post: '='
-        },
-        templateUrl: 'core/utils/directives/dashboardStats/dashboardStats.tpl.html',
-        link: function() {},
-        controller: /*@ngInject*/ function($scope, $http) {
-            bootstrap();
-            $scope.update = update;
-            $scope.$watch('post', function(nv, ov) {
-                if (nv != ov) {
-                    bootstrap();
-                }
-            }, true);
-
-            function bootstrap() {
-                $scope.loading = true;
-                var onSuccess = function(response) {
-                    $scope.loading = false;
-                    for (var k in response.data) {
-                        if (response.data.hasOwnProperty(k)) {
-                            $scope.data.forEach(function(row, i) {
-                                if (row.slug === k) {
-                                    $scope.data[i].value = response.data[k];
-                                }
-                            })
-                        }
-                    }
-                }
-                var onFail = function(response) {
-                    $scope.loading = false;
-                    $scope.error = response && response.data ? response.data : 'erro no servidor';
-                }
-                $http.post($scope.url, $scope.post).then(onSuccess, onFail);
-            }
-
-            function update() {
-                bootstrap();
-            }
-        }
-    }
-})
-'use strict';
-angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
-    return {
-        scope: {
-            focus: '=',
-            focusWhen: '='
-        },
-        restrict: 'A',
-        link: function(scope, elem) {
-            scope.$watch('focusWhen', function(nv, ov) {
-                if (nv != ov) {
-                    if (nv) {
-                        elem.focus();
-                    }
-                }
-            });
-            if (scope.focus)
-                elem.focus();
-        }
-    }
-})
 'use strict';
 /**
  * @ngdoc directive
@@ -4917,6 +4894,27 @@ angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function($md
         }
     }
 });
+'use strict';
+angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
+    return {
+        scope: {
+            focus: '=',
+            focusWhen: '='
+        },
+        restrict: 'A',
+        link: function(scope, elem) {
+            scope.$watch('focusWhen', function(nv, ov) {
+                if (nv != ov) {
+                    if (nv) {
+                        elem.focus();
+                    }
+                }
+            });
+            if (scope.focus)
+                elem.focus();
+        }
+    }
+})
 'use strict';
 angular.module('core.utils').directive('infiniteScroll', /*@ngInject*/ function infiniteScroll() {
     return {
