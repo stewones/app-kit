@@ -7,7 +7,8 @@ angular.module('core.list').directive('list', /*@ngInject*/ function() {
         bindToController: {
             listSource: '=',
             listRoute: '@',
-            listBrStates: '='
+            listBrStates: '=',
+            listFilters: '='
         },
         templateUrl: function(elem, attr) {
             return attr.templateUrl ? attr.templateUrl : "core/list/list.tpl.html";

@@ -730,8 +730,10 @@ angular.module('core.list').controller('ListCtrl', /*@ngInject*/ function($scope
     vm.page = $stateParams.page ? Number($stateParams.page) : 1;
     vm.limit = 8;
     vm.loadMoreBtn = false;
-    vm.filter = {};
+    vm.filter = vm.listFilters ? vm.listFilters : {};
     vm.disableTransition = false;
+
+    console.log('filter', vm.filter);
 
     // Extend filters with $stateParams
     angular.extend(vm.filter, $stateParams);
@@ -840,7 +842,8 @@ angular.module('core.list').directive('list', /*@ngInject*/ function() {
         bindToController: {
             listSource: '=',
             listRoute: '@',
-            listBrStates: '='
+            listBrStates: '=',
+            listFilters: '='
         },
         templateUrl: function(elem, attr) {
             return attr.templateUrl ? attr.templateUrl : "core/list/list.tpl.html";

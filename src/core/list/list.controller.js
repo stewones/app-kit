@@ -9,7 +9,7 @@ angular.module('core.list').controller('ListCtrl', /*@ngInject*/ function($scope
     vm.page = $stateParams.page ? Number($stateParams.page) : 1;
     vm.limit = 8;
     vm.loadMoreBtn = false;
-    vm.filter = {};
+    vm.filter = vm.listFilters ? vm.listFilters : {};
     vm.disableTransition = false;
 
     // Extend filters with $stateParams
