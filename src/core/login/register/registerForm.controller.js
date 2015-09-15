@@ -11,7 +11,8 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
                 msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
             }
             $page.load.done();
-            $user.instance().init(result.data.user, true, msg, 10000);
+            var userInstance = $user.instance();
+            if (typeof userInstance.init === 'function') $user.instance().init(result.data.user, true, msg, 10000);
         }
         var onError = function(result) {
             $page.load.done();

@@ -1,18 +1,17 @@
 {
-    "name": "@esgrupo/app-kit",
-    "version": "0.0.1",
-    "private": true,
+    "name": "esgrupo-app-kit",
+    "version": "1.1.0",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/esgrupo/app-kit.git"
+        "url": "git+https://github.com/esgrupo/esgrupo-app-kit.git"
     },
     "author": "ES Grupo",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/esgrupo/app-kit/issues"
+        "url": "https://github.com/esgrupo/esgrupo-app-kit/issues"
     },
-    "homepage": "https://github.com/esgrupo/app-kit#readme",
-    "main": "src/app-kit.min.js",
+    "homepage": "https://github.com/esgrupo/esgrupo-app-kit#readme",
+    "main": "./index.js",
     "dependencies": {
         "body-parser": "^1.12.4",
         "compression": "^1.4.4",
@@ -24,6 +23,7 @@
         "chalk": "~0.5.1",
         "concat-stream": "~1.4.7",
         "del": "~1.2.0",
+        "expect.js": "^0.3.1",
         "gulp": "^3.9.0",
         "gulp-angular-constant": "^0.3.0",
         "gulp-angular-filesort": "~1.0.4",

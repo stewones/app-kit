@@ -150,6 +150,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($rootScope, 
      * @param {bool} alert mensagem de aviso (você saiu)
      */
     User.prototype.destroy = function(alert) {
+        $user.set({});
         removeStorageSession();
         removeStorageUser();
         $auth.removeToken();
@@ -201,6 +202,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($rootScope, 
 
     function removeStorageUser() {
         window.localStorage.removeItem(setting.slug + '.user');
+        window.localStorage.removeItem(setting.slug + '.session_token');
     }
 
     function getStorageSession() {
@@ -213,6 +215,7 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($rootScope, 
 
     function removeStorageSession() {
         window.localStorage.removeItem(setting.slug + '.session');
+        window.localStorage.removeItem(setting.slug + '.app');
     }
 
     function getCompanies(userInstance) {

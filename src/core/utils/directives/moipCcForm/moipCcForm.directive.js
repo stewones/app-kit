@@ -9,12 +9,14 @@
  * div
  * @param {object} ngModel model do contato
  * @param {object} handleForm model para reter estados do form
+ * @param {array} parcels array com a qtd de parcelas. ex: [1,2,3]
  **/
 angular.module('core.utils').directive('moipCcForm', /*@ngInject*/ function() {
     return {
         scope: {
             ngModel: '=',
-            handleForm: '='
+            handleForm: '=',
+            parcels: '='
         },
         controller: 'MoipCcFormCtrl',
         controllerAs: 'vm',

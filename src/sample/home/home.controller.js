@@ -15,14 +15,13 @@ angular.module('core.home').controller('HomeCtrl', /*@ngInject*/ function($rootS
     }
     $scope.myCep = 29126145;
     $page.toast('Oieee', 10000, 'top right');
-
     // List
     vm.listSource = events.getEvents;
     vm.listBrStates = $utils.brStates();
 });
-
 'use strict';
-angular.module('core.home').controller('BodyCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $page, $mdDialog, $Account, setting, api) {
+angular.module('core.home').controller('BodyCtrl', /*@ngInject*/ function($rootScope, $scope, $state, $auth, $http, $mdToast, $q, $timeout, $page, $mdDialog, $Account, Commission, setting, api) {
     var vm = this;
-
+    var commission = new Commission();
+    console.log(commission.resume(60))
 });
