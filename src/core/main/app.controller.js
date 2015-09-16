@@ -76,6 +76,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         $rootScope.$Unauthorized = true;
         var userInstance = $user.instance();
         if (typeof userInstance.destroy === 'function') $user.instance().destroy();
+        window.location.href = '/login-session/';
     });
     //
     // Comportamentos para quando o usuário entrar
