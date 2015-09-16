@@ -9,6 +9,9 @@
     </div>
 </md-toolbar>
 <md-dialog-content>
+<!-- Optional desc -->
+<p ng-if="cutText">{{cutText}}</p>
+
 <!-- area of crop -->
 <image-cutter-area
 endpoint-url="{{endpointUrl}}"

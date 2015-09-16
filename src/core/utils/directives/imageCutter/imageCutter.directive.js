@@ -34,7 +34,8 @@ angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function($md
             cutShape: '@',
             cutLabel: '@',
             cutResult: '=',
-            cutStep: '='
+            cutStep: '=',
+            cutText: '@'
         },
         replace: true,
         transclude: true,
