@@ -15,12 +15,15 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         scope: {
             ngModel: '=',
             address: '=',
+            templateUrl: '=',
             endpointUrl: '@'
         },
         replace: true,
         restrict: 'EA',
         controller: 'CeperCtrl',
         controllerAs: 'vm',
-        templateUrl: 'core/utils/directives/ceper/ceper.tpl.html'
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/ceper/ceper.tpl.html';
+        }
     }
 });

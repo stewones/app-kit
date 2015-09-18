@@ -1687,8 +1687,10 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         }
         $rootScope.$Unauthorized = true;
         var userInstance = $user.instance();
-        if (typeof userInstance.destroy === 'function') $user.instance().destroy();
-        window.location.href = '/login-session/';
+        if (typeof userInstance.destroy === 'function') {
+            $user.instance().destroy(); 
+            window.location.href = '/login-session/';
+        }       
     });
     //
     // Comportamentos para quando o usuário entrar
@@ -4573,13 +4575,16 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         scope: {
             ngModel: '=',
             address: '=',
+            templateUrl: '=',
             endpointUrl: '@'
         },
         replace: true,
         restrict: 'EA',
         controller: 'CeperCtrl',
         controllerAs: 'vm',
-        templateUrl: 'core/utils/directives/ceper/ceper.tpl.html'
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/ceper/ceper.tpl.html';
+        }
     }
 });
 'use strict';
@@ -4713,54 +4718,6 @@ angular.module('core.utils').directive('contactForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
-    return {
-        restrict: 'EA',
-        replace: true,
-        scope: {
-            data: '=',
-            url: '=',
-            post: '='
-        },
-        templateUrl: 'core/utils/directives/dashboardStats/dashboardStats.tpl.html',
-        link: function() {},
-        controller: /*@ngInject*/ function($scope, $http) {
-            bootstrap();
-            $scope.update = update;
-            $scope.$watch('post', function(nv, ov) {
-                if (nv != ov) {
-                    bootstrap();
-                }
-            }, true);
-
-            function bootstrap() {
-                $scope.loading = true;
-                var onSuccess = function(response) {
-                    $scope.loading = false;
-                    for (var k in response.data) {
-                        if (response.data.hasOwnProperty(k)) {
-                            $scope.data.forEach(function(row, i) {
-                                if (row.slug === k) {
-                                    $scope.data[i].value = response.data[k];
-                                }
-                            })
-                        }
-                    }
-                }
-                var onFail = function(response) {
-                    $scope.loading = false;
-                    $scope.error = response && response.data ? response.data : 'erro no servidor';
-                }
-                $http.post($scope.url, $scope.post).then(onSuccess, onFail);
-            }
-
-            function update() {
-                bootstrap();
-            }
-        }
-    }
-})
-'use strict';
 //https://github.com/sparkalow/angular-count-to
 angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
     return {
@@ -4813,6 +4770,75 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
         }
     }
 });
+'use strict';
+angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+            data: '=',
+            url: '=',
+            post: '='
+        },
+        templateUrl: 'core/utils/directives/dashboardStats/dashboardStats.tpl.html',
+        link: function() {},
+        controller: /*@ngInject*/ function($scope, $http) {
+            bootstrap();
+            $scope.update = update;
+            $scope.$watch('post', function(nv, ov) {
+                if (nv != ov) {
+                    bootstrap();
+                }
+            }, true);
+
+            function bootstrap() {
+                $scope.loading = true;
+                var onSuccess = function(response) {
+                    $scope.loading = false;
+                    for (var k in response.data) {
+                        if (response.data.hasOwnProperty(k)) {
+                            $scope.data.forEach(function(row, i) {
+                                if (row.slug === k) {
+                                    $scope.data[i].value = response.data[k];
+                                }
+                            })
+                        }
+                    }
+                }
+                var onFail = function(response) {
+                    $scope.loading = false;
+                    $scope.error = response && response.data ? response.data : 'erro no servidor';
+                }
+                $http.post($scope.url, $scope.post).then(onSuccess, onFail);
+            }
+
+            function update() {
+                bootstrap();
+            }
+        }
+    }
+})
+'use strict';
+angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
+    return {
+        scope: {
+            focus: '=',
+            focusWhen: '='
+        },
+        restrict: 'A',
+        link: function(scope, elem) {
+            scope.$watch('focusWhen', function(nv, ov) {
+                if (nv != ov) {
+                    if (nv) {
+                        elem.focus();
+                    }
+                }
+            });
+            if (scope.focus)
+                elem.focus();
+        }
+    }
+})
 'use strict';
 /**
  * @ngdoc directive
@@ -4910,27 +4936,6 @@ angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function($md
         }
     }
 });
-'use strict';
-angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
-    return {
-        scope: {
-            focus: '=',
-            focusWhen: '='
-        },
-        restrict: 'A',
-        link: function(scope, elem) {
-            scope.$watch('focusWhen', function(nv, ov) {
-                if (nv != ov) {
-                    if (nv) {
-                        elem.focus();
-                    }
-                }
-            });
-            if (scope.focus)
-                elem.focus();
-        }
-    }
-})
 'use strict';
 angular.module('core.utils').directive('infiniteScroll', /*@ngInject*/ function infiniteScroll() {
     return {
@@ -5573,17 +5578,17 @@ $templateCache.put("core/account/deactivate.tpl.html","<md-dialog aria-label=\"D
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div>");
 $templateCache.put("core/list/list.tpl.html","<div class=\"search anim-zoom-in md-padding\"><h2>Busca de eventos <small class=\"md-subhead\">Exibindo {{vm.totalDisplay}} resultados de {{vm.total}} encontrados</small></h2><div list-search-box=\"\" list-filters=\"vm.filter\" class=\"search-box\" layout-padding=\"\"></div><div class=\"listing\" layout=\"column\" layout-gt-md=\"row\"><div list-filter-box=\"\" list-filters=\"vm.filter\" list-br-states=\"vm.listBrStates\" class=\"filter\" flex-gt-md=\"25\"></div><div list-content=\"\" list-entries=\"vm.entries\" list-filters=\"vm.filter\" list-source=\"vm.listSource\" list-total=\"vm.total\" list-total-display=\"vm.totalDisplay\" list-page=\"vm.page\" list-limit=\"vm.limit\" list-load-more-btn=\"vm.loadMoreBtn\" class=\"list\" flex-gt-md=\"\"></div></div></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
-$templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\n    min-height: 10px !important; height: 10px !important;\n}*/\n</style>");
+$templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/list/content/listContent.tpl.html","<div class=\"no-results\" ng-show=\"!vm.listEntries.length\"><md-icon md-font-set=\"material-icons\">announcement</md-icon>Nenhum resultado</div><md-list class=\"list-content md-whiteframe-z1\" ng-show=\"vm.listEntries.length\"><md-list-item class=\"md-3-line\" ng-repeat=\"item in vm.listEntries\"><img ng-src=\"{{item.image}}\" class=\"list-avatar\" alt=\"{{item.title}}\"><div class=\"md-list-item-text\"><div class=\"item-content\"><h3>{{item.title}}</h3><p><md-icon md-font-set=\"material-icons\">event</md-icon>{{item.startDate}}<md-icon md-font-set=\"material-icons\">alarm</md-icon>{{item.startTime}}</p><p><md-icon md-font-set=\"material-icons\">place</md-icon>{{item.address.bairro}}, {{item.address.city}} - {{item.address.state}}</p></div><div class=\"item-actions\"><a class=\"link\" ui-sref=\"app.event-page(item)\" title=\"configurações do evento\" tabindex=\"0\">Saiba mais <i class=\"material-icons\">info_outline</i></a></div></div></md-list-item><md-list-item list-load-more=\"\" ng-if=\"vm.listLoadMoreBtn\" class=\"load-more-btn\"></md-list-item></md-list>");
 $templateCache.put("core/list/filter-box/listFilterBox.tpl.html","<form name=\"vm.form\" layout-padding=\"\"><div class=\"group\" ng-if=\"vm.listBrStates\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">place</md-icon>Localização</h4><md-select placeholder=\"Estado\" class=\"state\" ng-model=\"vm.listFilters.state\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.listBrStates\">{{ opt.name }}</md-option></md-select></div><div class=\"group\"><h4 class=\"title\"><md-icon md-font-set=\"material-icons\">event</md-icon>Periodo</h4><md-input-container><label>Data inicial</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.startDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container><md-input-container><label>Data final</label> <input mask=\"39/19/2999\" ng-model=\"vm.listFilters.endDate\" ng-model-options=\"{ updateOn: \'blur\' }\"></md-input-container></div></form>");
 $templateCache.put("core/list/load-more/listLoadMore.tpl.html","<div class=\"md-list-item-text list-more-wrapper\"><md-button class=\"md-primary list-more\" ng-click=\"vm.goToNextPage()\"><div layout=\"row\" layout-align=\"center\"><md-icon md-font-set=\"material-icons\">dialpad</md-icon><div>Mais resultados</div></div></md-button></div>");
 $templateCache.put("core/list/search-box/listSearchBox.tpl.html","<form name=\"vm.form\"><md-input-container md-no-float=\"\"><md-icon md-font-icon=\"fa fa-search\"></md-icon><input ng-model=\"vm.listFilters.term\" ng-model-options=\"{ updateOn: \'blur\' }\" ng-keyup=\"cancel($event)\" placeholder=\"Buscar eventos por titulo, empresas, etc..\"></md-input-container></form>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.$page.load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
-$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\nbody, html {  overflow: auto;}\n</style>");
+$templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.$page.load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.$page.load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
-$templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\nbody, html {  overflow: auto;}\n</style>");
+$templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.$page.load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
-$templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\nbody, html {  overflow: auto;}\n</style>");
+$templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.$page.load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state.current.name != \'app.profile\' && app.state.current.name != \'app.landing\'}\"></div></md-content></div>");
 $templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.$page.load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");
