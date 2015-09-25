@@ -2,6 +2,7 @@ docs/
 node_modules/
 bower_components/
 coverage/
+server/
 .sass-cache/
 .tmp/
 .doc.build/
