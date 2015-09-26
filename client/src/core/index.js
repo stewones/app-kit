@@ -13,6 +13,7 @@ angular.module('app.kit', [
     'ngAnimate',
     'ngTouch',
     'ngSanitize',
+    'ngStorage',
     'angulartics',
     'angulartics.google.analytics',
     'ui.router',

@@ -39,31 +39,46 @@ angular.module('core.user').provider('$user',
          * </pre>
          * @return {object} objeto correspondente a uma Factory
          **/
-        this.$get = this.get = function() {
+        this.$get = this.get = function($User_, $log, $auth, $page, $rootScope, $sessionStorage) {
             return {
-                instance: function() {
-                    return this._instance;
+                instance: function(user) {
+                    if (user) return this._instance = user;
+                    else return this._instance;
                 },
                 setting: this._setting,
                 /**
                  * @ngdoc function
-                 * @name core.user.$userProvider#set
-                 * @methodOf core.user.$userProvider
-                 * @description 
-                 * Setar instância do usuário
-                 * @example
-                 * <pre>
-                 * var user = new $User();
-                 * $user.set(user);
-                 * //now user instance can be injectable
-                 * angular.module('myApp').controller('myCtrl',function($user){
-                 * console.log($user.instance()) //imprime objeto de instância do usuário
-                 * })
-                 * </pre>
-                 **/
-                set: function(data) {
-                    this._instance = data;
-                    return data;
+                 * @name core.user.factory:$user:instantiate
+                 * @methodOf core.user.factory:$user
+                 * @description
+                 * User bootstrap
+                 * @param {object} params the params of instance
+                 * @param {bool} alert display a welcome message when user logs in
+                 * @param {string} message the message
+                 */
+                instantiate: function(params, alert, message, cb) {
+                    if (typeof params != 'object') params = {};
+                    this.instance(new $User_(params));
+                    $sessionStorage.user = this.instance();
+                    //
+                    // @todo doc broadcast $UserInstantiateStart
+                    //                   
+                    $rootScope.$emit('$UserInstantiateStart', this.instance());
+                    //
+                    // When i have user ID
+                    //
+                    if (this._id || this.id) {
+                        if (!message && this.profile && this.profile.firstName) message = 'Hello ' + this.profile.firstName + ', welcome back.';
+                        if (alert) $page.toast(message, 5000);
+                    }
+                    //
+                    // @todo doc broadcast $UserInstantiateEnd
+                    //                   
+                    $rootScope.$emit('$UserInstantiateEnd', this.instance());
+                    if (typeof cb === 'function') {
+                        cb(this.instance());
+                    }
+                    return this.instance();
                 },
                 /**
                  * @ngdoc function
@@ -81,8 +96,24 @@ angular.module('core.user').provider('$user',
                  * })
                  * </pre>
                  **/
-                destroy: function() {
-                    this._instance = null;
+                destroy: function(alert) {
+                    //
+                    // delete user instance
+                    //
+                    this._instance = false;
+                    //
+                    // delete token auth
+                    //
+                    $auth.removeToken();
+                    //
+                    // @todo doc broadcast $UserLeft
+                    //   
+                    $rootScope.$emit('$UserLeft');
+                    if (alert) $page.toast('You just left.', 3000);
+                    //
+                    // sign out user
+                    //
+                    $auth.logout();
                 }
             }
         }

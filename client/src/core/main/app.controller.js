@@ -20,7 +20,7 @@
  * @requires core.login.$loginProvider
  * @requires core.page.factory:$menu
  **/
-angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app) {
+angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app, $sessionStorage) {
     var app = this;
     app.enviroment = enviroment;
     //
@@ -44,6 +44,13 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     //
     moment.locale('pt_BR');
     //
+    // Storage defaults
+    //
+    // $localStorage.$default({});
+    // $sessionStorage.$default({
+    //     user: {}
+    // });
+    //
     // Events
     //  
     $rootScope.$on('$AppReboot', function() {
@@ -64,9 +71,8 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     });
     $rootScope.$on('$Unauthorized', function(ev, status) {
         //
-        // Persistir o local atual
-        // para redirecionamento após o login
-        // - somente se status 401
+        // Persists current location to execute redirection after login
+        // - Only if server status is 401
         //
         if (status === 401) {
             $app.storage('session').set({
@@ -81,59 +87,59 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         }
     });
     //
-    // Comportamentos para quando o usuário entrar
+    // When user in...
     //
     $rootScope.$on('$LoginSuccess', function(ev, response) {
-        //
-        // Redirecionar usuario para alguma rota pre-estabelecida
-        //
         var appSession = $app.storage('session').get();
         if (appSession && appSession.locationRedirect && appSession.locationRedirect != '/login/') {
             //
-            // Redirecionar o caboclo
+            // Do redirection
             //
             $location.path(appSession.locationRedirect);
             //
-            // Resetar o locationRedirect
+            // Reset locationRedirect
             //
             $app.storage('session').set({
                 locationRedirect: ''
             })
         }
         //
-        // Zerar o $rootScope.$Unauthorized
+        // Reset the $rootScope.$Unauthorized
         //
         $rootScope.$Unauthorized = false;
     });
     //
-    // BOOTSTRAP
+    // BOOTSTRAP with a new user
     //  
     bootstrap(true);
 
-    function bootstrap(withUser) {
-        if (withUser) {
-            var newUser = new $User();
-            $user.set(newUser);
+    function bootstrap(withNewUser) {
+        if (withNewUser) {
+            $user.instantiate({}, false, false, function() {
+                boot();
+            });
+        } else {
+            boot();
         }
-        app.user = $user.instance();
-        app.page = $page; //@todo break
-        app.setting = setting;
-        app.year = moment().format('YYYY');
-        app.state = $state;
-        app.isAuthed = $auth.isAuthenticated;
-        app.logout = logout;
-        app.menu = $menu.api();
-        app.iframe = $location.hash() === 'iframe' ? true : false;
+
+        function boot() {
+            //app.user = $sessionStorage.user;
+            app.user = $user.instance();
+            app.page = $page; //@todo break
+            app.setting = setting;
+            app.year = moment().format('YYYY');
+            app.state = $state;
+            app.isAuthed = $auth.isAuthenticated;
+            app.logout = logout;
+            app.menu = $menu.api();
+            app.iframe = $location.hash() === 'iframe' ? true : false;
+        }
     }
     //
     // Behaviors
     //
     function logout() {
-        $mdSidenav('left').close(); //@todo factory
-        //$timeout(function() {
-        var userInstance = $user.instance();
-        if (typeof userInstance.destroy === 'function') $user.instance().destroy(true);
-        //bootstrap(true);
-        //}, 500);
+        $mdSidenav('left').close(); //@todo factory to avoid console log warning
+        $user.destroy(true);
     }
 })

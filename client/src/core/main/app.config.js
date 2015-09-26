@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, enviroment, setting, api) {
+angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, enviroment, setting, api) {
     //
     // States & Routes
     //    
@@ -65,7 +65,7 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProv
     //
     $authProvider.httpInterceptor = true; // Add Authorization header to HTTP request
     $authProvider.loginOnSignup = true;
-    $authProvider.loginRedirect = '/profile/';
+    $authProvider.loginRedirect = '/';
     $authProvider.logoutRedirect = '/login/';
     $authProvider.signupRedirect = '/login/';
     $authProvider.loginUrl = api.url + '/auth/local/';
@@ -79,13 +79,15 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProv
     $authProvider.unlinkMethod = 'get';
     $authProvider.authHeader = 'Authorization';
     $authProvider.withCredentials = true; // Send POST request with credentials
-   
-
+    //$authProvider.storageType = 'sessionStorage';
+    //
+    // Storage options
+    //
+//    $localStorageProvider.setKeyPrefix(setting.slug+'.');
+    $sessionStorageProvider.setKeyPrefix(setting.slug+'.');
     //
     // Debug options
     //
-    if (enviroment === 'production')
-        $logProvider.debugEnabled(false);
-    else
-        $logProvider.debugEnabled(true);
+    if (enviroment === 'production') $logProvider.debugEnabled(false);
+    else $logProvider.debugEnabled(true);
 });

@@ -3,7 +3,7 @@
  * @ngdoc service
  * @name core.user.service:$User
  **/
-angular.module('core.user').service('$User', /*@ngInject*/ function() {
+angular.module('core.user').service('$User_', /*@ngInject*/ function(lodash) {
     var _ = lodash,
         self = this;
     var $User = function(params) {
