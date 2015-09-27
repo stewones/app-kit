@@ -16,6 +16,7 @@ angular.module('app.kit', [
     'ngStorage',
     'angulartics',
     'angulartics.google.analytics',
+    'pascalprecht.translate',
     'ui.router',
     //
     // Load core kit

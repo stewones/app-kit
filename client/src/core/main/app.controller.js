@@ -83,7 +83,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         var userInstance = $user.instance();
         if (typeof userInstance.destroy === 'function') {
             $user.instance().destroy();
-            window.location.href = '/login-session/';
+            window.location.href = '/login/lost/session/';
         }
     });
     //
@@ -121,11 +121,9 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         } else {
             boot();
         }
-
         function boot() {
-            //app.user = $sessionStorage.user;
-            app.user = $user.instance();
-            app.page = $page; //@todo break
+            app.user = $user; //@todo break changes
+            app.page = $page; //@todo break changes
             app.setting = setting;
             app.year = moment().format('YYYY');
             app.state = $state;

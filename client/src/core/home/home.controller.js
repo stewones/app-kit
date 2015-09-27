@@ -9,9 +9,9 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($root
     //
     // Broadcast
     //
-    $rootScope.$on('$LoginSuccess',function(ev, response){
-    	console.log(response)
-    });
+    // $rootScope.$on('$LoginSuccess',function(ev, response){
+    // 	console.log(response)
+    // });
 
     bootstrap();
 

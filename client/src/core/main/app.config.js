@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, enviroment, setting, api) {
+angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, $translateProvider, enviroment, setting, api) {
     //
     // States & Routes
     //    
@@ -61,6 +61,11 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProv
     //
     $mdThemingProvider.theme('darkness').primaryPalette('cyan').dark();
     //
+    // User options
+    //
+    $userProvider.setting('loginSuccessRedirect', '/');
+    $userProvider.setting('loginSuccessRedirectState', 'app.home');
+    //
     // Auth options
     //
     $authProvider.httpInterceptor = true; // Add Authorization header to HTTP request
@@ -83,8 +88,11 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProv
     //
     // Storage options
     //
-//    $localStorageProvider.setKeyPrefix(setting.slug+'.');
-    $sessionStorageProvider.setKeyPrefix(setting.slug+'.');
+    $sessionStorageProvider.setKeyPrefix(setting.slug + '.');
+    //
+    // i18n options
+    //
+    $translateProvider.preferredLanguage('en_US');
     //
     // Debug options
     //

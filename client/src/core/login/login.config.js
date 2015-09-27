@@ -4,7 +4,6 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
     // States & Routes
     //
     $stateProvider.state('app.login', {
-            protected: false,
             url: '/login/',
             views: {
                 'content': {
@@ -15,19 +14,14 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: /*@ngInject*/ function($auth, $location, $login) {
-                    if ($auth.isAuthenticated()) {
-                        $location.path($login.config.auth.loginSuccessRedirect);
-                    }
-                }
+                authed: isAuthed
             }
         })
         //
-        // bugfix #18 - usuario perdendo sessao
-        // https://github.com/esgrupo/app-kit/issues/18
+        // same as login, just to force that session was been lost
         //
-        .state('app.login-session', {
-            url: '/login-session/',
+        .state('app.login-lost-session', {
+            url: '/login/lost/session/',
             views: {
                 'content': {
                     templateUrl: /*@ngInject*/ function() {
@@ -57,11 +51,7 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                     }
                 },
                 resolve: {
-                    authed: /*@ngInject*/ function($auth, $location, $login) {
-                        if ($auth.isAuthenticated()) {
-                            $location.path($login.config.auth.loginSuccessRedirect);
-                        }
-                    }
+                    authed: isAuthed
                 }
             }
         }).state('app.login-lost', {
@@ -76,12 +66,20 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: /*@ngInject*/ function($auth, $window, $login) {
-                    if ($auth.isAuthenticated()) {
-                        $window.location = $login.config.auth.loginSuccessRedirect //here we use $window to fix issue related with $location.hash (#) in url
-                    }
-                }
+                authed: isAuthed
             }
         });
     $locationProvider.html5Mode(true);
-})
+});
+
+function isAuthed($auth, $state, $timeout, $user, $location) {
+    if ($auth.isAuthenticated()) {
+        $timeout(function() {
+            //$state.go($user.setting.loginSuccessRedirect);
+            $location.path($user.setting.loginSuccessRedirect);
+        });
+        return true;
+    } else {
+        return false;
+    }
+}

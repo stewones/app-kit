@@ -39,7 +39,7 @@ angular.module('core.user').provider('$user',
          * </pre>
          * @return {object} objeto correspondente a uma Factory
          **/
-        this.$get = this.get = function($User_, $log, $auth, $page, $rootScope, $sessionStorage) {
+        this.$get = this.get = function($User_, $log, $auth, $page, $rootScope, $sessionStorage, $translate) {
             return {
                 instance: function(user) {
                     if (user) return this._instance = user;
@@ -65,11 +65,21 @@ angular.module('core.user').provider('$user',
                     //                   
                     $rootScope.$emit('$UserInstantiateStart', this.instance());
                     //
-                    // When i have user ID
-                    //
-                    if (this._id || this.id) {
-                        if (!message && this.profile && this.profile.firstName) message = 'Hello ' + this.profile.firstName + ', welcome back.';
-                        if (alert) $page.toast(message, 5000);
+                    // We have user ID ?
+                    //            
+                    if (params._id || params.id) {
+                        if (!message && params.profile && params.profile.firstName) {
+                            //
+                            // Welcome warning
+                            //      
+                            $translate('WELCOME_WARN', {
+                                'firstName': params.profile.firstName
+                            }).then(function(message) {
+                                if (alert) $page.toast(message, 5000);
+                            });
+                        } else if (message && alert) {
+                            $page.toast(message, 5000);
+                        }
                     }
                     //
                     // @todo doc broadcast $UserInstantiateEnd
@@ -122,4 +132,4 @@ angular.module('core.user').provider('$user',
             else if (key) return this._setting[key];
             else return this._setting;
         }
-    })
+    });

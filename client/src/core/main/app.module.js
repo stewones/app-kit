@@ -5,6 +5,7 @@
  * @description
  **/
 angular.module('core.app', [
+	'app.i18n',
     'app.setting',
     'app.env',
     'core.utils',
