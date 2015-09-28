@@ -14,7 +14,7 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                 }
             },
             resolve: {
-                authed: $userProvider.isAuthed('/')
+                authed: /*@ngInject*/ $userProvider.isAuthed('/')
             }
         })
         //
@@ -49,10 +49,10 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                     controller: /*@ngInject*/ function($page, setting) {
                         $page.title(setting.name + setting.titleSeparator + 'Cadastro');
                     }
-                },
-                resolve: {
-                    authed: $userProvider.isAuthed('/')
                 }
+            },
+            resolve: {
+                authed: /*@ngInject*/ $userProvider.isAuthed('/')
             }
         }).state('app.login-lost', {
             protected: false,
@@ -66,7 +66,7 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                 }
             },
             resolve: {
-                authed: $userProvider.isAuthed('/')
+                authed: /*@ngInject*/ $userProvider.isAuthed('/')
             }
         });
     $locationProvider.html5Mode(true);

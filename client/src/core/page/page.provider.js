@@ -153,7 +153,7 @@ angular.module('core.page').provider('$page',
             }
         }
         this.closeMenu = function() {
-            return /*@ngInject*/ function($timeout, $auth, $menu) {
+            return function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
                         $menu.api().close();

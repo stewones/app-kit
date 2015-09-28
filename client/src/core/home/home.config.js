@@ -33,8 +33,8 @@ angular.module('core.home').config( /*@ngInject*/ function($pageProvider, $state
             }
         },
         resolve: {
-            closeMenu: $pageProvider.closeMenu(),
-            authed: $userProvider.isNotAuthed('/login/')
+            closeMenu: /*@ngInject*/ $pageProvider.closeMenu(),
+            authed: /*@ngInject*/ $userProvider.isNotAuthed('/login/')
         }
     });
     $locationProvider.html5Mode(true);

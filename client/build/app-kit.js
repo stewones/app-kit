@@ -132,8 +132,8 @@ angular.module('core.home').config( /*@ngInject*/ function($pageProvider, $state
             }
         },
         resolve: {
-            closeMenu: $pageProvider.closeMenu(),
-            authed: $userProvider.isNotAuthed('/login/')
+            closeMenu: /*@ngInject*/ $pageProvider.closeMenu(),
+            authed: /*@ngInject*/ $userProvider.isNotAuthed('/login/')
         }
     });
     $locationProvider.html5Mode(true);
@@ -166,7 +166,7 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                 }
             },
             resolve: {
-                authed: $userProvider.isAuthed('/')
+                authed: /*@ngInject*/ $userProvider.isAuthed('/')
             }
         })
         //
@@ -201,10 +201,10 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                     controller: /*@ngInject*/ function($page, setting) {
                         $page.title(setting.name + setting.titleSeparator + 'Cadastro');
                     }
-                },
-                resolve: {
-                    authed: $userProvider.isAuthed('/')
                 }
+            },
+            resolve: {
+                authed: /*@ngInject*/ $userProvider.isAuthed('/')
             }
         }).state('app.login-lost', {
             protected: false,
@@ -218,7 +218,7 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                 }
             },
             resolve: {
-                authed: $userProvider.isAuthed('/')
+                authed: /*@ngInject*/ $userProvider.isAuthed('/')
             }
         });
     $locationProvider.html5Mode(true);
@@ -1231,7 +1231,7 @@ angular.module('core.page').provider('$page',
             }
         }
         this.closeMenu = function() {
-            return /*@ngInject*/ function($timeout, $auth, $menu) {
+            return function($timeout, $auth, $menu) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
                         $menu.api().close();
@@ -1563,7 +1563,7 @@ angular.module('core.user').provider('$user',
             else return this._setting;
         }
         this.isAuthed = function(redirect) {
-            return /*@ngInject*/ function isAuthed($auth, $state, $timeout, $user, $location) {
+            return function isAuthed($auth, $state, $timeout, $user, $location) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
                         window.location = redirect || $user.setting.loginSuccessRedirect;
@@ -1575,7 +1575,7 @@ angular.module('core.user').provider('$user',
             }
         }
         this.isNotAuthed = function(redirect) {
-            return /*@ngInject*/ function isAuthed($auth, $state, $timeout, $user, $location) {
+            return function isAuthed($auth, $state, $timeout, $user, $location) {
                 if (!$auth.isAuthenticated()) {
                     $timeout(function() {
                         window.location = redirect || $user.setting.loginSuccessRedirect;
