@@ -479,16 +479,6 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
     }
 })
 angular.module("app.env",[]).constant("enviroment","development").constant("base",{url:"http://localhost:3000",urlUnsecure:"http://localhost:3000"}).constant("api",{url:"http://localhost:9000"});
-angular.module("app.i18n", []).config(["$translateProvider", function($translateProvider) {
-$translateProvider.translations("en_US", {
-    "USER_WELCOME_WARN": "Hello {{firstName}}, welcome back!"
-});
-
-$translateProvider.translations("pt_BR", {
-    "USER_WELCOME_WARN": "Olá {{firstName}}, bem vind@ de volta!"
-});
-}]);
-
 angular.module("app.setting",[]).constant("setting",{name:"app-kit",slug:"appkit",version:"1.0.0",title:"appkit",baseUrl:"https://app-kit.stpa.co",titleSeparator:" — ",description:"Skeleton for MEAN applications",copyright:"",google:{clientId:"",language:"en-EN"},facebook:{scope:"email",appId:"1572873089619343",appSecret:"4f4ddc65318b2222773dc8ceda3e107d",language:"en-EN"},ogLocale:"en_EN",ogSiteName:"app-kit",ogTitle:"app-kit",ogDescription:"Skeleton for MEAN applications",ogUrl:"https://app-kit.stpa.co",ogImage:""});
 'use strict';
 angular.module('core.app').provider('$app',
@@ -850,7 +840,7 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProv
     // i18n options
     //
     $translateProvider.preferredLanguage('en_US');
-    $translateProvider.useSanitizeValueStrategy('sanitize');
+    $translateProvider.useSanitizeValueStrategy('escape');
     //
     // Debug options
     //
@@ -1041,11 +1031,13 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
 })
 angular.module("core.i18n", []).config(["$translateProvider", function($translateProvider) {
 $translateProvider.translations("en_US", {
-    "USER_WELCOME_WARN": "Hello {{firstName}}, welcome back!"
+    "USER_WELCOME_WARN": "Hello {{firstName}}, welcome back!",
+    "USER_YOU_LEFT": "You just left."
 });
 
 $translateProvider.translations("pt_BR", {
-    "USER_WELCOME_WARN": "Olá {{firstName}}, bem vind@ de volta!"
+    "USER_WELCOME_WARN": "Olá {{firstName}}, bem vind@ de volta!",
+    "USER_YOU_LEFT": "Você saiu."
 });
 }]);
 
@@ -1552,14 +1544,17 @@ angular.module('core.user').provider('$user',
                     this.destroy(function() {
                         //
                         // @todo doc broadcast $UserLeft
-                        //   
-                        $rootScope.$emit('$UserLeft');
-                        if (alert) $page.toast('You just left.', 3000);
                         //
-                        // sign out user
-                        //
-                        $auth.logout();
-                        if (typeof cb === 'function') return cb();
+                        console.log($translate('USER_YOU_LEFT'))   
+                        $translate('USER_YOU_LEFT').then(function(message) {
+                            $rootScope.$emit('$UserLeft');
+                            if (alert) $page.toast(message, 3000);
+                            //
+                            // sign out user
+                            //
+                            $auth.logout();
+                            if (typeof cb === 'function') return cb();
+                        });
                     });
                 }
             }

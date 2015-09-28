@@ -1,3 +1,4 @@
 {
-    "USER_WELCOME_WARN": "Hello {{firstName}}, welcome back!"
+    "USER_WELCOME_WARN": "Hello {{firstName}}, welcome back!",
+    "USER_YOU_LEFT": "You just left."
 }

@@ -130,14 +130,16 @@ angular.module('core.user').provider('$user',
                     this.destroy(function() {
                         //
                         // @todo doc broadcast $UserLeft
-                        //   
-                        $rootScope.$emit('$UserLeft');
-                        if (alert) $page.toast('You just left.', 3000);
-                        //
-                        // sign out user
-                        //
-                        $auth.logout();
-                        if (typeof cb === 'function') return cb();
+                        //     
+                        $translate('USER_YOU_LEFT').then(function(message) {
+                            $rootScope.$emit('$UserLeft');
+                            if (alert) $page.toast(message, 3000);
+                            //
+                            // sign out user
+                            //
+                            $auth.logout();
+                            if (typeof cb === 'function') return cb();
+                        });
                     });
                 }
             }
