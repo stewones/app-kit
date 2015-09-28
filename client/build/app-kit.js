@@ -35,16 +35,6 @@ angular.module('core.app', [
     'core.user'
 ]);
 'use strict';
-angular.module('core.user', [
-  'ui.router',
-  'satellizer',
-  'app.setting',
-  'app.env',
-  'core.menu',
-  'core.page'
-]);
-
-'use strict';
 angular.module('core.page', [
     'core.app',
     'core.menu',
@@ -58,6 +48,16 @@ angular.module('core.page', [
     'ui.utils.masks',
     'directives.inputMatch'
 ]);
+'use strict';
+angular.module('core.user', [
+  'ui.router',
+  'satellizer',
+  'app.setting',
+  'app.env',
+  'core.menu',
+  'core.page'
+]);
+
 'use strict';
 angular.module('core.utils', ['core.page', 'angularMoment', 'ImageCropper']);
 'use strict';
@@ -1033,259 +1033,6 @@ angular.module('core.app').provider('$app',
  'use strict';
  angular.module('core.app').run( /*@ngInject*/ function() {});
 'use strict';
-angular.module('core.user').provider('$user',
-    /**
-     * @ngdoc object
-     * @name core.user.$userProvider
-     * @description
-     * 2 em 1 - provém configurações e a factory (ver $get) com estados/comportamentos de usuário.
-     **/
-    /*@ngInject*/
-    function $userProvider() {
-        /**
-         * @ngdoc object
-         * @name core.user.$userProvider#_instance
-         * @propertyOf core.user.$userProvider
-         * @description 
-         * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
-         **/
-        this._instance = null;
-        /**
-         * @ngdoc object
-         * @name core.user.$userProvider#_setting
-         * @propertyOf core.user.$userProvider
-         * @description 
-         * Armazena configurações
-         **/
-        this._setting = {};
-        /**
-         * @ngdoc function
-         * @name core.user.$userProvider#$get
-         * @propertyOf core.user.$userProvider
-         * @description 
-         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
-         * @example
-         * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($user) {     
-         *      console.log($user.setting.roleForCompany);
-         *      //printa a regra para empresa
-         * })
-         * </pre>
-         * @return {object} objeto correspondente a uma Factory
-         **/
-        this.$get = this.get = /*@ngInject*/ function($User, $log, $auth, $page, $rootScope, $sessionStorage, $translate) {
-            return {
-                instance: function(user) {
-                    if (user) return this._instance = user;
-                    else return this._instance && this._instance.id ? this._instance : {
-                        'profile': {}
-                    };
-                },
-                setting: this._setting,
-                /**
-                 * @ngdoc function
-                 * @name core.user.factory:$user:instantiate
-                 * @methodOf core.user.factory:$user
-                 * @description
-                 * User bootstrap
-                 * @param {object} params the params of instance
-                 * @param {bool} alert display a welcome message when user logs in
-                 * @param {string} message the message
-                 */
-                instantiate: function(params, alert, message, cb) {
-                    if (typeof params != 'object') params = {};
-                    this.instance(new $User(params));
-                    $sessionStorage.user = this.instance();
-                    //
-                    // @todo doc broadcast $UserInstantiateStart
-                    //                   
-                    $rootScope.$emit('$UserInstantiateStart', this.instance());
-                    //
-                    // We have user ID ?
-                    //            
-                    if (params._id || params.id) {
-                        if (!message && params.profile && params.profile.firstName) {
-                            //
-                            // Welcome warning
-                            //      
-                            $translate('USER_WELCOME_WARN', {
-                                'firstName': params.profile.firstName
-                            }).then(function(message) {
-                                if (alert) $page.toast(message, 5000);
-                            });
-                        } else if (message && alert) {
-                            $page.toast(message, 5000);
-                        }
-                        //
-                        // Company behavior
-                        // @app-kit-pro version
-                        //
-                        var role = false,
-                            roleForCompany = this.setting.roleForCompany,
-                            userInstance = this.instance();
-                        if (userInstance.id) {
-                            if (roleForCompany && roleForCompany != 'user') {
-                                role = params[roleForCompany].role;
-                            } else if (roleForCompany && roleForCompany === 'user') {
-                                role = params.role;
-                            }
-                            if (role.length) {
-                                this.instance().current('company', this.getCompany());
-                                this.instance().current('companies', this.getCompanies());
-                            }
-                        }
-                    }
-                    //
-                    // @todo doc broadcast $UserInstantiateEnd
-                    //                   
-                    $rootScope.$emit('$UserInstantiateEnd', this.instance());
-                    if (typeof cb === 'function') {
-                        cb(this.instance());
-                    }
-                    return this.instance();
-                },
-                /**
-                 * @ngdoc function
-                 * @name core.user.$userProvider#destroy
-                 * @methodOf core.user.$userProvider
-                 * @description 
-                 * Apagar instância do usuário
-                 * @example
-                 * <pre>
-                 * var user = new $User();
-                 * $user.set(user);
-                 * //now user instance can be injectable
-                 * angular.module('myApp').controller('myCtrl',function($user){
-                 * $user.instance().destroy() //apaga instância do usuário
-                 * })
-                 * </pre>
-                 **/
-                destroy: function(cb) {
-                    //
-                    // delete user instance
-                    //
-                    this._instance = null;
-                    //
-                    // delete token auth
-                    //
-                    $auth.removeToken();
-                    if (typeof cb === 'function') return cb();
-                },
-                /**
-                 * @ngdoc function
-                 * @name core.user.$userProvider#logout
-                 * @methodOf core.user.$userProvider
-                 * @description 
-                 * Apagar instância do usuário e sair
-                 **/
-                logout: function(alert, cb) {
-                    this.destroy(function() {
-                        //
-                        // @todo doc broadcast $UserLeft
-                        //     
-                        $translate('USER_YOU_LEFT').then(function(message) {
-                            //
-                            // sign out user
-                            //
-                            $auth.logout().then(function() {
-                                $rootScope.$emit('$UserLeft');
-                                if (alert) $page.toast(message, 3000);
-                                if (typeof cb === 'function') return cb();
-                            });
-                        });
-                    });
-                },
-                getCompanies: function() {
-                    var role = false,
-                        roleForCompany = this.setting.roleForCompany;
-                    if (roleForCompany && roleForCompany != 'user') {
-                        role = this.instance()[roleForCompany].role;
-                    } else if (roleForCompany && roleForCompany === 'user') {
-                        role = this.instance().role;
-                    }
-                    return role;
-                },
-                getCompany: function() {
-                    return this.getCompanies()[0].company;
-                }
-            }
-        }
-        this.setting = function(key, val) {
-            if (key && val) return this._setting[key] = val;
-            else if (key) return this._setting[key];
-            else return this._setting;
-        }
-        this.isAuthed = function(redirect) {
-            return function isAuthed($auth, $state, $timeout, $user, $location) {
-                if ($auth.isAuthenticated()) {
-                    $timeout(function() {
-                        window.location = redirect || $user.setting.loginSuccessRedirect;
-                    });
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        this.isNotAuthed = function(redirect) {
-            return function isAuthed($auth, $state, $timeout, $user, $location) {
-                if (!$auth.isAuthenticated()) {
-                    $timeout(function() {
-                        window.location = redirect || $user.setting.loginSuccessRedirect;
-                    });
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-    });
-'use strict';
-/**
- * @ngdoc service
- * @name core.user.service:$User
- **/
-angular.module('core.user').service('$User', /*@ngInject*/ function($auth, lodash) {
-    var _ = lodash,
-        self = this;
-    var $User = function(params) {
-        params = params ? params : {};
-        if (!params.currentData) params.currentData = {};
-        angular.extend(this, params);
-    }
-    $User.prototype.isAuthed = isAuthed;
-    /**
-     * @ngdoc function
-     * @name core.user.service:$User:current
-     * @methodOf core.user.service:$User
-     * @description
-     * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário
-     * @example
-     * <pre>
-     * var user = new $User();
-     * user.current('company',{_id: 123456, name: 'CocaCola'})
-     * console.log(user.current('company')) //prints {_id: 123456, name: 'CocaCola'}
-     * </pre>
-     * @param {string} key chave
-     * @param {*} val valor
-     */
-    $User.prototype.current = current;
-
-    function isAuthed() {
-        return $auth.isAuthenticated();
-    }
-
-    function current(key, val) {
-        if (key && val) {
-            this.currentData[key] = val;
-        } else if (key) {
-            return this.currentData && this.currentData[key] ? this.currentData[key] : false;
-        }
-        return this.currentData;
-    }
-    return $User;
-});
-'use strict';
 /*global window*/
 angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     /**
@@ -1661,6 +1408,259 @@ angular.module('core.page').provider('$page',
         }
     })
 'use strict';
+angular.module('core.user').provider('$user',
+    /**
+     * @ngdoc object
+     * @name core.user.$userProvider
+     * @description
+     * 2 em 1 - provém configurações e a factory (ver $get) com estados/comportamentos de usuário.
+     **/
+    /*@ngInject*/
+    function $userProvider() {
+        /**
+         * @ngdoc object
+         * @name core.user.$userProvider#_instance
+         * @propertyOf core.user.$userProvider
+         * @description 
+         * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
+         **/
+        this._instance = null;
+        /**
+         * @ngdoc object
+         * @name core.user.$userProvider#_setting
+         * @propertyOf core.user.$userProvider
+         * @description 
+         * Armazena configurações
+         **/
+        this._setting = {};
+        /**
+         * @ngdoc function
+         * @name core.user.$userProvider#$get
+         * @propertyOf core.user.$userProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($user) {     
+         *      console.log($user.setting.roleForCompany);
+         *      //printa a regra para empresa
+         * })
+         * </pre>
+         * @return {object} objeto correspondente a uma Factory
+         **/
+        this.$get = this.get = /*@ngInject*/ function($User, $log, $auth, $page, $rootScope, $sessionStorage, $translate) {
+            return {
+                instance: function(user) {
+                    if (user) return this._instance = user;
+                    else return this._instance && this._instance.id ? this._instance : {
+                        'profile': {}
+                    };
+                },
+                setting: this._setting,
+                /**
+                 * @ngdoc function
+                 * @name core.user.factory:$user:instantiate
+                 * @methodOf core.user.factory:$user
+                 * @description
+                 * User bootstrap
+                 * @param {object} params the params of instance
+                 * @param {bool} alert display a welcome message when user logs in
+                 * @param {string} message the message
+                 */
+                instantiate: function(params, alert, message, cb) {
+                    if (typeof params != 'object') params = {};
+                    this.instance(new $User(params));
+                    $sessionStorage.user = this.instance();
+                    //
+                    // @todo doc broadcast $UserInstantiateStart
+                    //                   
+                    $rootScope.$emit('$UserInstantiateStart', this.instance());
+                    //
+                    // We have user ID ?
+                    //            
+                    if (params._id || params.id) {
+                        if (!message && params.profile && params.profile.firstName) {
+                            //
+                            // Welcome warning
+                            //      
+                            $translate('USER_WELCOME_WARN', {
+                                'firstName': params.profile.firstName
+                            }).then(function(message) {
+                                if (alert) $page.toast(message, 5000);
+                            });
+                        } else if (message && alert) {
+                            $page.toast(message, 5000);
+                        }
+                        //
+                        // Company behavior
+                        // @app-kit-pro version
+                        //
+                        var role = false,
+                            roleForCompany = this.setting.roleForCompany,
+                            userInstance = this.instance();
+                        if (userInstance.id) {
+                            if (roleForCompany && roleForCompany != 'user') {
+                                role = params[roleForCompany].role;
+                            } else if (roleForCompany && roleForCompany === 'user') {
+                                role = params.role;
+                            }
+                            if (role.length) {
+                                this.instance().current('company', this.getCompany());
+                                this.instance().current('companies', this.getCompanies());
+                            }
+                        }
+                    }
+                    //
+                    // @todo doc broadcast $UserInstantiateEnd
+                    //                   
+                    $rootScope.$emit('$UserInstantiateEnd', this.instance());
+                    if (typeof cb === 'function') {
+                        cb(this.instance());
+                    }
+                    return this.instance();
+                },
+                /**
+                 * @ngdoc function
+                 * @name core.user.$userProvider#destroy
+                 * @methodOf core.user.$userProvider
+                 * @description 
+                 * Apagar instância do usuário
+                 * @example
+                 * <pre>
+                 * var user = new $User();
+                 * $user.set(user);
+                 * //now user instance can be injectable
+                 * angular.module('myApp').controller('myCtrl',function($user){
+                 * $user.instance().destroy() //apaga instância do usuário
+                 * })
+                 * </pre>
+                 **/
+                destroy: function(cb) {
+                    //
+                    // delete user instance
+                    //
+                    this._instance = null;
+                    //
+                    // delete token auth
+                    //
+                    $auth.removeToken();
+                    if (typeof cb === 'function') return cb();
+                },
+                /**
+                 * @ngdoc function
+                 * @name core.user.$userProvider#logout
+                 * @methodOf core.user.$userProvider
+                 * @description 
+                 * Apagar instância do usuário e sair
+                 **/
+                logout: function(alert, cb) {
+                    this.destroy(function() {
+                        //
+                        // @todo doc broadcast $UserLeft
+                        //     
+                        $translate('USER_YOU_LEFT').then(function(message) {
+                            //
+                            // sign out user
+                            //
+                            $auth.logout().then(function() {
+                                $rootScope.$emit('$UserLeft');
+                                if (alert) $page.toast(message, 3000);
+                                if (typeof cb === 'function') return cb();
+                            });
+                        });
+                    });
+                },
+                getCompanies: function() {
+                    var role = false,
+                        roleForCompany = this.setting.roleForCompany;
+                    if (roleForCompany && roleForCompany != 'user') {
+                        role = this.instance()[roleForCompany].role;
+                    } else if (roleForCompany && roleForCompany === 'user') {
+                        role = this.instance().role;
+                    }
+                    return role;
+                },
+                getCompany: function() {
+                    return this.getCompanies()[0].company;
+                }
+            }
+        }
+        this.setting = function(key, val) {
+            if (key && val) return this._setting[key] = val;
+            else if (key) return this._setting[key];
+            else return this._setting;
+        }
+        this.isAuthed = function(redirect) {
+            return function isAuthed($auth, $state, $timeout, $user, $location) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        this.isNotAuthed = function(redirect) {
+            return function isAuthed($auth, $state, $timeout, $user, $location) {
+                if (!$auth.isAuthenticated()) {
+                    $timeout(function() {
+                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    });
+'use strict';
+/**
+ * @ngdoc service
+ * @name core.user.service:$User
+ **/
+angular.module('core.user').service('$User', /*@ngInject*/ function($auth, lodash) {
+    var _ = lodash,
+        self = this;
+    var $User = function(params) {
+        params = params ? params : {};
+        if (!params.currentData) params.currentData = {};
+        angular.extend(this, params);
+    }
+    $User.prototype.isAuthed = isAuthed;
+    /**
+     * @ngdoc function
+     * @name core.user.service:$User:current
+     * @methodOf core.user.service:$User
+     * @description
+     * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário
+     * @example
+     * <pre>
+     * var user = new $User();
+     * user.current('company',{_id: 123456, name: 'CocaCola'})
+     * console.log(user.current('company')) //prints {_id: 123456, name: 'CocaCola'}
+     * </pre>
+     * @param {string} key chave
+     * @param {*} val valor
+     */
+    $User.prototype.current = current;
+
+    function isAuthed() {
+        return $auth.isAuthenticated();
+    }
+
+    function current(key, val) {
+        if (key && val) {
+            this.currentData[key] = val;
+        } else if (key) {
+            return this.currentData && this.currentData[key] ? this.currentData[key] : false;
+        }
+        return this.currentData;
+    }
+    return $User;
+});
+'use strict';
 /* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
 angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     var vm = this;
@@ -1838,19 +1838,16 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
         var onSuccess = function(fbUser) {
             var onSuccess = function(response) {
                 $page.load.done();
-                var msg = false;
-                var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
-                if (response.data.new) {
-                    msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
-                    if ($login.config.signupWelcome) {
-                        msg = $login.config.signupWelcome.replace('@firstName', response.data.user.profile.firstName).replace('@appName', setting.name);
+                $user.instantiate(response.data.user, true, response.data.new ? msg : false, function() {
+                    var msg = false;
+                    var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
+                    if (response.data.new) {
+                        msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
                     }
-                }
-                $auth.setToken(response.data.token);
-                var userInstance = $user.instance();
-                if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true, msg);
-                if (cbSuccess) cbSuccess()
-                $rootScope.$emit('$LoginSuccess', response);
+                    $rootScope.$emit('$LoginSuccess', response.data);
+                    $auth.setToken(response.data.token);
+                    if (cbSuccess) cbSuccess();
+                });
             }
             var onFail = function(response) {
                 $page.load.done();
@@ -1900,7 +1897,7 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         var onSuccess = function(response) {
             $page.load.done();
             $user.instantiate(response.data.user, true, false, function() {
-                $rootScope.$emit('$LoginSuccess', response);
+                $rootScope.$emit('$LoginSuccess', response.data);
             });
         }
         var onError = function(result) {
@@ -2830,6 +2827,14 @@ angular.module('core.menu').directive('menuFacepile', /*@ngInject*/ function() {
     }
 });
 'use strict';
+angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function($app) {
+    return {
+        templateUrl: function() {
+            return $app.toolbarTitleUrl;
+        }
+    }
+});
+'use strict';
 angular.module('core.page').controller('ToolbarMenuCtrl', /*@ngInject*/ function($rootScope, $mdBottomSheet) {
     var vm = this;
     $rootScope.$on('AppMenuOpened', function() {
@@ -2876,14 +2881,6 @@ angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function tool
         }
     }
 })
-'use strict';
-angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function($app) {
-    return {
-        templateUrl: function() {
-            return $app.toolbarTitleUrl;
-        }
-    }
-});
 'use strict';
 /**
  * @ngdoc object
@@ -3170,6 +3167,54 @@ angular.module('core.utils').directive('contactForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
+angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+            data: '=',
+            url: '=',
+            post: '='
+        },
+        templateUrl: 'core/utils/directives/dashboardStats/dashboardStats.tpl.html',
+        link: function() {},
+        controller: /*@ngInject*/ function($scope, $http) {
+            bootstrap();
+            $scope.update = update;
+            $scope.$watch('post', function(nv, ov) {
+                if (nv != ov) {
+                    bootstrap();
+                }
+            }, true);
+
+            function bootstrap() {
+                $scope.loading = true;
+                var onSuccess = function(response) {
+                    $scope.loading = false;
+                    for (var k in response.data) {
+                        if (response.data.hasOwnProperty(k)) {
+                            $scope.data.forEach(function(row, i) {
+                                if (row.slug === k) {
+                                    $scope.data[i].value = response.data[k];
+                                }
+                            })
+                        }
+                    }
+                }
+                var onFail = function(response) {
+                    $scope.loading = false;
+                    $scope.error = response && response.data ? response.data : 'erro no servidor';
+                }
+                $http.post($scope.url, $scope.post).then(onSuccess, onFail);
+            }
+
+            function update() {
+                bootstrap();
+            }
+        }
+    }
+})
+'use strict';
 //https://github.com/sparkalow/angular-count-to
 angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
     return {
@@ -3222,54 +3267,6 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
         }
     }
 });
-'use strict';
-angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
-    return {
-        restrict: 'EA',
-        replace: true,
-        scope: {
-            data: '=',
-            url: '=',
-            post: '='
-        },
-        templateUrl: 'core/utils/directives/dashboardStats/dashboardStats.tpl.html',
-        link: function() {},
-        controller: /*@ngInject*/ function($scope, $http) {
-            bootstrap();
-            $scope.update = update;
-            $scope.$watch('post', function(nv, ov) {
-                if (nv != ov) {
-                    bootstrap();
-                }
-            }, true);
-
-            function bootstrap() {
-                $scope.loading = true;
-                var onSuccess = function(response) {
-                    $scope.loading = false;
-                    for (var k in response.data) {
-                        if (response.data.hasOwnProperty(k)) {
-                            $scope.data.forEach(function(row, i) {
-                                if (row.slug === k) {
-                                    $scope.data[i].value = response.data[k];
-                                }
-                            })
-                        }
-                    }
-                }
-                var onFail = function(response) {
-                    $scope.loading = false;
-                    $scope.error = response && response.data ? response.data : 'erro no servidor';
-                }
-                $http.post($scope.url, $scope.post).then(onSuccess, onFail);
-            }
-
-            function update() {
-                bootstrap();
-            }
-        }
-    }
-})
 'use strict';
 angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
     return {
@@ -4034,8 +4031,8 @@ $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.user().isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.page().load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.page().load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.user().isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.page().load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
-$templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.user().isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\"><div ui-view=\"content\" class=\"anim-in-out anim-slide-below-fade\"></div></md-content></div>");
 $templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.page().load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
+$templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.user().isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\"><div ui-view=\"content\" class=\"anim-in-out anim-slide-below-fade\"></div></md-content></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu().sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu().isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu().isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting().copyright }} © {{ app.year() }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
