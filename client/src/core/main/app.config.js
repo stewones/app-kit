@@ -93,6 +93,7 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProv
     // i18n options
     //
     $translateProvider.preferredLanguage('en_US');
+    $translateProvider.useSanitizeValueStrategy('sanitize');
     //
     // Debug options
     //

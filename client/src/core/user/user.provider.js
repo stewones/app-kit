@@ -39,11 +39,13 @@ angular.module('core.user').provider('$user',
          * </pre>
          * @return {object} objeto correspondente a uma Factory
          **/
-        this.$get = this.get = function($User_, $log, $auth, $page, $rootScope, $sessionStorage, $translate) {
+        this.$get = this.get = /*@ngInject*/ function($User, $log, $auth, $page, $rootScope, $sessionStorage, $translate) {
             return {
                 instance: function(user) {
                     if (user) return this._instance = user;
-                    else return this._instance;
+                    else return this._instance && this._instance.id ? this._instance : {
+                        'profile': {}
+                    };
                 },
                 setting: this._setting,
                 /**
@@ -58,7 +60,7 @@ angular.module('core.user').provider('$user',
                  */
                 instantiate: function(params, alert, message, cb) {
                     if (typeof params != 'object') params = {};
-                    this.instance(new $User_(params));
+                    this.instance(new $User(params));
                     $sessionStorage.user = this.instance();
                     //
                     // @todo doc broadcast $UserInstantiateStart
@@ -72,7 +74,7 @@ angular.module('core.user').provider('$user',
                             //
                             // Welcome warning
                             //      
-                            $translate('WELCOME_WARN', {
+                            $translate('USER_WELCOME_WARN', {
                                 'firstName': params.profile.firstName
                             }).then(function(message) {
                                 if (alert) $page.toast(message, 5000);
@@ -106,24 +108,37 @@ angular.module('core.user').provider('$user',
                  * })
                  * </pre>
                  **/
-                destroy: function(alert) {
+                destroy: function(cb) {
                     //
                     // delete user instance
                     //
-                    this._instance = false;
+                    this._instance = null;
                     //
                     // delete token auth
                     //
                     $auth.removeToken();
-                    //
-                    // @todo doc broadcast $UserLeft
-                    //   
-                    $rootScope.$emit('$UserLeft');
-                    if (alert) $page.toast('You just left.', 3000);
-                    //
-                    // sign out user
-                    //
-                    $auth.logout();
+                    if (typeof cb === 'function') return cb();
+                },
+                /**
+                 * @ngdoc function
+                 * @name core.user.$userProvider#logout
+                 * @methodOf core.user.$userProvider
+                 * @description 
+                 * Apagar instância do usuário e sair
+                 **/
+                logout: function(alert, cb) {
+                    this.destroy(function() {
+                        //
+                        // @todo doc broadcast $UserLeft
+                        //   
+                        $rootScope.$emit('$UserLeft');
+                        if (alert) $page.toast('You just left.', 3000);
+                        //
+                        // sign out user
+                        //
+                        $auth.logout();
+                        if (typeof cb === 'function') return cb();
+                    });
                 }
             }
         }

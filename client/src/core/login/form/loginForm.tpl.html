@@ -19,7 +19,7 @@
         </form>
     </md-content>
     <div layout="row" layout-padding>
-        <button flex class="entrar" ng-click="vm.login(logon)" ng-disabled="logon.$invalid||app.$page.load.status">Entrar</button>
+        <button flex class="entrar" ng-click="vm.login(logon)" ng-disabled="logon.$invalid||app.page().load.status">Entrar</button>
         <facebook-login user="user"></facebook-login>
     </div>
 </div>

@@ -22,7 +22,7 @@ gulp.task('partials', function() {
         }))
         .pipe($.angularTemplatecache('templateCacheHtml.js', {
             module: conf.appName,
-            root: 'app'
+            root: 'core'
         }))
         .pipe(gulp.dest(conf.paths.tmp + '/partials/'));
 });

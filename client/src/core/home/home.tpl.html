@@ -1,5 +1,5 @@
 <div class="main-wrapper anim-zoom-in md-padding home" layout="column" flex>
     <div class="text-center">
-        Olá moda foca <a ui-sref="app.login">entrar</a>
+    {{ 'USER_WELCOME_WARN' | translate:'{ firstName: "'+app.user().profile.firstName+'" }' }}<a ui-sref="app.login" ng-if="!app.user().isAuthed()">entrar</a>
     </div>
 </div>

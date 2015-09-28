@@ -1,4 +1,4 @@
-<div layout="row" class="login-lost" ng-if="!app.isAuthed()">
+<div layout="row" class="login-lost" ng-if="!app.user().isAuthed()">
     <div layout="column" class="login" flex ng-if="!vm.userHash">
         <div class="wrapper md-whiteframe-z1">
             <img class="avatar" src="assets/images/avatar-m.jpg">
@@ -13,7 +13,7 @@
                     </div>
                 </form>
             </md-content>
-        <md-button class="md-primary md-raised entrar" ng-disabled="lost.$invalid||app.$page.load.status" ng-click="!lost.$invalid?vm.lost(email):false">Recuperar</md-button>
+        <md-button class="md-primary md-raised entrar" ng-disabled="lost.$invalid||app.page().load.status" ng-click="!lost.$invalid?vm.lost(email):false">Recuperar</md-button>
     </div>
 </div>
 <div layout="column" class="login" flex ng-if="vm.userHash">
@@ -38,7 +38,7 @@
                 </div>
             </form>
         </md-content>
-    <md-button class="md-primary md-raised entrar" ng-disabled="lost.$invalid||app.$page.load.status" ng-click="!lost.$invalid?vm.change(senha):false">Alterar</md-button>
+    <md-button class="md-primary md-raised entrar" ng-disabled="lost.$invalid||app.page().load.status" ng-click="!lost.$invalid?vm.change(senha):false">Alterar</md-button>
 </div>
 <div ng-show="lost.senhaConfirm.$error.match" class="warn">
     <span>(!) As senhas não conferem</span>

@@ -1,7 +1,7 @@
 /**
  *  Settings
  */
-exports.appName = 'glamoux';
+exports.appName = 'app.kit';
 /**
  *  This file contains the variables used in other gulp files
  *  which defines tasks

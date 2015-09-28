@@ -22,7 +22,6 @@
  **/
 angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app, $sessionStorage) {
     var app = this;
-    app.enviroment = enviroment;
     //
     // SEO
     //
@@ -107,6 +106,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         // Reset the $rootScope.$Unauthorized
         //
         $rootScope.$Unauthorized = false;
+        $location.path($user.setting.loginSuccessRedirect);
     });
     //
     // BOOTSTRAP with a new user
@@ -114,30 +114,69 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     bootstrap(true);
 
     function bootstrap(withNewUser) {
+        //
+        // boot with new user
+        //
         if (withNewUser) {
-            $user.instantiate({}, false, false, function() {
-                boot();
-            });
+            //
+            // boot from storage
+            //
+            if ($sessionStorage.user && $sessionStorage.user.id && $auth.getToken()) {
+                $user.instantiate($sessionStorage.user, false, false, function() {
+                    boot();
+                });
+            } else {
+                //
+                // user not present, ensure that we dont have token
+                //
+                $user.destroy(function() {
+                    //
+                    // then instantiate a new blank user
+                    //
+                    $user.instantiate({}, false, false, function() {
+                        boot();
+                    });
+                });
+            }
         } else {
             boot();
         }
+        //
+        // export default states and behaviors to view
+        //
         function boot() {
-            app.user = $user; //@todo break changes
-            app.page = $page; //@todo break changes
-            app.setting = setting;
-            app.year = moment().format('YYYY');
-            app.state = $state;
-            app.isAuthed = $auth.isAuthenticated;
-            app.logout = logout;
-            app.menu = $menu.api();
-            app.iframe = $location.hash() === 'iframe' ? true : false;
+            app.user = function() { //@todo break changes
+                return $user.instance();
+            }
+            app.page = function() { //@todo break changes
+                return $page;
+            }
+            app.state = function() { //@todo break changes
+                return $state;
+            }
+            app.logout = function() { //@todo break changes
+                return logout();
+            }
+            app.menu = function() { //@todo break changes
+                return $menu.api();
+            }
+            app.setting = function() { //@todo break changes
+                return setting;
+            }
+            app.enviroment = function() { //@todo break changes
+                return enviroment
+            }
+            app.year = function() { //@todo break changes
+                return moment().format('YYYY');
+            }
         }
     }
     //
     // Behaviors
     //
     function logout() {
-        $mdSidenav('left').close(); //@todo factory to avoid console log warning
-        $user.destroy(true);
+        $user.logout(true, function() {
+            $mdSidenav('left').close(); //@todo factory to avoid console log warning
+        });
     }
 })

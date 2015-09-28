@@ -8,5 +8,5 @@
  **/
 angular.module('core.login').controller('$LogoutCtrl', /*@ngInject*/ function($user) {
     var userInstance = $user.instance();
-    if (typeof userInstance.destroy === 'function') $user.instance().destroy();
+    if (typeof userInstance.destroy === 'function') $user.instance().logout();
 })

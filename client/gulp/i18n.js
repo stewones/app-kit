@@ -12,7 +12,7 @@ var _ = require('lodash');
 var angularTranslate = require('gulp-angular-translate');
 
 gulp.task('i18n', function() {
-  return gulp.src('./src/core/locale/locale-*.json')
+  return gulp.src('./src/core/**/locale-*.json')
     .pipe(angularTranslate('app.i18n.js',{module:'app.i18n'}))
     .pipe(gulp.dest('./src/core/main'));
 });
