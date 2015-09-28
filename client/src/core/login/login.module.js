@@ -9,6 +9,8 @@
 angular.module('core.login', [
     'app.env',
     'app.setting',
+    'core.user',
+    'core.page',
     'ui.router',
     'satellizer',
     'google.login',
