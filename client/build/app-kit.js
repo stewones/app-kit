@@ -35,16 +35,6 @@ angular.module('core.app', [
     'core.user'
 ]);
 'use strict';
-angular.module('core.user', [
-  'ui.router',
-  'satellizer',
-  'app.setting',
-  'app.env',
-  'core.menu',
-  'core.page'
-]);
-
-'use strict';
 angular.module('core.page', [
     'core.app',
     'core.menu',
@@ -60,6 +50,16 @@ angular.module('core.page', [
 ]);
 'use strict';
 angular.module('core.utils', ['core.page', 'angularMoment', 'ImageCropper']);
+'use strict';
+angular.module('core.user', [
+  'ui.router',
+  'satellizer',
+  'app.setting',
+  'app.env',
+  'core.menu',
+  'core.page'
+]);
+
 'use strict';
 angular.module('facebook.login', [
     'facebook',
@@ -1038,202 +1038,6 @@ angular.module('core.app').provider('$app',
  'use strict';
  angular.module('core.app').run( /*@ngInject*/ function() {});
 'use strict';
-angular.module('core.user').provider('$user',
-    /**
-     * @ngdoc object
-     * @name core.user.$userProvider
-     * @description
-     * 2 em 1 - provém configurações e a factory (ver $get) com estados/comportamentos de usuário.
-     **/
-    /*@ngInject*/
-    function $userProvider() {
-        /**
-         * @ngdoc object
-         * @name core.user.$userProvider#_instance
-         * @propertyOf core.user.$userProvider
-         * @description 
-         * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
-         **/
-        this._instance = null;
-        /**
-         * @ngdoc object
-         * @name core.user.$userProvider#_setting
-         * @propertyOf core.user.$userProvider
-         * @description 
-         * Armazena configurações
-         **/
-        this._setting = {};
-        /**
-         * @ngdoc function
-         * @name core.user.$userProvider#$get
-         * @propertyOf core.user.$userProvider
-         * @description 
-         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
-         * @example
-         * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($user) {     
-         *      console.log($user.setting.roleForCompany);
-         *      //printa a regra para empresa
-         * })
-         * </pre>
-         * @return {object} objeto correspondente a uma Factory
-         **/
-        this.$get = this.get = /*@ngInject*/ function($User, $log, $auth, $page, $rootScope, $sessionStorage, $translate) {
-            return {
-                instance: function(user) {
-                    if (user) return this._instance = user;
-                    else return this._instance && this._instance.id ? this._instance : {
-                        'profile': {}
-                    };
-                },
-                setting: this._setting,
-                /**
-                 * @ngdoc function
-                 * @name core.user.factory:$user:instantiate
-                 * @methodOf core.user.factory:$user
-                 * @description
-                 * User bootstrap
-                 * @param {object} params the params of instance
-                 * @param {bool} alert display a welcome message when user logs in
-                 * @param {string} message the message
-                 */
-                instantiate: function(params, alert, message, cb) {
-                    if (typeof params != 'object') params = {};
-                    this.instance(new $User(params));
-                    $sessionStorage.user = this.instance();
-                    //
-                    // @todo doc broadcast $UserInstantiateStart
-                    //                   
-                    $rootScope.$emit('$UserInstantiateStart', this.instance());
-                    //
-                    // We have user ID ?
-                    //            
-                    if (params._id || params.id) {
-                        if (!message && params.profile && params.profile.firstName) {
-                            //
-                            // Welcome warning
-                            //      
-                            $translate('USER_WELCOME_WARN', {
-                                'firstName': params.profile.firstName
-                            }).then(function(message) {
-                                if (alert) $page.toast(message, 5000);
-                            });
-                        } else if (message && alert) {
-                            $page.toast(message, 5000);
-                        }
-                    }
-                    //
-                    // @todo doc broadcast $UserInstantiateEnd
-                    //                   
-                    $rootScope.$emit('$UserInstantiateEnd', this.instance());
-                    if (typeof cb === 'function') {
-                        cb(this.instance());
-                    }
-                    return this.instance();
-                },
-                /**
-                 * @ngdoc function
-                 * @name core.user.$userProvider#destroy
-                 * @methodOf core.user.$userProvider
-                 * @description 
-                 * Apagar instância do usuário
-                 * @example
-                 * <pre>
-                 * var user = new $User();
-                 * $user.set(user);
-                 * //now user instance can be injectable
-                 * angular.module('myApp').controller('myCtrl',function($user){
-                 * $user.instance().destroy() //apaga instância do usuário
-                 * })
-                 * </pre>
-                 **/
-                destroy: function(cb) {
-                    //
-                    // delete user instance
-                    //
-                    this._instance = null;
-                    //
-                    // delete token auth
-                    //
-                    $auth.removeToken();
-                    if (typeof cb === 'function') return cb();
-                },
-                /**
-                 * @ngdoc function
-                 * @name core.user.$userProvider#logout
-                 * @methodOf core.user.$userProvider
-                 * @description 
-                 * Apagar instância do usuário e sair
-                 **/
-                logout: function(alert, cb) {
-                    this.destroy(function() {
-                        //
-                        // @todo doc broadcast $UserLeft
-                        //     
-                        $translate('USER_YOU_LEFT').then(function(message) {
-                            //
-                            // sign out user
-                            //
-                            $auth.logout().then(function() {
-                                $rootScope.$emit('$UserLeft');
-                                if (alert) $page.toast(message, 3000);                          
-                                if (typeof cb === 'function') return cb();
-                            });
-                        });
-                    });
-                }
-            }
-        }
-        this.setting = function(key, val) {
-            if (key && val) return this._setting[key] = val;
-            else if (key) return this._setting[key];
-            else return this._setting;
-        }
-        this.isAuthed = function(redirect) {
-            return function isAuthed($auth, $state, $timeout, $user, $location) {
-                if ($auth.isAuthenticated()) {
-                    $timeout(function() {
-                        window.location = redirect || $user.setting.loginSuccessRedirect;
-                    });
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        this.isNotAuthed = function(redirect) {
-            return function isAuthed($auth, $state, $timeout, $user, $location) {
-                if (!$auth.isAuthenticated()) {
-                    $timeout(function() {
-                        window.location = redirect || $user.setting.loginSuccessRedirect;
-                    });
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-    });
-'use strict';
-/**
- * @ngdoc service
- * @name core.user.service:$User
- **/
-angular.module('core.user').service('$User', /*@ngInject*/ function($auth, lodash) {
-    var _ = lodash,
-        self = this;
-    var $User = function(params) {
-        params = params ? params : {};
-        angular.extend(this, params);
-    }
-    $User.prototype.isAuthed = isAuthed;
-
-    function isAuthed() {
-        return $auth.isAuthenticated();
-    }
-    return $User;
-});
-'use strict';
 /*global window*/
 angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
     /**
@@ -1720,6 +1524,255 @@ angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
         }];
     }
 })
+'use strict';
+angular.module('core.user').provider('$user',
+    /**
+     * @ngdoc object
+     * @name core.user.$userProvider
+     * @description
+     * 2 em 1 - provém configurações e a factory (ver $get) com estados/comportamentos de usuário.
+     **/
+    /*@ngInject*/
+    function $userProvider() {
+        /**
+         * @ngdoc object
+         * @name core.user.$userProvider#_instance
+         * @propertyOf core.user.$userProvider
+         * @description 
+         * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
+         **/
+        this._instance = null;
+        /**
+         * @ngdoc object
+         * @name core.user.$userProvider#_setting
+         * @propertyOf core.user.$userProvider
+         * @description 
+         * Armazena configurações
+         **/
+        this._setting = {};
+        /**
+         * @ngdoc function
+         * @name core.user.$userProvider#$get
+         * @propertyOf core.user.$userProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($user) {     
+         *      console.log($user.setting.roleForCompany);
+         *      //printa a regra para empresa
+         * })
+         * </pre>
+         * @return {object} objeto correspondente a uma Factory
+         **/
+        this.$get = this.get = /*@ngInject*/ function($User, $log, $auth, $page, $rootScope, $sessionStorage, $translate) {
+            return {
+                instance: function(user) {
+                    if (user) return this._instance = user;
+                    else return this._instance && this._instance.id ? this._instance : {
+                        'profile': {}
+                    };
+                },
+                setting: this._setting,
+                /**
+                 * @ngdoc function
+                 * @name core.user.factory:$user:instantiate
+                 * @methodOf core.user.factory:$user
+                 * @description
+                 * User bootstrap
+                 * @param {object} params the params of instance
+                 * @param {bool} alert display a welcome message when user logs in
+                 * @param {string} message the message
+                 */
+                instantiate: function(params, alert, message, cb) {
+                    if (typeof params != 'object') params = {};
+                    this.instance(new $User(params));
+                    $sessionStorage.user = this.instance();
+                    //
+                    // @todo doc broadcast $UserInstantiateStart
+                    //                   
+                    $rootScope.$emit('$UserInstantiateStart', this.instance());
+                    //
+                    // We have user ID ?
+                    //            
+                    if (params._id || params.id) {
+                        if (!message && params.profile && params.profile.firstName) {
+                            //
+                            // Welcome warning
+                            //      
+                            $translate('USER_WELCOME_WARN', {
+                                'firstName': params.profile.firstName
+                            }).then(function(message) {
+                                if (alert) $page.toast(message, 5000);
+                            });
+                        } else if (message && alert) {
+                            $page.toast(message, 5000);
+                        }
+                        //
+                        // Company behavior
+                        //
+                        var role = false,
+                            roleForCompany = this.setting.roleForCompany;
+                        if (roleForCompany && roleForCompany != 'user') {
+                            role = params[roleForCompany].role;
+                        } else if (roleForCompany && roleForCompany === 'user') {
+                            role = params.role;
+                        }
+                        if (role.length) {
+                            this.instance().current('company', this.getCompany());
+                            this.instance().current('companies', this.getCompanies());
+                        }
+                    }
+                    //
+                    // @todo doc broadcast $UserInstantiateEnd
+                    //                   
+                    $rootScope.$emit('$UserInstantiateEnd', this.instance());
+                    if (typeof cb === 'function') {
+                        cb(this.instance());
+                    }
+                    return this.instance();
+                },
+                /**
+                 * @ngdoc function
+                 * @name core.user.$userProvider#destroy
+                 * @methodOf core.user.$userProvider
+                 * @description 
+                 * Apagar instância do usuário
+                 * @example
+                 * <pre>
+                 * var user = new $User();
+                 * $user.set(user);
+                 * //now user instance can be injectable
+                 * angular.module('myApp').controller('myCtrl',function($user){
+                 * $user.instance().destroy() //apaga instância do usuário
+                 * })
+                 * </pre>
+                 **/
+                destroy: function(cb) {
+                    //
+                    // delete user instance
+                    //
+                    this._instance = null;
+                    //
+                    // delete token auth
+                    //
+                    $auth.removeToken();
+                    if (typeof cb === 'function') return cb();
+                },
+                /**
+                 * @ngdoc function
+                 * @name core.user.$userProvider#logout
+                 * @methodOf core.user.$userProvider
+                 * @description 
+                 * Apagar instância do usuário e sair
+                 **/
+                logout: function(alert, cb) {
+                    this.destroy(function() {
+                        //
+                        // @todo doc broadcast $UserLeft
+                        //     
+                        $translate('USER_YOU_LEFT').then(function(message) {
+                            //
+                            // sign out user
+                            //
+                            $auth.logout().then(function() {
+                                $rootScope.$emit('$UserLeft');
+                                if (alert) $page.toast(message, 3000);
+                                if (typeof cb === 'function') return cb();
+                            });
+                        });
+                    });
+                },
+                getCompanies: function() {
+                    var role = false,
+                        roleForCompany = this.setting.roleForCompany;
+                    if (roleForCompany && roleForCompany != 'user') {
+                        role = params[roleForCompany].role;
+                    } else if (roleForCompany && roleForCompany === 'user') {
+                        role = params.role;
+                    }
+                    return role;
+                },
+                getCompany: function() {
+                    return this.getCompanies[0].company;
+                }
+            }
+        }
+        this.setting = function(key, val) {
+            if (key && val) return this._setting[key] = val;
+            else if (key) return this._setting[key];
+            else return this._setting;
+        }
+        this.isAuthed = function(redirect) {
+            return function isAuthed($auth, $state, $timeout, $user, $location) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        this.isNotAuthed = function(redirect) {
+            return function isAuthed($auth, $state, $timeout, $user, $location) {
+                if (!$auth.isAuthenticated()) {
+                    $timeout(function() {
+                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    });
+'use strict';
+/**
+ * @ngdoc service
+ * @name core.user.service:$User
+ **/
+angular.module('core.user').service('$User', /*@ngInject*/ function($auth, lodash) {
+    var _ = lodash,
+        self = this;
+    var $User = function(params) {
+        params = params ? params : {};
+        if (!params.current) params.current = {};
+        angular.extend(this, params);
+    }
+    $User.prototype.isAuthed = isAuthed;
+    /**
+     * @ngdoc function
+     * @name core.user.service:$User:current
+     * @methodOf core.user.service:$User
+     * @description
+     * Adiciona informações customizadas no formato chave:valor à instância corrente do usuário
+     * @example
+     * <pre>
+     * var user = new $User();
+     * user.current('company',{_id: 123456, name: 'CocaCola'})
+     * console.log(user.current('company')) //prints {_id: 123456, name: 'CocaCola'}
+     * </pre>
+     * @param {string} key chave
+     * @param {*} val valor
+     */
+    $User.prototype.current = current;
+
+    function isAuthed() {
+        return $auth.isAuthenticated();
+    }
+
+    function current(key, val) {
+        if (key && val) {
+            this.current[key] = val;
+        } else if (key) {
+            return this.current && this.current[key] ? this.current[key] : false;
+        }
+        return this.current;
+    }
+    return $User;
+});
 'use strict';
 angular.module('facebook.login').config(function(FacebookProvider, setting) {
     FacebookProvider.init({
@@ -2724,6 +2777,31 @@ angular.module('core.utils').factory('HttpInterceptor', /*@ngInject*/ function($
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){var S,app,createFilterFor,name,_i,_j,_len,_len1,_ref,_ref1,__slice=[].slice;S=require("string");app=angular.module("string",[]);app.factory("string",function(){return S});createFilterFor=function(name,returnsStringObject){var filterName;filterName=S("string-"+name).camelize().toString();return app.filter(filterName,["string",function(S){return function(){var args,input,out,_ref;input=arguments[0],args=2<=arguments.length?__slice.call(arguments,1):[];out=(_ref=S(input))[name].apply(_ref,args);if(returnsStringObject){out=out.toString()}return out}}])};_ref=["between","camelize","capitalize","chompLeft","chompRight","collapseWhitespace","dasherize","decodeHTMLEntities","escapeHTML","ensureLeft","ensureRight","humanize","left","pad","padLeft","padRight","repeat","replaceAll","right","slugify","stripPunctuation","stripTags","times","toCSV","trim","trimLeft","trimRight","truncate","underscore","unescapeHTML"];for(_i=0,_len=_ref.length;_i<_len;_i++){name=_ref[_i];createFilterFor(name,true)}_ref1=["contains","count","endsWith","include","isAlpha","isAlphaNumeric","isEmpty","isLower","isNumeric","isUpper","lines","parseCSV","startsWith","toBoolean","toBool","toFloat","toInt","toInteger"];for(_j=0,_len1=_ref1.length;_j<_len1;_j++){name=_ref1[_j];createFilterFor(name,false)}},{string:2}],2:[function(require,module,exports){!function(){"use strict";var VERSION="1.7.0";var ENTITIES={};function initialize(object,s){if(s!==null&&s!==undefined){if(typeof s==="string")object.s=s;else object.s=s.toString()}else{object.s=s}object.orig=s;if(s!==null&&s!==undefined){if(object.__defineGetter__){object.__defineGetter__("length",function(){return object.s.length})}else{object.length=s.length}}else{object.length=-1}}function S(s){initialize(this,s)}var __nsp=String.prototype;var __sp=S.prototype={between:function(left,right){var s=this.s;var startPos=s.indexOf(left);var endPos=s.indexOf(right);var start=startPos+left.length;return new this.constructor(endPos>startPos?s.slice(start,endPos):"")},camelize:function(){var s=this.trim().s.replace(/(\-|_|\s)+(.)?/g,function(mathc,sep,c){return c?c.toUpperCase():""});return new this.constructor(s)},capitalize:function(){return new this.constructor(this.s.substr(0,1).toUpperCase()+this.s.substring(1).toLowerCase())},charAt:function(index){return this.s.charAt(index)},chompLeft:function(prefix){var s=this.s;if(s.indexOf(prefix)===0){s=s.slice(prefix.length);return new this.constructor(s)}else{return this}},chompRight:function(suffix){if(this.endsWith(suffix)){var s=this.s;s=s.slice(0,s.length-suffix.length);return new this.constructor(s)}else{return this}},collapseWhitespace:function(){var s=this.s.replace(/[\s\xa0]+/g," ").replace(/^\s+|\s+$/g,"");return new this.constructor(s)},contains:function(ss){return this.s.indexOf(ss)>=0},count:function(ss){var count=0,pos=this.s.indexOf(ss);while(pos>=0){count+=1;pos=this.s.indexOf(ss,pos+1)}return count},dasherize:function(){var s=this.trim().s.replace(/[_\s]+/g,"-").replace(/([A-Z])/g,"-$1").replace(/-+/g,"-").toLowerCase();return new this.constructor(s)},decodeHtmlEntities:function(){var s=this.s;s=s.replace(/&#(\d+);?/g,function(_,code){return String.fromCharCode(code)}).replace(/&#[xX]([A-Fa-f0-9]+);?/g,function(_,hex){return String.fromCharCode(parseInt(hex,16))}).replace(/&([^;\W]+;?)/g,function(m,e){var ee=e.replace(/;$/,"");var target=ENTITIES[e]||e.match(/;$/)&&ENTITIES[ee];if(typeof target==="number"){return String.fromCharCode(target)}else if(typeof target==="string"){return target}else{return m}});return new this.constructor(s)},endsWith:function(suffix){var l=this.s.length-suffix.length;return l>=0&&this.s.indexOf(suffix,l)===l},escapeHTML:function(){return new this.constructor(this.s.replace(/[&<>"']/g,function(m){return"&"+reversedEscapeChars[m]+";"}))},ensureLeft:function(prefix){var s=this.s;if(s.indexOf(prefix)===0){return this}else{return new this.constructor(prefix+s)}},ensureRight:function(suffix){var s=this.s;if(this.endsWith(suffix)){return this}else{return new this.constructor(s+suffix)}},humanize:function(){if(this.s===null||this.s===undefined)return new this.constructor("");var s=this.underscore().replace(/_id$/,"").replace(/_/g," ").trim().capitalize();return new this.constructor(s)},isAlpha:function(){return!/[^a-z\xC0-\xFF]/.test(this.s.toLowerCase())},isAlphaNumeric:function(){return!/[^0-9a-z\xC0-\xFF]/.test(this.s.toLowerCase())},isEmpty:function(){return this.s===null||this.s===undefined?true:/^[\s\xa0]*$/.test(this.s)},isLower:function(){return this.isAlpha()&&this.s.toLowerCase()===this.s},isNumeric:function(){return!/[^0-9]/.test(this.s)},isUpper:function(){return this.isAlpha()&&this.s.toUpperCase()===this.s},left:function(N){if(N>=0){var s=this.s.substr(0,N);return new this.constructor(s)}else{return this.right(-N)}},lines:function(){return this.replaceAll("\r\n","\n").s.split("\n")},pad:function(len,ch){if(ch==null)ch=" ";if(this.s.length>=len)return new this.constructor(this.s);len=len-this.s.length;var left=Array(Math.ceil(len/2)+1).join(ch);var right=Array(Math.floor(len/2)+1).join(ch);return new this.constructor(left+this.s+right)},padLeft:function(len,ch){if(ch==null)ch=" ";if(this.s.length>=len)return new this.constructor(this.s);return new this.constructor(Array(len-this.s.length+1).join(ch)+this.s)},padRight:function(len,ch){if(ch==null)ch=" ";if(this.s.length>=len)return new this.constructor(this.s);return new this.constructor(this.s+Array(len-this.s.length+1).join(ch))},parseCSV:function(delimiter,qualifier,escape,lineDelimiter){delimiter=delimiter||",";escape=escape||"\\";if(typeof qualifier=="undefined")qualifier='"';var i=0,fieldBuffer=[],fields=[],len=this.s.length,inField=false,self=this;var ca=function(i){return self.s.charAt(i)};if(typeof lineDelimiter!=="undefined")var rows=[];if(!qualifier)inField=true;while(i<len){var current=ca(i);switch(current){case escape:if(inField&&(escape!==qualifier||ca(i+1)===qualifier)){i+=1;fieldBuffer.push(ca(i));break}if(escape!==qualifier)break;case qualifier:inField=!inField;break;case delimiter:if(inField&&qualifier)fieldBuffer.push(current);else{fields.push(fieldBuffer.join(""));fieldBuffer.length=0}break;case lineDelimiter:if(inField){fieldBuffer.push(current)}else{if(rows){fields.push(fieldBuffer.join(""));rows.push(fields);fields=[];fieldBuffer.length=0}}break;default:if(inField)fieldBuffer.push(current);break}i+=1}fields.push(fieldBuffer.join(""));if(rows){rows.push(fields);return rows}return fields},replaceAll:function(ss,r){var s=this.s.split(ss).join(r);return new this.constructor(s)},right:function(N){if(N>=0){var s=this.s.substr(this.s.length-N,N);return new this.constructor(s)}else{return this.left(-N)}},setValue:function(s){initialize(this,s);return this},slugify:function(){var sl=new S(this.s.replace(/[^\w\s-]/g,"").toLowerCase()).dasherize().s;if(sl.charAt(0)==="-")sl=sl.substr(1);return new this.constructor(sl)},startsWith:function(prefix){return this.s.lastIndexOf(prefix,0)===0},stripPunctuation:function(){return new this.constructor(this.s.replace(/[^\w\s]|_/g,"").replace(/\s+/g," "))},stripTags:function(){var s=this.s,args=arguments.length>0?arguments:[""];multiArgs(args,function(tag){s=s.replace(RegExp("</?"+tag+"[^<>]*>","gi"),"")});return new this.constructor(s)},template:function(values,opening,closing){var s=this.s;var opening=opening||Export.TMPL_OPEN;var closing=closing||Export.TMPL_CLOSE;var open=opening.replace(/[-[\]()*\s]/g,"\\$&").replace(/\$/g,"\\$");var close=closing.replace(/[-[\]()*\s]/g,"\\$&").replace(/\$/g,"\\$");var r=new RegExp(open+"(.+?)"+close,"g");var matches=s.match(r)||[];matches.forEach(function(match){var key=match.substring(opening.length,match.length-closing.length);if(typeof values[key]!="undefined")s=s.replace(match,values[key])});return new this.constructor(s)},times:function(n){return new this.constructor(new Array(n+1).join(this.s))},toBoolean:function(){if(typeof this.orig==="string"){var s=this.s.toLowerCase();return s==="true"||s==="yes"||s==="on"}else return this.orig===true||this.orig===1},toFloat:function(precision){var num=parseFloat(this.s);if(precision)return parseFloat(num.toFixed(precision));else return num},toInt:function(){return/^\s*-?0x/i.test(this.s)?parseInt(this.s,16):parseInt(this.s,10)},trim:function(){var s;if(typeof __nsp.trim==="undefined")s=this.s.replace(/(^\s*|\s*$)/g,"");else s=this.s.trim();return new this.constructor(s)},trimLeft:function(){var s;if(__nsp.trimLeft)s=this.s.trimLeft();else s=this.s.replace(/(^\s*)/g,"");return new this.constructor(s)},trimRight:function(){var s;if(__nsp.trimRight)s=this.s.trimRight();else s=this.s.replace(/\s+$/,"");return new this.constructor(s)},truncate:function(length,pruneStr){var str=this.s;length=~~length;pruneStr=pruneStr||"...";if(str.length<=length)return new this.constructor(str);var tmpl=function(c){return c.toUpperCase()!==c.toLowerCase()?"A":" "},template=str.slice(0,length+1).replace(/.(?=\W*\w*$)/g,tmpl);if(template.slice(template.length-2).match(/\w\w/))template=template.replace(/\s*\S+$/,"");else template=new S(template.slice(0,template.length-1)).trimRight().s;return(template+pruneStr).length>str.length?new S(str):new S(str.slice(0,template.length)+pruneStr)},toCSV:function(){var delim=",",qualifier='"',escape="\\",encloseNumbers=true,keys=false;var dataArray=[];function hasVal(it){return it!==null&&it!==""}if(typeof arguments[0]==="object"){delim=arguments[0].delimiter||delim;delim=arguments[0].separator||delim;qualifier=arguments[0].qualifier||qualifier;encloseNumbers=!!arguments[0].encloseNumbers;escape=arguments[0].escape||escape;keys=!!arguments[0].keys}else if(typeof arguments[0]==="string"){delim=arguments[0]}if(typeof arguments[1]==="string")qualifier=arguments[1];if(arguments[1]===null)qualifier=null;if(this.orig instanceof Array)dataArray=this.orig;else{for(var key in this.orig)if(this.orig.hasOwnProperty(key))if(keys)dataArray.push(key);else dataArray.push(this.orig[key])}var rep=escape+qualifier;var buildString=[];for(var i=0;i<dataArray.length;++i){var shouldQualify=hasVal(qualifier);if(typeof dataArray[i]=="number")shouldQualify&=encloseNumbers;if(shouldQualify)buildString.push(qualifier);if(dataArray[i]!==null&&dataArray[i]!==undefined){var d=new S(dataArray[i]).replaceAll(qualifier,rep).s;buildString.push(d)}else buildString.push("");if(shouldQualify)buildString.push(qualifier);if(delim)buildString.push(delim)}buildString.length=buildString.length-1;return new this.constructor(buildString.join(""))},toString:function(){return this.s},underscore:function(){var s=this.trim().s.replace(/([a-z\d])([A-Z]+)/g,"$1_$2").replace(/[-\s]+/g,"_").toLowerCase();if(new S(this.s.charAt(0)).isUpper()){s="_"+s}return new this.constructor(s)},unescapeHTML:function(){return new this.constructor(this.s.replace(/\&([^;]+);/g,function(entity,entityCode){var match;if(entityCode in escapeChars){return escapeChars[entityCode]}else if(match=entityCode.match(/^#x([\da-fA-F]+)$/)){return String.fromCharCode(parseInt(match[1],16))}else if(match=entityCode.match(/^#(\d+)$/)){return String.fromCharCode(~~match[1])}else{return entity}}))},valueOf:function(){return this.s.valueOf()}};var methodsAdded=[];function extendPrototype(){for(var name in __sp){(function(name){var func=__sp[name];if(!__nsp.hasOwnProperty(name)){methodsAdded.push(name);__nsp[name]=function(){String.prototype.s=this;return func.apply(this,arguments)}}})(name)}}function restorePrototype(){for(var i=0;i<methodsAdded.length;++i)delete String.prototype[methodsAdded[i]];methodsAdded.length=0}var nativeProperties=getNativeStringProperties();for(var name in nativeProperties){(function(name){var stringProp=__nsp[name];if(typeof stringProp=="function"){if(!__sp[name]){if(nativeProperties[name]==="string"){__sp[name]=function(){return new this.constructor(stringProp.apply(this,arguments))}}else{__sp[name]=stringProp}}}})(name)}__sp.repeat=__sp.times;__sp.include=__sp.contains;__sp.toInteger=__sp.toInt;__sp.toBool=__sp.toBoolean;__sp.decodeHTMLEntities=__sp.decodeHtmlEntities;__sp.constructor=S;function getNativeStringProperties(){var names=getNativeStringPropertyNames();var retObj={};for(var i=0;i<names.length;++i){var name=names[i];var func=__nsp[name];try{var type=typeof func.apply("teststring",[]);retObj[name]=type}catch(e){}}return retObj}function getNativeStringPropertyNames(){var results=[];if(Object.getOwnPropertyNames){results=Object.getOwnPropertyNames(__nsp);results.splice(results.indexOf("valueOf"),1);results.splice(results.indexOf("toString"),1);return results}else{var stringNames={};var objectNames=[];for(var name in String.prototype)stringNames[name]=name;for(var name in Object.prototype)delete stringNames[name];for(var name in stringNames){results.push(name)}return results}}function Export(str){return new S(str)}Export.extendPrototype=extendPrototype;Export.restorePrototype=restorePrototype;Export.VERSION=VERSION;Export.TMPL_OPEN="{{";Export.TMPL_CLOSE="}}";Export.ENTITIES=ENTITIES;if(typeof module!=="undefined"&&typeof module.exports!=="undefined"){module.exports=Export}else{if(typeof define==="function"&&define.amd){define([],function(){return Export})}else{window.S=Export}}function multiArgs(args,fn){var result=[],i;for(i=0;i<args.length;i++){result.push(args[i]);if(fn)fn.call(args,args[i],i)}return result}var escapeChars={lt:"<",gt:">",quot:'"',apos:"'",amp:"&"};var reversedEscapeChars={};for(var key in escapeChars){reversedEscapeChars[escapeChars[key]]=key}ENTITIES={amp:"&",gt:">",lt:"<",quot:'"',apos:"'",AElig:198,Aacute:193,Acirc:194,Agrave:192,Aring:197,Atilde:195,Auml:196,Ccedil:199,ETH:208,Eacute:201,Ecirc:202,Egrave:200,Euml:203,Iacute:205,Icirc:206,Igrave:204,Iuml:207,Ntilde:209,Oacute:211,Ocirc:212,Ograve:210,Oslash:216,Otilde:213,Ouml:214,THORN:222,Uacute:218,Ucirc:219,Ugrave:217,Uuml:220,Yacute:221,aacute:225,acirc:226,aelig:230,agrave:224,aring:229,atilde:227,auml:228,ccedil:231,eacute:233,ecirc:234,egrave:232,eth:240,euml:235,iacute:237,icirc:238,igrave:236,iuml:239,ntilde:241,oacute:243,ocirc:244,ograve:242,oslash:248,otilde:245,ouml:246,szlig:223,thorn:254,uacute:250,ucirc:251,ugrave:249,uuml:252,yacute:253,yuml:255,copy:169,reg:174,nbsp:160,iexcl:161,cent:162,pound:163,curren:164,yen:165,brvbar:166,sect:167,uml:168,ordf:170,laquo:171,not:172,shy:173,macr:175,deg:176,plusmn:177,sup1:185,sup2:178,sup3:179,acute:180,micro:181,para:182,middot:183,cedil:184,ordm:186,raquo:187,frac14:188,frac12:189,frac34:190,iquest:191,times:215,divide:247,"OElig;":338,"oelig;":339,"Scaron;":352,"scaron;":353,"Yuml;":376,"fnof;":402,"circ;":710,"tilde;":732,"Alpha;":913,"Beta;":914,"Gamma;":915,"Delta;":916,"Epsilon;":917,"Zeta;":918,"Eta;":919,"Theta;":920,"Iota;":921,"Kappa;":922,"Lambda;":923,"Mu;":924,"Nu;":925,"Xi;":926,"Omicron;":927,"Pi;":928,"Rho;":929,"Sigma;":931,"Tau;":932,"Upsilon;":933,"Phi;":934,"Chi;":935,"Psi;":936,"Omega;":937,"alpha;":945,"beta;":946,"gamma;":947,"delta;":948,"epsilon;":949,"zeta;":950,"eta;":951,"theta;":952,"iota;":953,"kappa;":954,"lambda;":955,"mu;":956,"nu;":957,"xi;":958,"omicron;":959,"pi;":960,"rho;":961,"sigmaf;":962,"sigma;":963,"tau;":964,"upsilon;":965,"phi;":966,"chi;":967,"psi;":968,"omega;":969,"thetasym;":977,"upsih;":978,"piv;":982,"ensp;":8194,"emsp;":8195,"thinsp;":8201,"zwnj;":8204,"zwj;":8205,"lrm;":8206,"rlm;":8207,"ndash;":8211,"mdash;":8212,"lsquo;":8216,"rsquo;":8217,"sbquo;":8218,"ldquo;":8220,"rdquo;":8221,"bdquo;":8222,"dagger;":8224,"Dagger;":8225,"bull;":8226,"hellip;":8230,"permil;":8240,"prime;":8242,"Prime;":8243,"lsaquo;":8249,"rsaquo;":8250,"oline;":8254,"frasl;":8260,"euro;":8364,"image;":8465,"weierp;":8472,"real;":8476,"trade;":8482,"alefsym;":8501,"larr;":8592,"uarr;":8593,"rarr;":8594,"darr;":8595,"harr;":8596,"crarr;":8629,"lArr;":8656,"uArr;":8657,"rArr;":8658,"dArr;":8659,"hArr;":8660,"forall;":8704,"part;":8706,"exist;":8707,"empty;":8709,"nabla;":8711,"isin;":8712,"notin;":8713,"ni;":8715,"prod;":8719,"sum;":8721,"minus;":8722,"lowast;":8727,"radic;":8730,"prop;":8733,"infin;":8734,"ang;":8736,"and;":8743,"or;":8744,"cap;":8745,"cup;":8746,"int;":8747,"there4;":8756,"sim;":8764,"cong;":8773,"asymp;":8776,"ne;":8800,"equiv;":8801,"le;":8804,"ge;":8805,"sub;":8834,"sup;":8835,"nsub;":8836,"sube;":8838,"supe;":8839,"oplus;":8853,"otimes;":8855,"perp;":8869,"sdot;":8901,"lceil;":8968,"rceil;":8969,"lfloor;":8970,"rfloor;":8971,"lang;":9001,"rang;":9002,"loz;":9674,"spades;":9824,"clubs;":9827,"hearts;":9829,"diams;":9830}}.call(this)},{}]},{},[1]);
 /* jshint ignore:end */
 'use strict';
+angular.module('core.menu').controller('MenuAvatarCtrl', /*@ngInject*/ function($rootScope, $scope) {
+    var vm = this;
+    vm.picture = '';
+    if ($scope.gender === 'female') $scope.gender = 'f';
+    if ($scope.gender === 'male') $scope.gender = 'm';
+    vm.picture = '/assets/images/avatar-m.jpg';
+    if ($scope.gender) vm.picture = '/assets/images/avatar-' + $scope.gender.toLowerCase() + '.jpg';
+    if ($scope.facebook) vm.picture = 'https://graph.facebook.com/' + $scope.facebook + '/picture?width=150';
+});
+'use strict';
+angular.module('core.menu').directive('menuAvatar', /*@ngInject*/ function() {
+    return {
+        scope: {          
+            firstName: '=',
+            lastName: '=',
+            facebook: '=',
+            gender: '='
+        },
+        restrict: 'EA',
+        controller: 'MenuAvatarCtrl',
+        controllerAs: 'vm',
+        templateUrl: 'core/page/menu/avatar/menuAvatar.tpl.html'
+    }
+});
+'use strict';
 angular.module('core.menu').controller('MenuFacepileCtrl', /*@ngInject*/ function() {});
 'use strict';
 angular.module('core.menu').directive('menuFacepile', /*@ngInject*/ function() {
@@ -2753,28 +2831,11 @@ angular.module('core.menu').directive('menuFacepile', /*@ngInject*/ function() {
     }
 });
 'use strict';
-angular.module('core.menu').controller('MenuAvatarCtrl', /*@ngInject*/ function($rootScope, $scope) {
-    var vm = this;
-    vm.picture = '';
-    if ($scope.gender === 'female') $scope.gender = 'f';
-    if ($scope.gender === 'male') $scope.gender = 'm';
-    vm.picture = '/assets/images/avatar-m.jpg';
-    if ($scope.gender) vm.picture = '/assets/images/avatar-' + $scope.gender.toLowerCase() + '.jpg';
-    if ($scope.facebook) vm.picture = 'https://graph.facebook.com/' + $scope.facebook + '/picture?width=150';
-});
-'use strict';
-angular.module('core.menu').directive('menuAvatar', /*@ngInject*/ function() {
+angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function($app) {
     return {
-        scope: {          
-            firstName: '=',
-            lastName: '=',
-            facebook: '=',
-            gender: '='
-        },
-        restrict: 'EA',
-        controller: 'MenuAvatarCtrl',
-        controllerAs: 'vm',
-        templateUrl: 'core/page/menu/avatar/menuAvatar.tpl.html'
+        templateUrl: function() {
+            return $app.toolbarTitleUrl;
+        }
     }
 });
 'use strict';
@@ -2824,14 +2885,6 @@ angular.module('core.page').directive('toolbarMenu', /*@ngInject*/ function tool
         }
     }
 })
-'use strict';
-angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function($app) {
-    return {
-        templateUrl: function() {
-            return $app.toolbarTitleUrl;
-        }
-    }
-});
 'use strict';
 /**
  * @ngdoc object
@@ -3976,17 +4029,17 @@ angular.module("app.kit").run(["$templateCache", function($templateCache) {$temp
 $templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">{{ \'USER_WELCOME_WARN\' | translate:\'{ firstName: \"\'+app.user().profile.firstName+\'\" }\' }}</div><a ui-sref=\"app.login\" ng-if=\"!app.user().isAuthed()\">entrar</a> <a ui-sref=\"app.home-secured\">home secured</a></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.user().isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
-$templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.page().load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
 $templateCache.put("core/login/form/loginForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"logon\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"logon.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"logon.password\" type=\"password\" required=\"\"></md-input-container></div></form></md-content><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-click=\"vm.login(logon)\" ng-disabled=\"logon.$invalid||app.page().load.status\">Entrar</button><facebook-login user=\"user\"></facebook-login></div></div><div class=\"help\" layout=\"row\"><a flex=\"\" ui-sref=\"app.login-lost\" class=\"lost\"><i class=\"fa fa-support\"></i> Esqueci minha senha</a> <a flex=\"\" ui-sref=\"app.signup\" class=\"lost\"><i class=\"fa fa-support\"></i> Não tenho cadastro</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
+$templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.page().load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
 $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin clientid=\"{{google.clientId}}\" language=\"{{google.language}}\"><button class=\"google\" layout=\"row\" ng-disabled=\"app.page().load.status\"><i class=\"fa fa-google-plus\"></i> <span>Entrar com Google</span></button></google-plus-signin>");
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.user().isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.page().load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.page().load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.user().isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.page().load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
-$templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.user().isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" ng-class=\"{\'not-authed\':!app.user().isAuthed()&&!app.user.current(\'company\')}\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\" on-scroll-apply-opacity=\"\"><div ui-view=\"content\" ng-class=\"{ \'anim-in-out anim-slide-below-fade\': app.state().current.name != \'app.profile\' && app.state().current.name != \'app.landing\'}\"></div></md-content></div>");
+$templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.user().isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\"><div ui-view=\"content\" class=\"anim-in-out anim-slide-below-fade\"></div></md-content></div>");
 $templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.page().load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
-$templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-facepile ng-if=\"app.user.current(\'company\').facebook && (app.state().current.name!=\'app.home\' && app.state().current.name!=\'app.account\') && app.enviroment() !== \'development\' && !app.iframe\" hide-sm=\"\" width=\"304\" url=\"https://www.facebook.com/{{app.user.current(\'company\').facebook}}\" facepile=\"true\" hide-cover=\"false\" ng-hide=\"app.state().current.name===\'app.pages\'\"></menu-facepile><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu().sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu().isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu().isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting().copyright }} © {{ app.year() }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
+$templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu().sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu().isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu().isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting().copyright }} © {{ app.year() }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu().open()\" ng-if=\"app.user().isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state().current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.user().isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
 $templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");

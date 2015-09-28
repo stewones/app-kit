@@ -4,4 +4,6 @@
     </div>
     <a ui-sref="app.login" ng-if="!app.user().isAuthed()">entrar</a>
     <a ui-sref="app.home-secured">home secured</a>
+    <hr />
+    Company: {{app.user().current('company').name}}
 </div>

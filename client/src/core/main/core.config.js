@@ -63,6 +63,7 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProv
     //
     // User options
     //
+    $userProvider.setting('roleForCompany', 'user');
     $userProvider.setting('loginSuccessRedirect', '/');
     $userProvider.setting('loginSuccessRedirectState', 'app.home');
     //

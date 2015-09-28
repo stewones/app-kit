@@ -1,13 +1,4 @@
-<div layout="column">
-    <menu-facepile
-    ng-if="app.user.current('company').facebook && (app.state().current.name!='app.home' && app.state().current.name!='app.account') && app.enviroment() !== 'development' && !app.iframe"
-    hide-sm
-    width="304"
-    url="https://www.facebook.com/{{app.user.current('company').facebook}}"
-    facepile="true"
-    hide-cover="false"
-    ng-hide="app.state().current.name==='app.pages'">
-    </menu-facepile>
+<div layout="column">   
     <menu-avatar
     first-name="app.user.profile.firstName"
     last-name="app.user.profile.lastName"

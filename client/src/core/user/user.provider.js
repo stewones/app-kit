@@ -82,6 +82,24 @@ angular.module('core.user').provider('$user',
                         } else if (message && alert) {
                             $page.toast(message, 5000);
                         }
+                        //
+                        // Company behavior
+                        // @app-kit-pro version
+                        //
+                        var role = false,
+                            roleForCompany = this.setting.roleForCompany,
+                            userInstance = this.instance();
+                        if (userInstance.id) {
+                            if (roleForCompany && roleForCompany != 'user') {
+                                role = params[roleForCompany].role;
+                            } else if (roleForCompany && roleForCompany === 'user') {
+                                role = params.role;
+                            }
+                            if (role.length) {
+                                this.instance().current('company', this.getCompany());
+                                this.instance().current('companies', this.getCompanies());
+                            }
+                        }
                     }
                     //
                     // @todo doc broadcast $UserInstantiateEnd
@@ -137,11 +155,24 @@ angular.module('core.user').provider('$user',
                             //
                             $auth.logout().then(function() {
                                 $rootScope.$emit('$UserLeft');
-                                if (alert) $page.toast(message, 3000);                          
+                                if (alert) $page.toast(message, 3000);
                                 if (typeof cb === 'function') return cb();
                             });
                         });
                     });
+                },
+                getCompanies: function() {
+                    var role = false,
+                        roleForCompany = this.setting.roleForCompany;
+                    if (roleForCompany && roleForCompany != 'user') {
+                        role = this.instance()[roleForCompany].role;
+                    } else if (roleForCompany && roleForCompany === 'user') {
+                        role = this.instance().role;
+                    }
+                    return role;
+                },
+                getCompany: function() {
+                    return this.getCompanies()[0].company;
                 }
             }
         }
