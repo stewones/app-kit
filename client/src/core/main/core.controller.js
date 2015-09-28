@@ -43,13 +43,6 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     //
     moment.locale('pt_BR');
     //
-    // Storage defaults
-    //
-    // $localStorage.$default({});
-    // $sessionStorage.$default({
-    //     user: {}
-    // });
-    //
     // Events
     //  
     $rootScope.$on('$AppReboot', function() {
@@ -91,16 +84,17 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     $rootScope.$on('$LoginSuccess', function(ev, response) {
         var appSession = $app.storage('session').get();
         if (appSession && appSession.locationRedirect && appSession.locationRedirect != '/login/') {
-            //
-            // Do redirection
-            //
-            $location.path(appSession.locationRedirect);
+            var redirect = appSession.locationRedirect;
             //
             // Reset locationRedirect
             //
             $app.storage('session').set({
                 locationRedirect: ''
-            })
+            });
+            //
+            // Do redirection
+            //
+            window.location = redirect;
         }
         //
         // Reset the $rootScope.$Unauthorized
