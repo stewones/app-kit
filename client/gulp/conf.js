@@ -30,6 +30,7 @@ exports.paths = {
  */
 exports.wiredep = {
     directory: 'bower_components',
+    bowerJson: require('../../bower.json')
    // exclude: [/jquery/]
 
 };
