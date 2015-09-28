@@ -1,4 +1,4 @@
-angular.module("app.i18n", []).config(["$translateProvider", function($translateProvider) {
+angular.module("core.i18n", []).config(["$translateProvider", function($translateProvider) {
 $translateProvider.translations("en_US", {
     "USER_WELCOME_WARN": "Hello {{firstName}}, welcome back!"
 });

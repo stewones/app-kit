@@ -5,13 +5,12 @@
  * @description
  **/
 angular.module('core.app', [
-	'app.i18n',
     'app.setting',
     'app.env',
+    'core.i18n',
     'core.utils',
     'core.home',
     'core.page',
     'core.login',
-    'core.user',
-    'core.profile',
+    'core.user'
 ]);
