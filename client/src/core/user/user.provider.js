@@ -137,7 +137,7 @@ angular.module('core.user').provider('$user',
                             //
                             $auth.logout().then(function() {
                                 $rootScope.$emit('$UserLeft');
-                                if (alert) $page.toast(message, 3000);
+                                if (alert) $page.toast(message, 3000);                          
                                 if (typeof cb === 'function') return cb();
                             });
                         });
@@ -149,5 +149,29 @@ angular.module('core.user').provider('$user',
             if (key && val) return this._setting[key] = val;
             else if (key) return this._setting[key];
             else return this._setting;
+        }
+        this.isAuthed = function(redirect) {
+            return /*@ngInject*/ function isAuthed($auth, $state, $timeout, $user, $location) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        this.isNotAuthed = function(redirect) {
+            return /*@ngInject*/ function isAuthed($auth, $state, $timeout, $user, $location) {
+                if (!$auth.isAuthenticated()) {
+                    $timeout(function() {
+                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
     });

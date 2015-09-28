@@ -16,7 +16,6 @@ angular.module('core.app').provider('$app',
          * armazena configurações
          **/
         this._config = {};
-
         /**
          * @ngdoc object
          * @name app.kit.$appProvider#_layoutUrl
@@ -25,7 +24,6 @@ angular.module('core.app').provider('$app',
          * url do template para layout
          **/
         this._layoutUrl = 'core/page/layout/layout.tpl.html';
-
         /**
          * @ngdoc object
          * @name app.kit.$appProvider#_toolbarUrl
@@ -34,7 +32,6 @@ angular.module('core.app').provider('$app',
          * url do template para toolbar
          **/
         this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
-
         /**
          * @ngdoc object
          * @name app.kit.$appProvider#_toolbarTitleUrl
@@ -43,7 +40,6 @@ angular.module('core.app').provider('$app',
          * url do template para o toolbar title
          **/
         this._toolbarTitleUrl = 'core/page/toolbar/title/toolbarTitle.tpl.html';
-
         /**
          * @ngdoc object
          * @name app.kit.$appProvider#_sidenavUrl
@@ -52,7 +48,6 @@ angular.module('core.app').provider('$app',
          * url do template para sidenav
          **/
         this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
-
         /**
          * @ngdoc object
          * @name app.kit.$appProvider#_logo
@@ -61,7 +56,6 @@ angular.module('core.app').provider('$app',
          * armazena logo
          **/
         this._logo = '';
-
         /**
          * @ngdoc object
          * @name app.kit.$appProvider#_logoWhite
@@ -70,7 +64,6 @@ angular.module('core.app').provider('$app',
          * armazena logo na versão branca
          **/
         this._logoWhite = '';
-
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#$get
@@ -123,8 +116,7 @@ angular.module('core.app').provider('$app',
                     }
                 }
             }
-        }
-
+        };
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#config
@@ -146,8 +138,7 @@ angular.module('core.app').provider('$app',
         this.config = function(key, val) {
             if (val) return this._config[key] = val;
             else return this._config[key];
-        }
-
+        };
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#logo
@@ -165,8 +156,7 @@ angular.module('core.app').provider('$app',
         this.logo = function(value) {
             if (value) return this._logo = value;
             else return this._logo;
-        }
-
+        };
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#logoWhite
@@ -184,8 +174,7 @@ angular.module('core.app').provider('$app',
         this.logoWhite = function(value) {
             if (value) return this._logoWhite = value;
             else return this._logoWhite;
-        }
-
+        };
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#layoutUrl
@@ -203,8 +192,7 @@ angular.module('core.app').provider('$app',
         this.layoutUrl = function(val) {
             if (val) return this._layoutUrl = val;
             else return this._layoutUrl;
-        }
-
+        };
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#toolbarUrl
@@ -222,8 +210,7 @@ angular.module('core.app').provider('$app',
         this.toolbarUrl = function(val) {
             if (val) return this._toolbarUrl = val;
             else return this._toolbarUrl;
-        }
-
+        };
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#toolbarTitleUrl
@@ -241,8 +228,7 @@ angular.module('core.app').provider('$app',
         this.toolbarTitleUrl = function(val) {
             if (val) return this._toolbarTitleUrl = val;
             else return this._toolbarTitleUrl;
-        }
-
+        };
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#sidenavUrl
@@ -261,5 +247,4 @@ angular.module('core.app').provider('$app',
             if (val) return this._sidenavUrl = val;
             else return this._sidenavUrl;
         };
-    }
-)
+    });

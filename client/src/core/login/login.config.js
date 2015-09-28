@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
+angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
     // States & Routes
     //
@@ -14,7 +14,7 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: isAuthed
+                authed: $userProvider.isAuthed('/')
             }
         })
         //
@@ -51,7 +51,7 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                     }
                 },
                 resolve: {
-                    authed: isAuthed
+                    authed: $userProvider.isAuthed('/')
                 }
             }
         }).state('app.login-lost', {
@@ -66,20 +66,8 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: isAuthed
+                authed: $userProvider.isAuthed('/')
             }
         });
     $locationProvider.html5Mode(true);
 });
-
-function isAuthed($auth, $state, $timeout, $user, $location) {
-    if ($auth.isAuthenticated()) {
-        $timeout(function() {
-            //$state.go($user.setting.loginSuccessRedirect);
-            $location.path($user.setting.loginSuccessRedirect);
-        });
-        return true;
-    } else {
-        return false;
-    }
-}

@@ -1,6 +1,6 @@
 'use strict';
 /*global window*/
-angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('core.home').config( /*@ngInject*/ function($pageProvider, $stateProvider, $urlRouterProvider, $locationProvider, $userProvider) {
     /**
      * States & Routes
      */
@@ -23,6 +23,18 @@ angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $urlR
                     }, 500)
                 }
             }
+        }
+    }).state('app.home-secured', {
+        url: '/home-secured/',
+        views: {
+            'content': {
+                templateUrl: 'core/home/home-secured.tpl.html',
+                controller: '$HomeCtrl as vm'
+            }
+        },
+        resolve: {
+            closeMenu: $pageProvider.closeMenu(),
+            authed: $userProvider.isNotAuthed('/login/')
         }
     });
     $locationProvider.html5Mode(true);

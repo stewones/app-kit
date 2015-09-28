@@ -1,7 +1,7 @@
 <div class="main-wrapper anim-zoom-in md-padding home" layout="column" flex>
+    <h1>Secured Home</h1>
     <div class="text-center">
         {{ 'USER_WELCOME_WARN' | translate:'{ firstName: "'+app.user().profile.firstName+'" }' }}
     </div>
-    <a ui-sref="app.login" ng-if="!app.user().isAuthed()">entrar</a>
-    <a ui-sref="app.home-secured">home secured</a>
+    <a ui-sref="app.login">entrar</a>
 </div>

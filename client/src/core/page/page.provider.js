@@ -19,7 +19,6 @@ angular.module('core.page').provider('$page',
             // configuração para ativar/desativar a rota inicial
             'homeEnabled': true
         };
-
         /**
          * @ngdoc object
          * @name core.page.$pageProvider#_title
@@ -153,7 +152,15 @@ angular.module('core.page').provider('$page',
                 return this._config
             }
         }
-
+        this.closeMenu = function() {
+            return /*@ngInject*/ function($timeout, $auth, $menu) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        $menu.api().close();
+                    }, 500);
+                }
+            }
+        };
         /**
          * @ngdoc function
          * @name core.page.$pageProvider#title
@@ -324,5 +331,4 @@ angular.module('core.page').provider('$page',
                 }
             }
         }
-    }
-)
+    })

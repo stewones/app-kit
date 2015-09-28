@@ -1,5 +1,5 @@
 'use strict';
-angular.module('core.home', []);
+angular.module('core.home', ['core.user']);
 'use strict';
 /**
     * @ngdoc overview
@@ -99,7 +99,7 @@ angular.module('app.kit', [
 ]);
 'use strict';
 /*global window*/
-angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('core.home').config( /*@ngInject*/ function($pageProvider, $stateProvider, $urlRouterProvider, $locationProvider, $userProvider) {
     /**
      * States & Routes
      */
@@ -123,6 +123,18 @@ angular.module('core.home').config( /*@ngInject*/ function($stateProvider, $urlR
                 }
             }
         }
+    }).state('app.home-secured', {
+        url: '/home-secured/',
+        views: {
+            'content': {
+                templateUrl: 'core/home/home-secured.tpl.html',
+                controller: '$HomeCtrl as vm'
+            }
+        },
+        resolve: {
+            closeMenu: $pageProvider.closeMenu(),
+            authed: $userProvider.isNotAuthed('/login/')
+        }
     });
     $locationProvider.html5Mode(true);
 })
@@ -139,7 +151,7 @@ angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($root
     function bootstrap() {}
 });
 'use strict';
-angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
+angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
     // States & Routes
     //
@@ -154,7 +166,7 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: isAuthed
+                authed: $userProvider.isAuthed('/')
             }
         })
         //
@@ -191,7 +203,7 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                     }
                 },
                 resolve: {
-                    authed: isAuthed
+                    authed: $userProvider.isAuthed('/')
                 }
             }
         }).state('app.login-lost', {
@@ -206,23 +218,11 @@ angular.module('core.login').config( /*@ngInject*/ function($stateProvider, $url
                 }
             },
             resolve: {
-                authed: isAuthed
+                authed: $userProvider.isAuthed('/')
             }
         });
     $locationProvider.html5Mode(true);
 });
-
-function isAuthed($auth, $state, $timeout, $user, $location) {
-    if ($auth.isAuthenticated()) {
-        $timeout(function() {
-            //$state.go($user.setting.loginSuccessRedirect);
-            $location.path($user.setting.loginSuccessRedirect);
-        });
-        return true;
-    } else {
-        return false;
-    }
-}
 'use strict';
 /**
  * @ngdoc object
@@ -480,271 +480,6 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
 })
 angular.module("app.env",[]).constant("enviroment","development").constant("base",{url:"http://localhost:3000",urlUnsecure:"http://localhost:3000"}).constant("api",{url:"http://localhost:9000"});
 angular.module("app.setting",[]).constant("setting",{name:"app-kit",slug:"appkit",version:"1.0.0",title:"appkit",baseUrl:"https://app-kit.stpa.co",titleSeparator:" — ",description:"Skeleton for MEAN applications",copyright:"",google:{clientId:"",language:"en-EN"},facebook:{scope:"email",appId:"1572873089619343",appSecret:"4f4ddc65318b2222773dc8ceda3e107d",language:"en-EN"},ogLocale:"en_EN",ogSiteName:"app-kit",ogTitle:"app-kit",ogDescription:"Skeleton for MEAN applications",ogUrl:"https://app-kit.stpa.co",ogImage:""});
-'use strict';
-angular.module('core.app').provider('$app',
-    /**
-     * @ngdoc object
-     * @name app.kit.$appProvider
-     * @description
-     * Provém configurações para aplicação
-     **/
-    /*@ngInject*/
-    function $appProvider($stateProvider) {
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_config
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * armazena configurações
-         **/
-        this._config = {};
-
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_layoutUrl
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * url do template para layout
-         **/
-        this._layoutUrl = 'core/page/layout/layout.tpl.html';
-
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_toolbarUrl
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * url do template para toolbar
-         **/
-        this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
-
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_toolbarTitleUrl
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * url do template para o toolbar title
-         **/
-        this._toolbarTitleUrl = 'core/page/toolbar/title/toolbarTitle.tpl.html';
-
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_sidenavUrl
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * url do template para sidenav
-         **/
-        this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
-
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_logo
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * armazena logo
-         **/
-        this._logo = '';
-
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_logoWhite
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * armazena logo na versão branca
-         **/
-        this._logoWhite = '';
-
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#$get
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
-         * @example
-         * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($app) {     
-         *      console.log($app.layoutUrl);
-         *      //prints the default layoutUrl
-         *      //ex.: "core/page/layout/layout.tpl.html"     
-         *      console.log($app.config('myOwnConfiguration'));
-         *      //prints the current config
-         *      //ex.: "{ configA: 54, configB: '=D' }"
-         * })
-         * </pre>
-         * @return {object} Retorna um objeto contendo valores das propriedades.
-         **/
-        this.$get = this.get = /*@ngInject*/ function($window, setting) {
-            return {
-                config: this._config,
-                layoutUrl: this._layoutUrl,
-                toolbarUrl: this._toolbarUrl,
-                toolbarTitleUrl: this._toolbarTitleUrl,
-                sidenavUrl: this._sidenavUrl,
-                logoWhite: this._logoWhite,
-                logo: this._logo,
-                /**
-                 * @ngdoc method
-                 * @name app.kit.$appProvider#storage
-                 * @methodOf app.kit.$appProvider
-                 * @description
-                 * Carregar/persistir dados
-                 * @param {string} type tipo da persistência (local/session)
-                 * @return {object} getter/setter para persistência de dados
-                 **/
-                storage: function(type) {
-                    var where = (type === 'local') ? 'localStorage' : 'sessionStorage';
-                    return {
-                        set: function(item) {
-                            return $window[where].setItem(setting.slug + '.app', angular.toJson(item));
-                        },
-                        get: function() {
-                            return angular.fromJson($window[where].getItem(setting.slug + '.app'));
-                        },
-                        destroy: function() {
-                            $window[where].removeItem(setting.slug + '.app');
-                        }
-                    }
-                }
-            }
-        }
-
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#config
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para configurações
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *     $appProvider.config('myOwnConfiguration', {
-         *          configA: 54,
-         *          configB: '=D'
-         *      })
-         * })
-         * </pre>
-         * @param {string} key chave
-         * @param {*} val valor   
-         **/
-        this.config = function(key, val) {
-            if (val) return this._config[key] = val;
-            else return this._config[key];
-        }
-
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#logo
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para o path da logo
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *     $appProvider.logo('assets/images/my-logo.png')
-         * })
-         * </pre>
-         * @param {string} value caminho para logomarca   
-         **/
-        this.logo = function(value) {
-            if (value) return this._logo = value;
-            else return this._logo;
-        }
-
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#logoWhite
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para o path da logo na versão branca
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *     $appProvider.logoWhite('assets/images/my-logo.png')
-         * })
-         * </pre>
-         * @param {string} value caminho para logomarca   
-         **/
-        this.logoWhite = function(value) {
-            if (value) return this._logoWhite = value;
-            else return this._logoWhite;
-        }
-
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#layoutUrl
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para url do layout
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *      $appProvider.layoutUrl('app/layout/my-layout.html')
-         * })
-         * </pre>
-         * @param {string} val url do template
-         **/
-        this.layoutUrl = function(val) {
-            if (val) return this._layoutUrl = val;
-            else return this._layoutUrl;
-        }
-
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#toolbarUrl
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para url do toolbar
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
-         * })
-         * </pre>
-         * @param {string} val url do template
-         **/
-        this.toolbarUrl = function(val) {
-            if (val) return this._toolbarUrl = val;
-            else return this._toolbarUrl;
-        }
-
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#toolbarTitleUrl
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para url do componente toolbar-title
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
-         * })
-         * </pre>
-         * @param {string} val url do template
-         **/
-        this.toolbarTitleUrl = function(val) {
-            if (val) return this._toolbarTitleUrl = val;
-            else return this._toolbarTitleUrl;
-        }
-
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#sidenavUrl
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para url do sidenav
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *      $appProvider.sidenavUrl('app/layout/my-sidenav.html')
-         * })
-         * </pre>
-         * @param {string} val url do template
-         **/
-        this.sidenavUrl = function(val) {
-            if (val) return this._sidenavUrl = val;
-            else return this._sidenavUrl;
-        };
-    }
-)
 'use strict';
 angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, $translateProvider, enviroment, setting, api) {
     //
@@ -1025,7 +760,14 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     //
     function logout() {
         $user.logout(true, function() {
-            $mdSidenav('left').close(); //@todo factory to avoid console log warning
+            if ($state.current.name != 'app.home') {
+                $timeout(function() {
+                    $page.toast('Você será redirecionado em 5 segundos...');
+                    $timeout(function() {
+                        window.location = '/';
+                    }, 5000);
+                }, 2000);
+            }
         });
     }
 })
@@ -1041,6 +783,256 @@ $translateProvider.translations("pt_BR", {
 });
 }]);
 
+'use strict';
+angular.module('core.app').provider('$app',
+    /**
+     * @ngdoc object
+     * @name app.kit.$appProvider
+     * @description
+     * Provém configurações para aplicação
+     **/
+    /*@ngInject*/
+    function $appProvider($stateProvider) {
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_config
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena configurações
+         **/
+        this._config = {};
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_layoutUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para layout
+         **/
+        this._layoutUrl = 'core/page/layout/layout.tpl.html';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_toolbarUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para toolbar
+         **/
+        this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_toolbarTitleUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para o toolbar title
+         **/
+        this._toolbarTitleUrl = 'core/page/toolbar/title/toolbarTitle.tpl.html';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_sidenavUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para sidenav
+         **/
+        this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_logo
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena logo
+         **/
+        this._logo = '';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_logoWhite
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena logo na versão branca
+         **/
+        this._logoWhite = '';
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#$get
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($app) {     
+         *      console.log($app.layoutUrl);
+         *      //prints the default layoutUrl
+         *      //ex.: "core/page/layout/layout.tpl.html"     
+         *      console.log($app.config('myOwnConfiguration'));
+         *      //prints the current config
+         *      //ex.: "{ configA: 54, configB: '=D' }"
+         * })
+         * </pre>
+         * @return {object} Retorna um objeto contendo valores das propriedades.
+         **/
+        this.$get = this.get = /*@ngInject*/ function($window, setting) {
+            return {
+                config: this._config,
+                layoutUrl: this._layoutUrl,
+                toolbarUrl: this._toolbarUrl,
+                toolbarTitleUrl: this._toolbarTitleUrl,
+                sidenavUrl: this._sidenavUrl,
+                logoWhite: this._logoWhite,
+                logo: this._logo,
+                /**
+                 * @ngdoc method
+                 * @name app.kit.$appProvider#storage
+                 * @methodOf app.kit.$appProvider
+                 * @description
+                 * Carregar/persistir dados
+                 * @param {string} type tipo da persistência (local/session)
+                 * @return {object} getter/setter para persistência de dados
+                 **/
+                storage: function(type) {
+                    var where = (type === 'local') ? 'localStorage' : 'sessionStorage';
+                    return {
+                        set: function(item) {
+                            return $window[where].setItem(setting.slug + '.app', angular.toJson(item));
+                        },
+                        get: function() {
+                            return angular.fromJson($window[where].getItem(setting.slug + '.app'));
+                        },
+                        destroy: function() {
+                            $window[where].removeItem(setting.slug + '.app');
+                        }
+                    }
+                }
+            }
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#config
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para configurações
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.config('myOwnConfiguration', {
+         *          configA: 54,
+         *          configB: '=D'
+         *      })
+         * })
+         * </pre>
+         * @param {string} key chave
+         * @param {*} val valor   
+         **/
+        this.config = function(key, val) {
+            if (val) return this._config[key] = val;
+            else return this._config[key];
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#logo
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para o path da logo
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.logo('assets/images/my-logo.png')
+         * })
+         * </pre>
+         * @param {string} value caminho para logomarca   
+         **/
+        this.logo = function(value) {
+            if (value) return this._logo = value;
+            else return this._logo;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#logoWhite
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para o path da logo na versão branca
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.logoWhite('assets/images/my-logo.png')
+         * })
+         * </pre>
+         * @param {string} value caminho para logomarca   
+         **/
+        this.logoWhite = function(value) {
+            if (value) return this._logoWhite = value;
+            else return this._logoWhite;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#layoutUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do layout
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.layoutUrl('app/layout/my-layout.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.layoutUrl = function(val) {
+            if (val) return this._layoutUrl = val;
+            else return this._layoutUrl;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#toolbarUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do toolbar
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.toolbarUrl = function(val) {
+            if (val) return this._toolbarUrl = val;
+            else return this._toolbarUrl;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#toolbarTitleUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do componente toolbar-title
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.toolbarTitleUrl = function(val) {
+            if (val) return this._toolbarTitleUrl = val;
+            else return this._toolbarTitleUrl;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#sidenavUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do sidenav
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.sidenavUrl('app/layout/my-sidenav.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.sidenavUrl = function(val) {
+            if (val) return this._sidenavUrl = val;
+            else return this._sidenavUrl;
+        };
+    });
  'use strict';
  angular.module('core.app').run( /*@ngInject*/ function() {});
 'use strict';
@@ -1105,7 +1097,6 @@ angular.module('core.page').provider('$page',
             // configuração para ativar/desativar a rota inicial
             'homeEnabled': true
         };
-
         /**
          * @ngdoc object
          * @name core.page.$pageProvider#_title
@@ -1239,7 +1230,15 @@ angular.module('core.page').provider('$page',
                 return this._config
             }
         }
-
+        this.closeMenu = function() {
+            return /*@ngInject*/ function($timeout, $auth, $menu) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        $menu.api().close();
+                    }, 500);
+                }
+            }
+        };
         /**
          * @ngdoc function
          * @name core.page.$pageProvider#title
@@ -1410,8 +1409,7 @@ angular.module('core.page').provider('$page',
                 }
             }
         }
-    }
-)
+    })
 'use strict';
 angular.module('core.user').provider('$user',
     /**
@@ -1551,7 +1549,7 @@ angular.module('core.user').provider('$user',
                             //
                             $auth.logout().then(function() {
                                 $rootScope.$emit('$UserLeft');
-                                if (alert) $page.toast(message, 3000);
+                                if (alert) $page.toast(message, 3000);                          
                                 if (typeof cb === 'function') return cb();
                             });
                         });
@@ -1563,6 +1561,30 @@ angular.module('core.user').provider('$user',
             if (key && val) return this._setting[key] = val;
             else if (key) return this._setting[key];
             else return this._setting;
+        }
+        this.isAuthed = function(redirect) {
+            return /*@ngInject*/ function isAuthed($auth, $state, $timeout, $user, $location) {
+                if ($auth.isAuthenticated()) {
+                    $timeout(function() {
+                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        this.isNotAuthed = function(redirect) {
+            return /*@ngInject*/ function isAuthed($auth, $state, $timeout, $user, $location) {
+                if (!$auth.isAuthenticated()) {
+                    $timeout(function() {
+                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
     });
 'use strict';
@@ -3948,7 +3970,8 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
         }
     }
 });
-angular.module("app.kit").run(["$templateCache", function($templateCache) {$templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">{{ \'USER_WELCOME_WARN\' | translate:\'{ firstName: \"\'+app.user().profile.firstName+\'\" }\' }}<a ui-sref=\"app.login\" ng-if=\"!app.user().isAuthed()\">entrar</a></div></div>");
+angular.module("app.kit").run(["$templateCache", function($templateCache) {$templateCache.put("core/home/home-secured.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><h1>Secured Home</h1><div class=\"text-center\">{{ \'USER_WELCOME_WARN\' | translate:\'{ firstName: \"\'+app.user().profile.firstName+\'\" }\' }}</div><a ui-sref=\"app.login\">entrar</a></div>");
+$templateCache.put("core/home/home.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding home\" layout=\"column\" flex=\"\"><div class=\"text-center\">{{ \'USER_WELCOME_WARN\' | translate:\'{ firstName: \"\'+app.user().profile.firstName+\'\" }\' }}</div><a ui-sref=\"app.login\" ng-if=\"!app.user().isAuthed()\">entrar</a> <a ui-sref=\"app.home-secured\">home secured</a></div>");
 $templateCache.put("core/login/login.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.user().isAuthed()\" flex=\"\"><div layout=\"column\" class=\"login\" layout-padding=\"\" flex=\"\"><login-form config=\"vm.config\" user=\"app.user\"></login-form></div></md-content>");
 $templateCache.put("core/page/page.tpl.html","<div class=\"main-wrapper anim-zoom-in md-padding page\" layout=\"column\" flex=\"\"><div class=\"text-center\">Olá moda foca <a ui-sref=\"app.login\">entrar</a></div></div><style>\r\n/*md-toolbar.main.not-authed, md-toolbar.main.not-authed .md-toolbar-tools {\r\n    min-height: 10px !important; height: 10px !important;\r\n}*/\r\n</style>");
 $templateCache.put("core/login/facebook/facebookLogin.tpl.html","<button flex=\"\" ng-click=\"fb.login()\" ng-disabled=\"app.page().load.status\" layout=\"row\"><i class=\"fa fa-facebook\"></i> <span>Entrar com Facebook</span></button>");
