@@ -132,13 +132,14 @@ angular.module('core.user').provider('$user',
                         // @todo doc broadcast $UserLeft
                         //     
                         $translate('USER_YOU_LEFT').then(function(message) {
-                            $rootScope.$emit('$UserLeft');
-                            if (alert) $page.toast(message, 3000);
                             //
                             // sign out user
                             //
-                            $auth.logout();
-                            if (typeof cb === 'function') return cb();
+                            $auth.logout().then(function() {
+                                $rootScope.$emit('$UserLeft');
+                                if (alert) $page.toast(message, 3000);
+                                if (typeof cb === 'function') return cb();
+                            });
                         });
                     });
                 }
