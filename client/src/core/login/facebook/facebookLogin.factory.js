@@ -33,19 +33,16 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
         var onSuccess = function(fbUser) {
             var onSuccess = function(response) {
                 $page.load.done();
-                var msg = false;
-                var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
-                if (response.data.new) {
-                    msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
-                    if ($login.config.signupWelcome) {
-                        msg = $login.config.signupWelcome.replace('@firstName', response.data.user.profile.firstName).replace('@appName', setting.name);
+                $user.instantiate(response.data.user, true, response.data.new ? msg : false, function() {
+                    var msg = false;
+                    var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
+                    if (response.data.new) {
+                        msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
                     }
-                }
-                $auth.setToken(response.data.token);
-                var userInstance = $user.instance();
-                if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true, msg);
-                if (cbSuccess) cbSuccess()
-                $rootScope.$emit('$LoginSuccess', response);
+                    $rootScope.$emit('$LoginSuccess', response.data);
+                    $auth.setToken(response.data.token);
+                    if (cbSuccess) cbSuccess();
+                });
             }
             var onFail = function(response) {
                 $page.load.done();

@@ -25,7 +25,7 @@ angular.module('core.login').controller('$LoginFormCtrl', /*@ngInject*/ function
         var onSuccess = function(response) {
             $page.load.done();
             $user.instantiate(response.data.user, true, false, function() {
-                $rootScope.$emit('$LoginSuccess', response);
+                $rootScope.$emit('$LoginSuccess', response.data);
             });
         }
         var onError = function(result) {
