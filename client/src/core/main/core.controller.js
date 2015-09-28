@@ -169,15 +169,15 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     // Behaviors
     //
     function logout() {
-        $user.logout(true, function() {
-            if ($state.current.name != 'app.home') {
-                $timeout(function() {
-                    $page.toast('Você será redirecionado em 5 segundos...');
-                    $timeout(function() {
-                        window.location = '/';
-                    }, 5000);
-                }, 2000);
-            }
+        $user.logout(true, function() {            
+            // if ($state.current.name != 'app.home') {
+            //     $timeout(function() {
+            //         $page.toast('Você será redirecionado em 5 segundos...');
+            //         $timeout(function() {
+            //             window.location = '/';
+            //         }, 5000);
+            //     }, 2000);
+            // }
         });
     }
 })

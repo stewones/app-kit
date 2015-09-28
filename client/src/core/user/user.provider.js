@@ -39,7 +39,7 @@ angular.module('core.user').provider('$user',
          * </pre>
          * @return {object} objeto correspondente a uma Factory
          **/
-        this.$get = this.get = /*@ngInject*/ function($User, $log, $auth, $page, $rootScope, $sessionStorage, $translate) {
+        this.$get = this.get = /*@ngInject*/ function($User, $app, $auth, $page, $rootScope, $sessionStorage, $translate) {
             return {
                 instance: function(user) {
                     if (user) return this._instance = user;
@@ -135,6 +135,12 @@ angular.module('core.user').provider('$user',
                     // delete token auth
                     //
                     $auth.removeToken();
+                    //
+                    // delete session redirection
+                    //
+                    $app.storage('session').set({
+                        locationRedirect: ''
+                    });
                     if (typeof cb === 'function') return cb();
                 },
                 /**
@@ -155,7 +161,7 @@ angular.module('core.user').provider('$user',
                             //
                             $auth.logout().then(function() {
                                 $rootScope.$emit('$UserLeft');
-                                if (alert) $page.toast(message, 3000);
+                                if (alert) $page.toast(message, 3000, 'top right');
                                 if (typeof cb === 'function') return cb();
                             });
                         });

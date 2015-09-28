@@ -104,4 +104,4 @@ gulp.task('lib-css', [], function() {
         path.join(conf.paths.src, '/core/**/*.css')
     ]).pipe($.concat('app-kit.css')).pipe($.size()).pipe(gulp.dest(path.join(conf.paths.build, '/')));
 });
-gulp.task('build', ['html', 'fonts', 'other', 'angular-charts-fonts', 'app']);
+gulp.task('build', ['html', 'fonts', 'other', 'angular-charts-fonts', 'app','i18n','build-lib']);
