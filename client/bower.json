@@ -2,8 +2,8 @@
   "name": "app-kit",
   "version": "1.0.0",
   "main": [
-    "build/client/app-kit.js",
-    "build/client/app-kit.css"
+    "build/app-kit.js",
+    "build/app-kit.css"
   ],
   "authors": [
     "Stewan Pacheco <talk@stpa.co>"
