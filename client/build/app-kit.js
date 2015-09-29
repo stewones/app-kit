@@ -709,6 +709,10 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
                 });
             } else {
                 //
+                // user not present, ensure that we dont have token
+                //
+                $auth.removeToken();
+                //
                 // then instantiate a new blank user
                 //
                 $user.instantiate({}, false, false, function() {
@@ -2996,73 +3000,6 @@ angular.module('core.utils').directive('addrForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
-    var vm = this;
-    vm.busy = false;
-    vm.get = get;
-
-    if (!$scope.address || typeof $scope.address != 'object')
-        $scope.address = {};
-
-    function get() {
-        var cep = $scope.ngModel;
-        if (cep && cep.toString().length === 8) {
-            var url = $scope.endpointUrl
-            vm.busy = true;
-            var onSuccess = function(response) {
-                vm.busy = false;
-                var addr = response.data;
-                if (addr.city || addr.state) {
-                    $scope.address.street = addr.street;
-                    $scope.address.district = addr.district;
-                    $scope.address.city = addr.city;
-                    $scope.address.state = addr.state;
-                } else {
-                    error();
-                }
-            }
-            var onError = function(response) {
-                vm.busy = false;
-                error();
-            }
-            $http.get(url + cep, {}).then(onSuccess, onError);
-        }
-
-        function error() {
-            return $page.toast('Não foi possível encontrar o endereço com este cep, por favor insira manualmente', 10000, 'top right');
-        }
-    }
-});
-'use strict';
-/**
- * @ngdoc directive
- * @name core.utils.directive:ceper
- * @restrict EA
- * @description 
- * Input para auto busca de cep
- * @element div
- * @param {object} ngModel model qye representa o campo numerico do cep
- * @param {object} address model que representa os campos de endereço (street, district, city, state)
- * @param {string} endpointUrl endereço do server que deverá responder o json no formato esperado
- **/
-angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
-    return {
-        scope: {
-            ngModel: '=',
-            address: '=',
-            templateUrl: '=',
-            endpointUrl: '@'
-        },
-        replace: true,
-        restrict: 'EA',
-        controller: 'CeperCtrl',
-        controllerAs: 'vm',
-        templateUrl: function(elem, attr) {
-            return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/ceper/ceper.tpl.html';
-        }
-    }
-});
-'use strict';
 angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
     return {
         restrict: 'EA',
@@ -3131,6 +3068,73 @@ angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function(
         controller: 'CompanyChooserCtrl',
         controllerAs: 'vm',
         templateUrl: 'core/utils/directives/companyChooser/companyChooser.tpl.html'
+    }
+});
+'use strict';
+angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
+    var vm = this;
+    vm.busy = false;
+    vm.get = get;
+
+    if (!$scope.address || typeof $scope.address != 'object')
+        $scope.address = {};
+
+    function get() {
+        var cep = $scope.ngModel;
+        if (cep && cep.toString().length === 8) {
+            var url = $scope.endpointUrl
+            vm.busy = true;
+            var onSuccess = function(response) {
+                vm.busy = false;
+                var addr = response.data;
+                if (addr.city || addr.state) {
+                    $scope.address.street = addr.street;
+                    $scope.address.district = addr.district;
+                    $scope.address.city = addr.city;
+                    $scope.address.state = addr.state;
+                } else {
+                    error();
+                }
+            }
+            var onError = function(response) {
+                vm.busy = false;
+                error();
+            }
+            $http.get(url + cep, {}).then(onSuccess, onError);
+        }
+
+        function error() {
+            return $page.toast('Não foi possível encontrar o endereço com este cep, por favor insira manualmente', 10000, 'top right');
+        }
+    }
+});
+'use strict';
+/**
+ * @ngdoc directive
+ * @name core.utils.directive:ceper
+ * @restrict EA
+ * @description 
+ * Input para auto busca de cep
+ * @element div
+ * @param {object} ngModel model qye representa o campo numerico do cep
+ * @param {object} address model que representa os campos de endereço (street, district, city, state)
+ * @param {string} endpointUrl endereço do server que deverá responder o json no formato esperado
+ **/
+angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
+    return {
+        scope: {
+            ngModel: '=',
+            address: '=',
+            templateUrl: '=',
+            endpointUrl: '@'
+        },
+        replace: true,
+        restrict: 'EA',
+        controller: 'CeperCtrl',
+        controllerAs: 'vm',
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/ceper/ceper.tpl.html';
+        }
     }
 });
 'use strict';
