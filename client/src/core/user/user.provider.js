@@ -147,9 +147,9 @@ angular.module('core.user').provider('$user',
                     //
                     // delete session redirection
                     //
-                    // $app.storage('session').set({
-                    //     locationRedirect: ''
-                    // });
+                    $app.storage('session').set({
+                        locationRedirect: ''
+                    });
                     if (typeof cb === 'function') return cb();
                 },
                 /**

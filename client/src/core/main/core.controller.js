@@ -118,15 +118,10 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
                 });
             } else {
                 //
-                // user not present, ensure that we dont have token
+                // then instantiate a new blank user
                 //
-                $user.destroy(function() {
-                    //
-                    // then instantiate a new blank user
-                    //
-                    $user.instantiate({}, false, false, function() {
-                        boot();
-                    });
+                $user.instantiate({}, false, false, function() {
+                    boot();
                 });
             }
         } else {
