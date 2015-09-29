@@ -485,7 +485,7 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
     }
 })
 angular.module("app.env",[]).constant("enviroment","development").constant("base",{url:"http://localhost:3000",urlUnsecure:"http://localhost:3000"}).constant("api",{url:"http://localhost:9000"});
-angular.module("app.setting",[]).constant("setting",{name:"app-kit",slug:"appkit",version:"1.0.0",title:"appkit",baseUrl:"https://app-kit.stpa.co",titleSeparator:" — ",description:"Skeleton for MEAN applications",copyright:"",google:{clientId:"",language:"en-EN"},facebook:{scope:"email",appId:"1572873089619343",appSecret:"4f4ddc65318b2222773dc8ceda3e107d",language:"en-EN"},ogLocale:"en_EN",ogSiteName:"app-kit",ogTitle:"app-kit",ogDescription:"Skeleton for MEAN applications",ogUrl:"https://app-kit.stpa.co",ogImage:""});
+angular.module("app.setting",[]).constant("setting",{name:"app-kit",slug:"appkit",version:"1.0.0",title:"appkit",baseUrl:"https://app-kit.stpa.co",titleSeparator:" — ",description:"Skeleton for MEAN applications",keywords:"app kit js, mongodb, express, angular and node",copyright:"",google:{clientId:"",language:"en-EN"},facebook:{scope:"email",appId:"1572873089619343",appSecret:"4f4ddc65318b2222773dc8ceda3e107d",language:"en-EN"},ogLocale:"en_EN",ogSiteName:"app-kit",ogTitle:"app-kit",ogDescription:"Skeleton for MEAN applications",ogUrl:"https://app-kit.stpa.co",ogImage:""});
 'use strict';
 angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, $translateProvider, enviroment, setting, api) {
     //
@@ -618,6 +618,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     //
     $page.title(setting.title);
     $page.description(setting.description);
+    $page.keywords(setting.keywords);
     //
     // OPEN GRAPH
     //
@@ -1138,6 +1139,14 @@ angular.module('core.page').provider('$page',
         this._description = '';
         /**
          * @ngdoc object
+         * @name core.page.$pageProvider#_keywords
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * store keywords
+         **/
+        this._keywords = '';
+        /**
+         * @ngdoc object
          * @name core.page.$pageProvider#_ogSiteName
          * @propertyOf core.page.$pageProvider
          * @description 
@@ -1216,6 +1225,7 @@ angular.module('core.page').provider('$page',
                     toast: toast($mdToast),
                     title: title,
                     description: description,
+                    keywords: keywords,
                     ogLocale: ogLocale,
                     ogSiteName: ogSiteName,
                     ogTitle: ogTitle,
@@ -1286,6 +1296,18 @@ angular.module('core.page').provider('$page',
         function description(value) {
             if (value) return this._description = value;
             else return this._description;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#keywords
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter for keywords
+         * @param {string} value    
+         **/
+        function keywords(value) {
+            if (value) return this._keywords = value;
+            else return this._keywords;
         }
         /**
          * @ngdoc function
@@ -3011,66 +3033,6 @@ angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ funct
     }
 });
 'use strict';
-angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, $auth, lodash) {
-    var vm = this,
-        _ = lodash;
-    vm.companyid = $scope.companyid;
-    //external scope databind
-    $scope.$watch('companyid', function(nv, ov) {
-        if (nv != ov) {
-            vm.companyid = nv;
-        }
-        addAllOption();
-    });
-    //internal scope databind
-    $scope.$watch('vm.companyid', function(nv, ov) {
-        if (nv != ov) {
-            $scope.companyid = nv;
-            $rootScope.$emit('$CompanyIdUpdated', nv, ov);
-        }
-    });
-    //
-    // Add options for all companies
-    // https://github.com/esgrupo/livejob/issues/23
-    //
-    function addAllOption() {
-        if ($scope.showAllOption && $user.instance().role && $user.instance().role.length > 1) {
-            var allcompanies = [],
-                already = _.findIndex($scope.companies, function(row) {
-                    return row.company.name === 'Todas Empresas';
-                });
-            if (already === -1) {
-                $user.instance().current('companies').forEach(function(row) {
-                    allcompanies.push(row.company._id)
-                })
-                $scope.companies.push({
-                    company: {
-                        name: 'Todas Empresas',
-                        _id: allcompanies
-                    }
-                });
-            }
-        }
-    }
-});
-'use strict';
-angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function() {
-    return {
-        scope: {
-            companyid: '=',
-            companies: '=',
-            hideMe: '=',
-            placeholder: '=',
-            showAllOption: '=' //mostrar opção "todas empresas"
-        },
-        replace: true,
-        restrict: 'EA',
-        controller: 'CompanyChooserCtrl',
-        controllerAs: 'vm',
-        templateUrl: 'core/utils/directives/companyChooser/companyChooser.tpl.html'
-    }
-});
-'use strict';
 angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
     var vm = this;
     vm.busy = false;
@@ -3135,6 +3097,66 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         templateUrl: function(elem, attr) {
             return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/ceper/ceper.tpl.html';
         }
+    }
+});
+'use strict';
+angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, $auth, lodash) {
+    var vm = this,
+        _ = lodash;
+    vm.companyid = $scope.companyid;
+    //external scope databind
+    $scope.$watch('companyid', function(nv, ov) {
+        if (nv != ov) {
+            vm.companyid = nv;
+        }
+        addAllOption();
+    });
+    //internal scope databind
+    $scope.$watch('vm.companyid', function(nv, ov) {
+        if (nv != ov) {
+            $scope.companyid = nv;
+            $rootScope.$emit('$CompanyIdUpdated', nv, ov);
+        }
+    });
+    //
+    // Add options for all companies
+    // https://github.com/esgrupo/livejob/issues/23
+    //
+    function addAllOption() {
+        if ($scope.showAllOption && $user.instance().role && $user.instance().role.length > 1) {
+            var allcompanies = [],
+                already = _.findIndex($scope.companies, function(row) {
+                    return row.company.name === 'Todas Empresas';
+                });
+            if (already === -1) {
+                $user.instance().current('companies').forEach(function(row) {
+                    allcompanies.push(row.company._id)
+                })
+                $scope.companies.push({
+                    company: {
+                        name: 'Todas Empresas',
+                        _id: allcompanies
+                    }
+                });
+            }
+        }
+    }
+});
+'use strict';
+angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function() {
+    return {
+        scope: {
+            companyid: '=',
+            companies: '=',
+            hideMe: '=',
+            placeholder: '=',
+            showAllOption: '=' //mostrar opção "todas empresas"
+        },
+        replace: true,
+        restrict: 'EA',
+        controller: 'CompanyChooserCtrl',
+        controllerAs: 'vm',
+        templateUrl: 'core/utils/directives/companyChooser/companyChooser.tpl.html'
     }
 });
 'use strict';

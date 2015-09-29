@@ -7,6 +7,7 @@
         "baseUrl": "https://app-kit.stpa.co",
         "titleSeparator": " — ",
         "description": "Skeleton for MEAN applications",
+        "keywords": "app kit js, mongodb, express, angular and node",
         "copyright": "",
         "google": {
             "clientId": "",

@@ -27,6 +27,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     //
     $page.title(setting.title);
     $page.description(setting.description);
+    $page.keywords(setting.keywords);
     //
     // OPEN GRAPH
     //

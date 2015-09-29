@@ -37,6 +37,14 @@ angular.module('core.page').provider('$page',
         this._description = '';
         /**
          * @ngdoc object
+         * @name core.page.$pageProvider#_keywords
+         * @propertyOf core.page.$pageProvider
+         * @description 
+         * store keywords
+         **/
+        this._keywords = '';
+        /**
+         * @ngdoc object
          * @name core.page.$pageProvider#_ogSiteName
          * @propertyOf core.page.$pageProvider
          * @description 
@@ -115,6 +123,7 @@ angular.module('core.page').provider('$page',
                     toast: toast($mdToast),
                     title: title,
                     description: description,
+                    keywords: keywords,
                     ogLocale: ogLocale,
                     ogSiteName: ogSiteName,
                     ogTitle: ogTitle,
@@ -185,6 +194,18 @@ angular.module('core.page').provider('$page',
         function description(value) {
             if (value) return this._description = value;
             else return this._description;
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#keywords
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter for keywords
+         * @param {string} value    
+         **/
+        function keywords(value) {
+            if (value) return this._keywords = value;
+            else return this._keywords;
         }
         /**
          * @ngdoc function
