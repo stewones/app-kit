@@ -73,7 +73,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
         }
         $rootScope.$Unauthorized = true;
         $user.destroy(function() {
-            window.location.href = '/login/lost/session/';
+            return window.location.href = '/login/lost/session/';
         });
     });
     //
@@ -91,7 +91,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             //
             // Do redirection
             //
-            window.location = locationRedirect;
+            return window.location = locationRedirect;
         }
         //
         // Reset the $rootScope.$Unauthorized
