@@ -147,9 +147,9 @@ angular.module('core.user').provider('$user',
                     //
                     // delete session redirection
                     //
-                    $app.storage('session').set({
-                        locationRedirect: ''
-                    });
+                    // $app.storage('session').set({
+                    //     locationRedirect: ''
+                    // });
                     if (typeof cb === 'function') return cb();
                 },
                 /**
@@ -200,7 +200,7 @@ angular.module('core.user').provider('$user',
             return function isAuthed($auth, $state, $timeout, $user, $location) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
-                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                        window.location = redirect || $user.setting.loginSuccessRedirect || '/';
                     });
                     return true;
                 } else {
@@ -212,7 +212,7 @@ angular.module('core.user').provider('$user',
             return function isAuthed($auth, $state, $timeout, $user, $location) {
                 if (!$auth.isAuthenticated()) {
                     $timeout(function() {
-                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                        window.location = redirect || $user.setting.loginSuccessRedirect || '/';
                     });
                     return true;
                 } else {

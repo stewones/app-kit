@@ -49,8 +49,6 @@ angular.module('core.page', [
     'directives.inputMatch'
 ]);
 'use strict';
-angular.module('core.utils', ['core.page', 'angularMoment', 'ImageCropper']);
-'use strict';
 angular.module('core.user', [
   'ui.router',
   'satellizer',
@@ -60,6 +58,8 @@ angular.module('core.user', [
   'core.page'
 ]);
 
+'use strict';
+angular.module('core.utils', ['core.page', 'angularMoment', 'ImageCropper']);
 'use strict';
 angular.module('facebook.login', [
     'facebook',
@@ -1435,118 +1435,6 @@ angular.module('core.page').provider('$page',
         }
     })
 'use strict';
-/* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
-angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
-    var vm = this;
-    return {
-        isImg: isImg,      
-        brStates: brStates,
-        age: age
-    }
-
-    function isImg(src) {
-        var deferred = $q.defer();
-        var image = new Image();
-        image.onerror = function() {
-            deferred.resolve(false);
-        };
-        image.onload = function() {
-            deferred.resolve(true);
-        };
-        image.src = src;
-        return deferred.promise;
-    }
-
-    function age(date) {
-        return moment(date).fromNow(true);
-    }
-
-    function brStates() {
-        return [{
-            value: "AC",
-            name: "Acre"
-        }, {
-            value: "AL",
-            name: "Alagoas"
-        }, {
-            value: "AM",
-            name: "Amazonas"
-        }, {
-            value: "AP",
-            name: "Amapá"
-        }, {
-            value: "BA",
-            name: "Bahia"
-        }, {
-            value: "CE",
-            name: "Ceará"
-        }, {
-            value: "DF",
-            name: "Distrito Federal"
-        }, {
-            value: "ES",
-            name: "Espírito Santo"
-        }, {
-            value: "GO",
-            name: "Goiás"
-        }, {
-            value: "MA",
-            name: "Maranhão"
-        }, {
-            value: "MT",
-            name: "Mato Grosso"
-        }, {
-            value: "MS",
-            name: "Mato Grosso do Sul"
-        }, {
-            value: "MG",
-            name: "Minas Gerais"
-        }, {
-            value: "PA",
-            name: "Pará"
-        }, {
-            value: "PB",
-            name: "Paraíba"
-        }, {
-            value: "PR",
-            name: "Paraná"
-        }, {
-            value: "PE",
-            name: "Pernambuco"
-        }, {
-            value: "PI",
-            name: "Piauí"
-        }, {
-            value: "RJ",
-            name: "Rio de Janeiro"
-        }, {
-            value: "RN",
-            name: "Rio Grande do Norte"
-        }, {
-            value: "RO",
-            name: "Rondônia"
-        }, {
-            value: "RS",
-            name: "Rio Grande do Sul"
-        }, {
-            value: "RR",
-            name: "Roraima"
-        }, {
-            value: "SC",
-            name: "Santa Catarina"
-        }, {
-            value: "SE",
-            name: "Sergipe"
-        }, {
-            value: "SP",
-            name: "São Paulo"
-        }, {
-            value: "TO",
-            name: "Tocantins"
-        }];
-    }
-})
-'use strict';
 angular.module('core.user').provider('$user',
     /**
      * @ngdoc object
@@ -1695,9 +1583,9 @@ angular.module('core.user').provider('$user',
                     //
                     // delete session redirection
                     //
-                    $app.storage('session').set({
-                        locationRedirect: ''
-                    });
+                    // $app.storage('session').set({
+                    //     locationRedirect: ''
+                    // });
                     if (typeof cb === 'function') return cb();
                 },
                 /**
@@ -1748,7 +1636,7 @@ angular.module('core.user').provider('$user',
             return function isAuthed($auth, $state, $timeout, $user, $location) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
-                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                        window.location = redirect || $user.setting.loginSuccessRedirect || '/';
                     });
                     return true;
                 } else {
@@ -1760,7 +1648,7 @@ angular.module('core.user').provider('$user',
             return function isAuthed($auth, $state, $timeout, $user, $location) {
                 if (!$auth.isAuthenticated()) {
                     $timeout(function() {
-                        window.location = redirect || $user.setting.loginSuccessRedirect;
+                        window.location = redirect || $user.setting.loginSuccessRedirect || '/';
                     });
                     return true;
                 } else {
@@ -1814,6 +1702,118 @@ angular.module('core.user').service('$User', /*@ngInject*/ function($auth, lodas
     }
     return $User;
 });
+'use strict';
+/* jshint undef: false, unused: false, shadow:true, quotmark: false, -W110,-W117, eqeqeq: false */
+angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
+    var vm = this;
+    return {
+        isImg: isImg,      
+        brStates: brStates,
+        age: age
+    }
+
+    function isImg(src) {
+        var deferred = $q.defer();
+        var image = new Image();
+        image.onerror = function() {
+            deferred.resolve(false);
+        };
+        image.onload = function() {
+            deferred.resolve(true);
+        };
+        image.src = src;
+        return deferred.promise;
+    }
+
+    function age(date) {
+        return moment(date).fromNow(true);
+    }
+
+    function brStates() {
+        return [{
+            value: "AC",
+            name: "Acre"
+        }, {
+            value: "AL",
+            name: "Alagoas"
+        }, {
+            value: "AM",
+            name: "Amazonas"
+        }, {
+            value: "AP",
+            name: "Amapá"
+        }, {
+            value: "BA",
+            name: "Bahia"
+        }, {
+            value: "CE",
+            name: "Ceará"
+        }, {
+            value: "DF",
+            name: "Distrito Federal"
+        }, {
+            value: "ES",
+            name: "Espírito Santo"
+        }, {
+            value: "GO",
+            name: "Goiás"
+        }, {
+            value: "MA",
+            name: "Maranhão"
+        }, {
+            value: "MT",
+            name: "Mato Grosso"
+        }, {
+            value: "MS",
+            name: "Mato Grosso do Sul"
+        }, {
+            value: "MG",
+            name: "Minas Gerais"
+        }, {
+            value: "PA",
+            name: "Pará"
+        }, {
+            value: "PB",
+            name: "Paraíba"
+        }, {
+            value: "PR",
+            name: "Paraná"
+        }, {
+            value: "PE",
+            name: "Pernambuco"
+        }, {
+            value: "PI",
+            name: "Piauí"
+        }, {
+            value: "RJ",
+            name: "Rio de Janeiro"
+        }, {
+            value: "RN",
+            name: "Rio Grande do Norte"
+        }, {
+            value: "RO",
+            name: "Rondônia"
+        }, {
+            value: "RS",
+            name: "Rio Grande do Sul"
+        }, {
+            value: "RR",
+            name: "Roraima"
+        }, {
+            value: "SC",
+            name: "Santa Catarina"
+        }, {
+            value: "SE",
+            name: "Sergipe"
+        }, {
+            value: "SP",
+            name: "São Paulo"
+        }, {
+            value: "TO",
+            name: "Tocantins"
+        }];
+    }
+})
 'use strict';
 angular.module('facebook.login').config(function(FacebookProvider, setting) {
     FacebookProvider.init({
@@ -4073,14 +4073,14 @@ $templateCache.put("core/login/google/googleLogin.tpl.html","<google-plus-signin
 $templateCache.put("core/login/register/lost.tpl.html","<div layout=\"row\" class=\"login-lost\" ng-if=\"!app.user().isAuthed()\"><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"!vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"email\" type=\"email\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.page().load.status\" ng-click=\"!lost.$invalid?vm.lost(email):false\">Recuperar</md-button></div></div><div layout=\"column\" class=\"login\" flex=\"\" ng-if=\"vm.userHash\"><div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><h4 class=\"text-center\">Entre com sua nova senha</h4><md-content class=\"md-padding\"><form name=\"lost\" novalidate=\"\"><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"senha\" type=\"password\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Repetir senha</label> <input ng-model=\"senhaConfirm\" name=\"senhaConfirm\" type=\"password\" match=\"senha\" required=\"\"></md-input-container></div></form></md-content><md-button class=\"md-primary md-raised entrar\" ng-disabled=\"lost.$invalid||app.page().load.status\" ng-click=\"!lost.$invalid?vm.change(senha):false\">Alterar</md-button></div><div ng-show=\"lost.senhaConfirm.$error.match\" class=\"warn\"><span>(!) As senhas não conferem</span></div></div></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
 $templateCache.put("core/login/register/register.tpl.html","<md-content class=\"md-padding anim-zoom-in login\" layout=\"row\" layout-sm=\"column\" ng-if=\"!app.user().isAuthed()\" flex=\"\"><div layout=\"column\" class=\"register\" layout-padding=\"\" flex=\"\"><register-form config=\"vm.config\"></register-form></div></md-content>");
 $templateCache.put("core/login/register/registerForm.tpl.html","<div class=\"wrapper md-whiteframe-z1\"><img class=\"avatar\" src=\"assets/images/avatar-m.jpg\"><md-content><form name=\"registerForm\" novalidate=\"\"><div layout=\"row\" layout-sm=\"column\" class=\"nome\"><i hide-sm=\"\" class=\"fa fa-smile-o\"></i><md-input-container flex=\"\"><label>Seu nome</label> <input ng-model=\"sign.firstName\" type=\"text\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Sobrenome</label> <input ng-model=\"sign.lastName\" type=\"text\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"email\"><i class=\"fa fa-at\"></i><md-input-container flex=\"\"><label>Email</label> <input ng-model=\"sign.email\" type=\"email\" required=\"\"></md-input-container></div><div layout=\"row\" class=\"senha\"><i class=\"fa fa-key\"></i><md-input-container flex=\"\"><label>Senha</label> <input ng-model=\"sign.password\" type=\"password\" required=\"\"></md-input-container></div></form><div layout=\"row\" layout-padding=\"\"><button flex=\"\" class=\"entrar\" ng-disabled=\"registerForm.$invalid||app.page().load.status\" ng-click=\"register(sign)\">Registrar</button><facebook-login user=\"user\"></facebook-login></div></md-content></div><div layout=\"column\"><a flex=\"\" class=\"lost\" ui-sref=\"app.pages({slug:\'terms\'})\"><i class=\"fa fa-warning\"></i> Concordo com os termos</a></div><style>\r\nbody, html {  overflow: auto;}\r\n</style>");
-$templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.user().isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\"><div ui-view=\"content\" class=\"anim-in-out anim-slide-below-fade\"></div></md-content></div>");
 $templateCache.put("core/page/loader/loader.tpl.html","<div class=\"page-loader\" ng-class=\"{\'show\':app.page().load.status}\"><md-progress-linear md-mode=\"indeterminate\"></md-progress-linear></div>");
+$templateCache.put("core/page/layout/layout.tpl.html","<md-sidenav ui-view=\"sidenav\" class=\"page-menu md-sidenav-left md-whiteframe-z2\" md-component-id=\"left\" md-is-locked-open=\"$mdMedia(\'gt-md\')\" ng-if=\"app.user().isAuthed()\"></md-sidenav><div layout=\"column\" flex=\"\" class=\"main-content-wrapper\"><loader></loader><md-toolbar ui-view=\"toolbar\" class=\"main\" md-scroll-shrink=\"\" md-shrink-speed-factor=\"0.25\"></md-toolbar><md-content class=\"main-content\"><div ui-view=\"content\" class=\"anim-in-out anim-slide-below-fade\"></div></md-content></div>");
 $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'active\' : isSelected()||vm.state.current.name === section.state}\" ng-href=\"{{section.url}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.iconMi}}</md-icon><span>{{section | menuHuman }}</span></md-button>");
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu().sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu().isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu().isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting().copyright }} © {{ app.year() }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu().open()\" ng-if=\"app.user().isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state().current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.user().isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
-$templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
+$templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
 $templateCache.put("core/utils/directives/addrForm/addrForm.tpl.html","<form name=\"handleForm\" class=\"addr-form\"><div layout=\"row\" layout-sm=\"column\"><ceper endpoint-url=\"{{vm.endpointCepUrl}}\" ng-model=\"ngModel.cep\" address=\"ngModel\"></ceper><md-input-container flex=\"\"><label>Endereço</label> <input ng-model=\"ngModel.street\" required=\"\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Número</label> <input type=\"number\" ng-model=\"ngModel.num\"></md-input-container><md-input-container flex=\"\"><label>Bairro</label> <input ng-model=\"ngModel.district\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Complemento</label> <input ng-model=\"ngModel.comp\" md-maxlength=\"50\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Cidade</label> <input ng-model=\"ngModel.city\" required=\"\"></md-input-container><md-select ng-model=\"ngModel.state\" placeholder=\"Estado\" flex=\"\" required=\"\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.states\">{{ opt.name }}</md-option></md-select></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-if=\"endpointUrl\" ng-click=\"vm.save()\" ng-disabled=\"vm.busy||handleForm.$invalid||!handleForm.$dirty||vm.pristine()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form>");
