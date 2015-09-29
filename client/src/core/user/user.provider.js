@@ -141,6 +141,10 @@ angular.module('core.user').provider('$user',
                     //
                     $auth.removeToken();
                     //
+                    // delete user session
+                    //
+                    $sessionStorage.$reset();
+                    //
                     // delete session redirection
                     //
                     $app.storage('session').set({
