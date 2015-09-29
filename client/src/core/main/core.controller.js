@@ -82,9 +82,8 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     // When user in...
     //
     $rootScope.$on('$LoginSuccess', function(ev, response) {
-        var appSession = $app.storage('session').get();
-        if (appSession && appSession.locationRedirect && appSession.locationRedirect != '/login/') {
-            var redirect = appSession.locationRedirect;
+        var locationRedirect = $app.storage('session').get().locationRedirect;
+        if (locationRedirect && locationRedirect != '/login/') {
             //
             // Reset locationRedirect
             //
@@ -94,7 +93,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             //
             // Do redirection
             //
-            window.location = redirect;
+            window.location = locationRedirect;
         }
         //
         // Reset the $rootScope.$Unauthorized
@@ -162,6 +161,16 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             }
             app.year = function() { //@todo break changes
                 return moment().format('YYYY');
+            };
+            //
+            // Warning
+            //
+            var warning = $app.storage('session').get().warning;
+            if (warning) {
+                $page.toast(warning, 5000, 'top right');
+                $app.storage('session').set({
+                    warning: ''
+                });
             }
         }
     }
@@ -169,7 +178,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     // Behaviors
     //
     function logout() {
-        $user.logout(true, function() {            
+        $user.logout(true, function() {
             // if ($state.current.name != 'app.home') {
             //     $timeout(function() {
             //         $page.toast('Você será redirecionado em 5 segundos...');

@@ -83,7 +83,7 @@ angular.module('core.app').provider('$app',
          * </pre>
          * @return {object} Retorna um objeto contendo valores das propriedades.
          **/
-        this.$get = this.get = /*@ngInject*/ function($window, setting) {
+        this.$get = this.get = /*@ngInject*/ function($window, $sessionStorage, $localStorage, setting) {
             return {
                 config: this._config,
                 layoutUrl: this._layoutUrl,
@@ -102,16 +102,32 @@ angular.module('core.app').provider('$app',
                  * @return {object} getter/setter para persistência de dados
                  **/
                 storage: function(type) {
-                    var where = (type === 'local') ? 'localStorage' : 'sessionStorage';
+                    var $storage;
+                    if (type === 'local') {
+                        if (!$localStorage.app) reset();
+                        $storage = $localStorage.app;
+                    } else {
+                        if (!$sessionStorage.app) reset();
+                        $storage = $sessionStorage.app;
+                    }
+
+                    function reset() {
+                        if (type === 'local') {
+                            $localStorage.app = {};
+                        } else {
+                            $sessionStorage.app = {};
+                        }
+                    }
                     return {
                         set: function(item) {
-                            return $window[where].setItem(setting.slug + '.app', angular.toJson(item));
+                            angular.extend($storage, item)
+                            return $storage;
                         },
                         get: function() {
-                            return angular.fromJson($window[where].getItem(setting.slug + '.app'));
+                            return $storage;
                         },
                         destroy: function() {
-                            $window[where].removeItem(setting.slug + '.app');
+                            reset();
                         }
                     }
                 }

@@ -2,6 +2,22 @@
 angular.module('core.home', ['core.user']);
 'use strict';
 /**
+ * @ngdoc overview
+ * @name core.app
+ * @description
+ **/
+angular.module('core.app', [
+    'app.setting',
+    'app.env',
+    'core.i18n',
+    'core.utils',
+    'core.home',
+    'core.page',
+    'core.login',
+    'core.user'
+]);
+'use strict';
+/**
     * @ngdoc overview
     * @name core.login
     * @requires app.env
@@ -17,22 +33,6 @@ angular.module('core.login', [
     'satellizer',
     'google.login',
     'facebook.login'
-]);
-'use strict';
-/**
- * @ngdoc overview
- * @name core.app
- * @description
- **/
-angular.module('core.app', [
-    'app.setting',
-    'app.env',
-    'core.i18n',
-    'core.utils',
-    'core.home',
-    'core.page',
-    'core.login',
-    'core.user'
 ]);
 'use strict';
 angular.module('core.page', [
@@ -141,17 +141,599 @@ angular.module('core.home').config( /*@ngInject*/ function($pageProvider, $state
     $locationProvider.html5Mode(true);
 })
 'use strict';
-angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($rootScope, $page, $translate, $user, setting) {
+angular.module('core.home').controller('$HomeCtrl', /*@ngInject*/ function($rootScope, $page, $translate, $user, $state, $app, setting) {
     var vm = this;
     //
     // SEO
     //
     $page.title(setting.name + setting.titleSeparator + ' Home');
-   
     bootstrap();
-
-    function bootstrap() {}
+    function bootstrap() {
+        if ($state.current.name === 'app.home-secured') {
+            // $app.storage('session').set({
+            //     locationRedirect: '/home-secured/'
+            // });
+           // $app.storage('session').destroy();
+        }
+    }
 });
+angular.module("app.env",[]).constant("enviroment","development").constant("base",{url:"http://localhost:3000",urlUnsecure:"http://localhost:3000"}).constant("api",{url:"http://localhost:9000"});
+angular.module("app.setting",[]).constant("setting",{name:"app-kit",slug:"appkit",version:"1.0.0",title:"appkit",baseUrl:"https://app-kit.stpa.co",titleSeparator:" — ",description:"Skeleton for MEAN applications",copyright:"",google:{clientId:"",language:"en-EN"},facebook:{scope:"email",appId:"1572873089619343",appSecret:"4f4ddc65318b2222773dc8ceda3e107d",language:"en-EN"},ogLocale:"en_EN",ogSiteName:"app-kit",ogTitle:"app-kit",ogDescription:"Skeleton for MEAN applications",ogUrl:"https://app-kit.stpa.co",ogImage:""});
+'use strict';
+angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, $translateProvider, enviroment, setting, api) {
+    //
+    // States & Routes
+    //    
+    $stateProvider.state('app', {
+        abstract: true,
+        views: {
+            'app': {
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider.layoutUrl();
+                },
+            },
+            'toolbar@app': {
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider.toolbarUrl();
+                }
+            },
+            'sidenav@app': {
+                templateUrl: /*@ngInject*/ function() {
+                    return $appProvider.sidenavUrl();
+                }
+            }
+        }
+    });
+    $locationProvider.html5Mode(true);
+    //
+    // Redirect Trailing Slash
+    //
+    $urlMatcherFactoryProvider.strictMode(false);
+    $urlRouterProvider.rule(function($injector, $location) {
+        //
+        // if the app was not loaded inside iframe (url with #iframe)
+        //
+        if ($location.hash() !== 'iframe') {
+            var path = $location.url();
+            // check to see if the path already has a slash where it should be
+            if (path[path.length - 1] === '/' || path.indexOf('/?') > -1) {
+                return;
+            }
+            if (path.indexOf('?') > -1) {
+                return path.replace('?', '/?');
+            }
+            return path + '/';
+        }
+    });
+    //
+    // Intercept Http
+    //
+    $httpProvider.interceptors.push('HttpInterceptor');
+    //
+    // Theme options
+    //
+    $mdThemingProvider.theme('default').primaryPalette('indigo', {
+        // 'hue-1': '600'
+    }).accentPalette('deep-orange', {
+        // 'hue-1': '600'
+    });
+    //
+    // Dark theme
+    //
+    $mdThemingProvider.theme('darkness').primaryPalette('cyan').dark();
+    //
+    // User options
+    //
+    $userProvider.setting('roleForCompany', 'user');
+    $userProvider.setting('loginSuccessRedirect', '/');
+    $userProvider.setting('loginSuccessRedirectState', 'app.home');
+    //
+    // Auth options
+    //
+    $authProvider.httpInterceptor = true; // Add Authorization header to HTTP request
+    $authProvider.loginOnSignup = true;
+    $authProvider.loginRedirect = '/';
+    $authProvider.logoutRedirect = '/login/';
+    $authProvider.signupRedirect = '/login/';
+    $authProvider.loginUrl = api.url + '/auth/local/';
+    $authProvider.signupUrl = api.url + '/api/users/';
+    $authProvider.loginRoute = '/login/';
+    $authProvider.signupRoute = '/login/';
+    $authProvider.tokenRoot = false; // set the token parent element if the token is not the JSON root
+    $authProvider.tokenName = 'token';
+    $authProvider.tokenPrefix = setting.slug + '.session'; // Local Storage name prefix
+    $authProvider.unlinkUrl = '/auth/unlink/';
+    $authProvider.unlinkMethod = 'get';
+    $authProvider.authHeader = 'Authorization';
+    $authProvider.withCredentials = true; // Send POST request with credentials
+    //$authProvider.storageType = 'sessionStorage';
+    //
+    // Storage options
+    //
+    $sessionStorageProvider.setKeyPrefix(setting.slug + '.');
+    //
+    // i18n options
+    //
+    $translateProvider.preferredLanguage('en_US');
+    $translateProvider.useSanitizeValueStrategy('escape');
+    //
+    // Debug options
+    //
+    if (enviroment === 'production') $logProvider.debugEnabled(false);
+    else $logProvider.debugEnabled(true);
+});
+'use strict';
+/* global moment */
+/**
+ * @ngdoc object
+ * @name app.kit.controller:$AppCtrl
+ * @description
+ * Controlador da aplicação
+ * @requires setting
+ * @requires environment
+ * @requires $rootScope
+ * @requires $scope
+ * @requires $state
+ * @requires $location
+ * @requires $mdSidenav
+ * @requires $timeout
+ * @requires $auth
+ * @requires core.page.factory:$page
+ * @requires core.user.service:$User
+ * @requires core.user.factory:$user
+ * @requires core.login.$loginProvider
+ * @requires core.page.factory:$menu
+ **/
+angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app, $sessionStorage) {
+    var app = this;
+    //
+    // SEO
+    //
+    $page.title(setting.title);
+    $page.description(setting.description);
+    //
+    // OPEN GRAPH
+    //
+    $page.ogLocale(setting.ogLocale);
+    $page.ogSiteName(setting.ogSiteName);
+    $page.ogTitle(setting.ogTitle);
+    $page.ogDescription(setting.ogDescription);
+    $page.ogUrl(setting.ogUrl);
+    $page.ogImage(setting.ogImage);
+    $page.ogSection(setting.ogSection);
+    $page.ogTag(setting.ogTag);
+    //
+    // Moment
+    //
+    moment.locale('pt_BR');
+    //
+    // Events
+    //  
+    $rootScope.$on('$AppReboot', function() {
+        bootstrap();
+    });
+    $rootScope.$on('$CompanyIdUpdated', function(e, nv, ov) {
+        if (nv != ov) {
+            //quando alterar company, atualizar factory  
+            var company = $user.instance().filterCompany(nv);
+            $user.instance().current('company', company);
+            $user.instance().session('company', {
+                _id: company._id,
+                name: company.name
+            });
+            $menu.api().close();
+            bootstrap();
+        }
+    });
+    $rootScope.$on('$Unauthorized', function(ev, status) {
+        //
+        // Persists current location to execute redirection after login
+        // - Only if server status is 401
+        //
+        if (status === 401) {
+            $app.storage('session').set({
+                locationRedirect: $location.url()
+            });
+        }
+        $rootScope.$Unauthorized = true;
+        var userInstance = $user.instance();
+        if (typeof userInstance.destroy === 'function') {
+            $user.instance().destroy();
+            window.location.href = '/login/lost/session/';
+        }
+    });
+    //
+    // When user in...
+    //
+    $rootScope.$on('$LoginSuccess', function(ev, response) {
+        var locationRedirect = $app.storage('session').get().locationRedirect;
+        if (locationRedirect && locationRedirect != '/login/') {
+            //
+            // Reset locationRedirect
+            //
+            $app.storage('session').set({
+                locationRedirect: ''
+            });
+            //
+            // Do redirection
+            //
+            window.location = locationRedirect;
+        }
+        //
+        // Reset the $rootScope.$Unauthorized
+        //
+        $rootScope.$Unauthorized = false;
+        $location.path($user.setting.loginSuccessRedirect);
+    });
+    //
+    // BOOTSTRAP with a new user
+    //  
+    bootstrap(true);
+
+    function bootstrap(withNewUser) {
+        //
+        // boot with new user
+        //
+        if (withNewUser) {
+            //
+            // boot from storage
+            //
+            if ($sessionStorage.user && $sessionStorage.user.id && $auth.getToken()) {
+                $user.instantiate($sessionStorage.user, false, false, function() {
+                    boot();
+                });
+            } else {
+                //
+                // user not present, ensure that we dont have token
+                //
+                $user.destroy(function() {
+                    //
+                    // then instantiate a new blank user
+                    //
+                    $user.instantiate({}, false, false, function() {
+                        boot();
+                    });
+                });
+            }
+        } else {
+            boot();
+        }
+        //
+        // export default states and behaviors to view
+        //
+        function boot() {
+            app.user = function() { //@todo break changes
+                return $user.instance();
+            }
+            app.page = function() { //@todo break changes
+                return $page;
+            }
+            app.state = function() { //@todo break changes
+                return $state;
+            }
+            app.logout = function() { //@todo break changes
+                return logout();
+            }
+            app.menu = function() { //@todo break changes
+                return $menu.api();
+            }
+            app.setting = function() { //@todo break changes
+                return setting;
+            }
+            app.enviroment = function() { //@todo break changes
+                return enviroment
+            }
+            app.year = function() { //@todo break changes
+                return moment().format('YYYY');
+            };
+            //
+            // Warning
+            //
+            var warning = $app.storage('session').get().warning;
+            if (warning) {
+                $page.toast(warning, 5000, 'top right');
+                $app.storage('session').set({
+                    warning: ''
+                });
+            }
+        }
+    }
+    //
+    // Behaviors
+    //
+    function logout() {
+        $user.logout(true, function() {
+            // if ($state.current.name != 'app.home') {
+            //     $timeout(function() {
+            //         $page.toast('Você será redirecionado em 5 segundos...');
+            //         $timeout(function() {
+            //             window.location = '/';
+            //         }, 5000);
+            //     }, 2000);
+            // }
+        });
+    }
+})
+angular.module("core.i18n", []).config(["$translateProvider", function($translateProvider) {
+$translateProvider.translations("en_US", {
+    "USER_WELCOME_WARN": "Hello {{firstName}}, welcome back!",
+    "USER_YOU_LEFT": "You just left."
+});
+
+$translateProvider.translations("pt_BR", {
+    "USER_WELCOME_WARN": "Olá {{firstName}}, bem vind@ de volta!",
+    "USER_YOU_LEFT": "Você saiu."
+});
+}]);
+
+'use strict';
+angular.module('core.app').provider('$app',
+    /**
+     * @ngdoc object
+     * @name app.kit.$appProvider
+     * @description
+     * Provém configurações para aplicação
+     **/
+    /*@ngInject*/
+    function $appProvider($stateProvider) {
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_config
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena configurações
+         **/
+        this._config = {};
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_layoutUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para layout
+         **/
+        this._layoutUrl = 'core/page/layout/layout.tpl.html';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_toolbarUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para toolbar
+         **/
+        this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_toolbarTitleUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para o toolbar title
+         **/
+        this._toolbarTitleUrl = 'core/page/toolbar/title/toolbarTitle.tpl.html';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_sidenavUrl
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * url do template para sidenav
+         **/
+        this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_logo
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena logo
+         **/
+        this._logo = '';
+        /**
+         * @ngdoc object
+         * @name app.kit.$appProvider#_logoWhite
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * armazena logo na versão branca
+         **/
+        this._logoWhite = '';
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#$get
+         * @propertyOf app.kit.$appProvider
+         * @description 
+         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
+         * @example
+         * <pre>
+         * angular.module('myApp.module').controller('MyCtrl', function($app) {     
+         *      console.log($app.layoutUrl);
+         *      //prints the default layoutUrl
+         *      //ex.: "core/page/layout/layout.tpl.html"     
+         *      console.log($app.config('myOwnConfiguration'));
+         *      //prints the current config
+         *      //ex.: "{ configA: 54, configB: '=D' }"
+         * })
+         * </pre>
+         * @return {object} Retorna um objeto contendo valores das propriedades.
+         **/
+        this.$get = this.get = /*@ngInject*/ function($window, $sessionStorage, $localStorage, setting) {
+            return {
+                config: this._config,
+                layoutUrl: this._layoutUrl,
+                toolbarUrl: this._toolbarUrl,
+                toolbarTitleUrl: this._toolbarTitleUrl,
+                sidenavUrl: this._sidenavUrl,
+                logoWhite: this._logoWhite,
+                logo: this._logo,
+                /**
+                 * @ngdoc method
+                 * @name app.kit.$appProvider#storage
+                 * @methodOf app.kit.$appProvider
+                 * @description
+                 * Carregar/persistir dados
+                 * @param {string} type tipo da persistência (local/session)
+                 * @return {object} getter/setter para persistência de dados
+                 **/
+                storage: function(type) {
+                    var $storage;
+                    if (type === 'local') {
+                        if (!$localStorage.app) reset();
+                        $storage = $localStorage.app;
+                    } else {
+                        if (!$sessionStorage.app) reset();
+                        $storage = $sessionStorage.app;
+                    }
+
+                    function reset() {
+                        if (type === 'local') {
+                            $localStorage.app = {};
+                        } else {
+                            $sessionStorage.app = {};
+                        }
+                    }
+                    return {
+                        set: function(item) {
+                            angular.extend($storage, item)
+                            return $storage;
+                        },
+                        get: function() {
+                            return $storage;
+                        },
+                        destroy: function() {
+                            reset();
+                        }
+                    }
+                }
+            }
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#config
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para configurações
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.config('myOwnConfiguration', {
+         *          configA: 54,
+         *          configB: '=D'
+         *      })
+         * })
+         * </pre>
+         * @param {string} key chave
+         * @param {*} val valor   
+         **/
+        this.config = function(key, val) {
+            if (val) return this._config[key] = val;
+            else return this._config[key];
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#logo
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para o path da logo
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.logo('assets/images/my-logo.png')
+         * })
+         * </pre>
+         * @param {string} value caminho para logomarca   
+         **/
+        this.logo = function(value) {
+            if (value) return this._logo = value;
+            else return this._logo;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#logoWhite
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para o path da logo na versão branca
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *     $appProvider.logoWhite('assets/images/my-logo.png')
+         * })
+         * </pre>
+         * @param {string} value caminho para logomarca   
+         **/
+        this.logoWhite = function(value) {
+            if (value) return this._logoWhite = value;
+            else return this._logoWhite;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#layoutUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do layout
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.layoutUrl('app/layout/my-layout.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.layoutUrl = function(val) {
+            if (val) return this._layoutUrl = val;
+            else return this._layoutUrl;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#toolbarUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do toolbar
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.toolbarUrl = function(val) {
+            if (val) return this._toolbarUrl = val;
+            else return this._toolbarUrl;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#toolbarTitleUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do componente toolbar-title
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.toolbarTitleUrl = function(val) {
+            if (val) return this._toolbarTitleUrl = val;
+            else return this._toolbarTitleUrl;
+        };
+        /**
+         * @ngdoc function
+         * @name app.kit.$appProvider#sidenavUrl
+         * @methodOf app.kit.$appProvider
+         * @description
+         * getter/setter para url do sidenav
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($appProvider) {     
+         *      $appProvider.sidenavUrl('app/layout/my-sidenav.html')
+         * })
+         * </pre>
+         * @param {string} val url do template
+         **/
+        this.sidenavUrl = function(val) {
+            if (val) return this._sidenavUrl = val;
+            else return this._sidenavUrl;
+        };
+    });
+ 'use strict';
+ angular.module('core.app').run( /*@ngInject*/ function() {});
 'use strict';
 angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stateProvider, $urlRouterProvider, $locationProvider, $loginProvider) {
     //
@@ -480,558 +1062,6 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
         }).success(onSuccess).error(onError);
     }
 })
-angular.module("app.env",[]).constant("enviroment","development").constant("base",{url:"http://localhost:3000",urlUnsecure:"http://localhost:3000"}).constant("api",{url:"http://localhost:9000"});
-angular.module("app.setting",[]).constant("setting",{name:"app-kit",slug:"appkit",version:"1.0.0",title:"appkit",baseUrl:"https://app-kit.stpa.co",titleSeparator:" — ",description:"Skeleton for MEAN applications",copyright:"",google:{clientId:"",language:"en-EN"},facebook:{scope:"email",appId:"1572873089619343",appSecret:"4f4ddc65318b2222773dc8ceda3e107d",language:"en-EN"},ogLocale:"en_EN",ogSiteName:"app-kit",ogTitle:"app-kit",ogDescription:"Skeleton for MEAN applications",ogUrl:"https://app-kit.stpa.co",ogImage:""});
-'use strict';
-angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, $translateProvider, enviroment, setting, api) {
-    //
-    // States & Routes
-    //    
-    $stateProvider.state('app', {
-        abstract: true,
-        views: {
-            'app': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $appProvider.layoutUrl();
-                },
-            },
-            'toolbar@app': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $appProvider.toolbarUrl();
-                }
-            },
-            'sidenav@app': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $appProvider.sidenavUrl();
-                }
-            }
-        }
-    });
-    $locationProvider.html5Mode(true);
-    //
-    // Redirect Trailing Slash
-    //
-    $urlMatcherFactoryProvider.strictMode(false);
-    $urlRouterProvider.rule(function($injector, $location) {
-        //
-        // if the app was not loaded inside iframe (url with #iframe)
-        //
-        if ($location.hash() !== 'iframe') {
-            var path = $location.url();
-            // check to see if the path already has a slash where it should be
-            if (path[path.length - 1] === '/' || path.indexOf('/?') > -1) {
-                return;
-            }
-            if (path.indexOf('?') > -1) {
-                return path.replace('?', '/?');
-            }
-            return path + '/';
-        }
-    });
-    //
-    // Intercept Http
-    //
-    $httpProvider.interceptors.push('HttpInterceptor');
-    //
-    // Theme options
-    //
-    $mdThemingProvider.theme('default').primaryPalette('indigo', {
-        // 'hue-1': '600'
-    }).accentPalette('deep-orange', {
-        // 'hue-1': '600'
-    });
-    //
-    // Dark theme
-    //
-    $mdThemingProvider.theme('darkness').primaryPalette('cyan').dark();
-    //
-    // User options
-    //
-    $userProvider.setting('roleForCompany', 'user');
-    $userProvider.setting('loginSuccessRedirect', '/');
-    $userProvider.setting('loginSuccessRedirectState', 'app.home');
-    //
-    // Auth options
-    //
-    $authProvider.httpInterceptor = true; // Add Authorization header to HTTP request
-    $authProvider.loginOnSignup = true;
-    $authProvider.loginRedirect = '/';
-    $authProvider.logoutRedirect = '/login/';
-    $authProvider.signupRedirect = '/login/';
-    $authProvider.loginUrl = api.url + '/auth/local/';
-    $authProvider.signupUrl = api.url + '/api/users/';
-    $authProvider.loginRoute = '/login/';
-    $authProvider.signupRoute = '/login/';
-    $authProvider.tokenRoot = false; // set the token parent element if the token is not the JSON root
-    $authProvider.tokenName = 'token';
-    $authProvider.tokenPrefix = setting.slug + '.session'; // Local Storage name prefix
-    $authProvider.unlinkUrl = '/auth/unlink/';
-    $authProvider.unlinkMethod = 'get';
-    $authProvider.authHeader = 'Authorization';
-    $authProvider.withCredentials = true; // Send POST request with credentials
-    //$authProvider.storageType = 'sessionStorage';
-    //
-    // Storage options
-    //
-    $sessionStorageProvider.setKeyPrefix(setting.slug + '.');
-    //
-    // i18n options
-    //
-    $translateProvider.preferredLanguage('en_US');
-    $translateProvider.useSanitizeValueStrategy('escape');
-    //
-    // Debug options
-    //
-    if (enviroment === 'production') $logProvider.debugEnabled(false);
-    else $logProvider.debugEnabled(true);
-});
-'use strict';
-/* global moment */
-/**
- * @ngdoc object
- * @name app.kit.controller:$AppCtrl
- * @description
- * Controlador da aplicação
- * @requires setting
- * @requires environment
- * @requires $rootScope
- * @requires $scope
- * @requires $state
- * @requires $location
- * @requires $mdSidenav
- * @requires $timeout
- * @requires $auth
- * @requires core.page.factory:$page
- * @requires core.user.service:$User
- * @requires core.user.factory:$user
- * @requires core.login.$loginProvider
- * @requires core.page.factory:$menu
- **/
-angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app, $sessionStorage) {
-    var app = this;
-    //
-    // SEO
-    //
-    $page.title(setting.title);
-    $page.description(setting.description);
-    //
-    // OPEN GRAPH
-    //
-    $page.ogLocale(setting.ogLocale);
-    $page.ogSiteName(setting.ogSiteName);
-    $page.ogTitle(setting.ogTitle);
-    $page.ogDescription(setting.ogDescription);
-    $page.ogUrl(setting.ogUrl);
-    $page.ogImage(setting.ogImage);
-    $page.ogSection(setting.ogSection);
-    $page.ogTag(setting.ogTag);
-    //
-    // Moment
-    //
-    moment.locale('pt_BR');
-    //
-    // Events
-    //  
-    $rootScope.$on('$AppReboot', function() {
-        bootstrap();
-    });
-    $rootScope.$on('$CompanyIdUpdated', function(e, nv, ov) {
-        if (nv != ov) {
-            //quando alterar company, atualizar factory  
-            var company = $user.instance().filterCompany(nv);
-            $user.instance().current('company', company);
-            $user.instance().session('company', {
-                _id: company._id,
-                name: company.name
-            });
-            $menu.api().close();
-            bootstrap();
-        }
-    });
-    $rootScope.$on('$Unauthorized', function(ev, status) {
-        //
-        // Persists current location to execute redirection after login
-        // - Only if server status is 401
-        //
-        if (status === 401) {
-            $app.storage('session').set({
-                locationRedirect: $location.url()
-            });
-        }
-        $rootScope.$Unauthorized = true;
-        var userInstance = $user.instance();
-        if (typeof userInstance.destroy === 'function') {
-            $user.instance().destroy();
-            window.location.href = '/login/lost/session/';
-        }
-    });
-    //
-    // When user in...
-    //
-    $rootScope.$on('$LoginSuccess', function(ev, response) {
-        var appSession = $app.storage('session').get();
-        if (appSession && appSession.locationRedirect && appSession.locationRedirect != '/login/') {
-            var redirect = appSession.locationRedirect;
-            //
-            // Reset locationRedirect
-            //
-            $app.storage('session').set({
-                locationRedirect: ''
-            });
-            //
-            // Do redirection
-            //
-            window.location = redirect;
-        }
-        //
-        // Reset the $rootScope.$Unauthorized
-        //
-        $rootScope.$Unauthorized = false;
-        $location.path($user.setting.loginSuccessRedirect);
-    });
-    //
-    // BOOTSTRAP with a new user
-    //  
-    bootstrap(true);
-
-    function bootstrap(withNewUser) {
-        //
-        // boot with new user
-        //
-        if (withNewUser) {
-            //
-            // boot from storage
-            //
-            if ($sessionStorage.user && $sessionStorage.user.id && $auth.getToken()) {
-                $user.instantiate($sessionStorage.user, false, false, function() {
-                    boot();
-                });
-            } else {
-                //
-                // user not present, ensure that we dont have token
-                //
-                $user.destroy(function() {
-                    //
-                    // then instantiate a new blank user
-                    //
-                    $user.instantiate({}, false, false, function() {
-                        boot();
-                    });
-                });
-            }
-        } else {
-            boot();
-        }
-        //
-        // export default states and behaviors to view
-        //
-        function boot() {
-            app.user = function() { //@todo break changes
-                return $user.instance();
-            }
-            app.page = function() { //@todo break changes
-                return $page;
-            }
-            app.state = function() { //@todo break changes
-                return $state;
-            }
-            app.logout = function() { //@todo break changes
-                return logout();
-            }
-            app.menu = function() { //@todo break changes
-                return $menu.api();
-            }
-            app.setting = function() { //@todo break changes
-                return setting;
-            }
-            app.enviroment = function() { //@todo break changes
-                return enviroment
-            }
-            app.year = function() { //@todo break changes
-                return moment().format('YYYY');
-            }
-        }
-    }
-    //
-    // Behaviors
-    //
-    function logout() {
-        $user.logout(true, function() {            
-            // if ($state.current.name != 'app.home') {
-            //     $timeout(function() {
-            //         $page.toast('Você será redirecionado em 5 segundos...');
-            //         $timeout(function() {
-            //             window.location = '/';
-            //         }, 5000);
-            //     }, 2000);
-            // }
-        });
-    }
-})
-angular.module("core.i18n", []).config(["$translateProvider", function($translateProvider) {
-$translateProvider.translations("en_US", {
-    "USER_WELCOME_WARN": "Hello {{firstName}}, welcome back!",
-    "USER_YOU_LEFT": "You just left."
-});
-
-$translateProvider.translations("pt_BR", {
-    "USER_WELCOME_WARN": "Olá {{firstName}}, bem vind@ de volta!",
-    "USER_YOU_LEFT": "Você saiu."
-});
-}]);
-
-'use strict';
-angular.module('core.app').provider('$app',
-    /**
-     * @ngdoc object
-     * @name app.kit.$appProvider
-     * @description
-     * Provém configurações para aplicação
-     **/
-    /*@ngInject*/
-    function $appProvider($stateProvider) {
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_config
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * armazena configurações
-         **/
-        this._config = {};
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_layoutUrl
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * url do template para layout
-         **/
-        this._layoutUrl = 'core/page/layout/layout.tpl.html';
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_toolbarUrl
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * url do template para toolbar
-         **/
-        this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_toolbarTitleUrl
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * url do template para o toolbar title
-         **/
-        this._toolbarTitleUrl = 'core/page/toolbar/title/toolbarTitle.tpl.html';
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_sidenavUrl
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * url do template para sidenav
-         **/
-        this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_logo
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * armazena logo
-         **/
-        this._logo = '';
-        /**
-         * @ngdoc object
-         * @name app.kit.$appProvider#_logoWhite
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * armazena logo na versão branca
-         **/
-        this._logoWhite = '';
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#$get
-         * @propertyOf app.kit.$appProvider
-         * @description 
-         * getter que vira factory pelo angular para se tornar injetável em toda aplicação
-         * @example
-         * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($app) {     
-         *      console.log($app.layoutUrl);
-         *      //prints the default layoutUrl
-         *      //ex.: "core/page/layout/layout.tpl.html"     
-         *      console.log($app.config('myOwnConfiguration'));
-         *      //prints the current config
-         *      //ex.: "{ configA: 54, configB: '=D' }"
-         * })
-         * </pre>
-         * @return {object} Retorna um objeto contendo valores das propriedades.
-         **/
-        this.$get = this.get = /*@ngInject*/ function($window, setting) {
-            return {
-                config: this._config,
-                layoutUrl: this._layoutUrl,
-                toolbarUrl: this._toolbarUrl,
-                toolbarTitleUrl: this._toolbarTitleUrl,
-                sidenavUrl: this._sidenavUrl,
-                logoWhite: this._logoWhite,
-                logo: this._logo,
-                /**
-                 * @ngdoc method
-                 * @name app.kit.$appProvider#storage
-                 * @methodOf app.kit.$appProvider
-                 * @description
-                 * Carregar/persistir dados
-                 * @param {string} type tipo da persistência (local/session)
-                 * @return {object} getter/setter para persistência de dados
-                 **/
-                storage: function(type) {
-                    var where = (type === 'local') ? 'localStorage' : 'sessionStorage';
-                    return {
-                        set: function(item) {
-                            return $window[where].setItem(setting.slug + '.app', angular.toJson(item));
-                        },
-                        get: function() {
-                            return angular.fromJson($window[where].getItem(setting.slug + '.app'));
-                        },
-                        destroy: function() {
-                            $window[where].removeItem(setting.slug + '.app');
-                        }
-                    }
-                }
-            }
-        };
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#config
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para configurações
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *     $appProvider.config('myOwnConfiguration', {
-         *          configA: 54,
-         *          configB: '=D'
-         *      })
-         * })
-         * </pre>
-         * @param {string} key chave
-         * @param {*} val valor   
-         **/
-        this.config = function(key, val) {
-            if (val) return this._config[key] = val;
-            else return this._config[key];
-        };
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#logo
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para o path da logo
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *     $appProvider.logo('assets/images/my-logo.png')
-         * })
-         * </pre>
-         * @param {string} value caminho para logomarca   
-         **/
-        this.logo = function(value) {
-            if (value) return this._logo = value;
-            else return this._logo;
-        };
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#logoWhite
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para o path da logo na versão branca
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *     $appProvider.logoWhite('assets/images/my-logo.png')
-         * })
-         * </pre>
-         * @param {string} value caminho para logomarca   
-         **/
-        this.logoWhite = function(value) {
-            if (value) return this._logoWhite = value;
-            else return this._logoWhite;
-        };
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#layoutUrl
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para url do layout
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *      $appProvider.layoutUrl('app/layout/my-layout.html')
-         * })
-         * </pre>
-         * @param {string} val url do template
-         **/
-        this.layoutUrl = function(val) {
-            if (val) return this._layoutUrl = val;
-            else return this._layoutUrl;
-        };
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#toolbarUrl
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para url do toolbar
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
-         * })
-         * </pre>
-         * @param {string} val url do template
-         **/
-        this.toolbarUrl = function(val) {
-            if (val) return this._toolbarUrl = val;
-            else return this._toolbarUrl;
-        };
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#toolbarTitleUrl
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para url do componente toolbar-title
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
-         * })
-         * </pre>
-         * @param {string} val url do template
-         **/
-        this.toolbarTitleUrl = function(val) {
-            if (val) return this._toolbarTitleUrl = val;
-            else return this._toolbarTitleUrl;
-        };
-        /**
-         * @ngdoc function
-         * @name app.kit.$appProvider#sidenavUrl
-         * @methodOf app.kit.$appProvider
-         * @description
-         * getter/setter para url do sidenav
-         * @example
-         * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
-         *      $appProvider.sidenavUrl('app/layout/my-sidenav.html')
-         * })
-         * </pre>
-         * @param {string} val url do template
-         **/
-        this.sidenavUrl = function(val) {
-            if (val) return this._sidenavUrl = val;
-            else return this._sidenavUrl;
-        };
-    });
- 'use strict';
- angular.module('core.app').run( /*@ngInject*/ function() {});
 'use strict';
 /*global window*/
 angular.module('core.page').config( /*@ngInject*/ function($stateProvider, $urlRouterProvider, $locationProvider) {
@@ -1486,7 +1516,12 @@ angular.module('core.user').provider('$user',
                             $translate('USER_WELCOME_WARN', {
                                 'firstName': params.profile.firstName
                             }).then(function(message) {
-                                if (alert) $page.toast(message, 5000);
+                                if (alert) {
+                                    $page.toast(message, 5000);
+                                    $app.storage('session').set({
+                                        warning: message
+                                    });
+                                }
                             });
                         } else if (message && alert) {
                             $page.toast(message, 5000);
@@ -2055,6 +2090,12 @@ angular.module('core.login').directive('registerForm', /*@ngInject*/ function() 
     }
 })
 'use strict';
+angular.module('core.page').directive('loader', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/page/loader/loader.tpl.html",
+    }
+})
+'use strict';
 angular.module('core.menu').config( /*@ngInject*/ function() {})
 'use strict';
 angular.module('core.menu').provider('$menu',
@@ -2377,12 +2418,6 @@ angular.module('core.menu').filter('nospace', /*@ngInject*/ function() {
         return (!value) ? '' : value.replace(/ /g, '');
     }
 });
-'use strict';
-angular.module('core.page').directive('loader', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/page/loader/loader.tpl.html",
-    }
-})
  'use strict';
  /* global moment */
  /**
@@ -3226,6 +3261,27 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
     }
 });
 'use strict';
+angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
+    return {
+        scope: {
+            focus: '=',
+            focusWhen: '='
+        },
+        restrict: 'A',
+        link: function(scope, elem) {
+            scope.$watch('focusWhen', function(nv, ov) {
+                if (nv != ov) {
+                    if (nv) {
+                        elem.focus();
+                    }
+                }
+            });
+            if (scope.focus)
+                elem.focus();
+        }
+    }
+})
+'use strict';
 angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
     return {
         restrict: 'EA',
@@ -3270,27 +3326,6 @@ angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function(
             function update() {
                 bootstrap();
             }
-        }
-    }
-})
-'use strict';
-angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
-    return {
-        scope: {
-            focus: '=',
-            focusWhen: '='
-        },
-        restrict: 'A',
-        link: function(scope, elem) {
-            scope.$watch('focusWhen', function(nv, ov) {
-                if (nv != ov) {
-                    if (nv) {
-                        elem.focus();
-                    }
-                }
-            });
-            if (scope.focus)
-                elem.focus();
         }
     }
 })
@@ -4043,8 +4078,8 @@ $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu().sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu().isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu().isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting().copyright }} © {{ app.year() }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu().open()\" ng-if=\"app.user().isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state().current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.user().isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
-$templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
+$templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
 $templateCache.put("core/utils/directives/addrForm/addrForm.tpl.html","<form name=\"handleForm\" class=\"addr-form\"><div layout=\"row\" layout-sm=\"column\"><ceper endpoint-url=\"{{vm.endpointCepUrl}}\" ng-model=\"ngModel.cep\" address=\"ngModel\"></ceper><md-input-container flex=\"\"><label>Endereço</label> <input ng-model=\"ngModel.street\" required=\"\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Número</label> <input type=\"number\" ng-model=\"ngModel.num\"></md-input-container><md-input-container flex=\"\"><label>Bairro</label> <input ng-model=\"ngModel.district\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Complemento</label> <input ng-model=\"ngModel.comp\" md-maxlength=\"50\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Cidade</label> <input ng-model=\"ngModel.city\" required=\"\"></md-input-container><md-select ng-model=\"ngModel.state\" placeholder=\"Estado\" flex=\"\" required=\"\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.states\">{{ opt.name }}</md-option></md-select></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-if=\"endpointUrl\" ng-click=\"vm.save()\" ng-disabled=\"vm.busy||handleForm.$invalid||!handleForm.$dirty||vm.pristine()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form>");

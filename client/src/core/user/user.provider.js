@@ -77,7 +77,12 @@ angular.module('core.user').provider('$user',
                             $translate('USER_WELCOME_WARN', {
                                 'firstName': params.profile.firstName
                             }).then(function(message) {
-                                if (alert) $page.toast(message, 5000);
+                                if (alert) {
+                                    $page.toast(message, 5000);
+                                    $app.storage('session').set({
+                                        warning: message
+                                    });
+                                }
                             });
                         } else if (message && alert) {
                             $page.toast(message, 5000);
