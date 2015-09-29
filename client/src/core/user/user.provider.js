@@ -197,7 +197,7 @@ angular.module('core.user').provider('$user',
             else return this._setting;
         }
         this.isAuthed = function(redirect) {
-            return function isAuthed($auth, $state, $timeout, $user, $location) {
+            return /*@ngInject*/ function isAuthed($auth, $state, $timeout, $user, $location) {
                 if ($auth.isAuthenticated()) {
                     $timeout(function() {
                         window.location = redirect || $user.setting.loginSuccessRedirect || '/';
@@ -209,7 +209,7 @@ angular.module('core.user').provider('$user',
             }
         }
         this.isNotAuthed = function(redirect) {
-            return function isAuthed($auth, $state, $timeout, $user, $location) {
+            return /*@ngInject*/ function isAuthed($auth, $state, $timeout, $user, $location) {
                 if (!$auth.isAuthenticated()) {
                     $timeout(function() {
                         window.location = redirect || $user.setting.loginSuccessRedirect || '/';

@@ -14,7 +14,7 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                 }
             },
             resolve: {
-                authed: /*@ngInject*/ $userProvider.isAuthed('/')
+                authed: $userProvider.isAuthed('/')
             }
         })
         //
@@ -52,7 +52,7 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                 }
             },
             resolve: {
-                authed: /*@ngInject*/ $userProvider.isAuthed('/')
+                authed: $userProvider.isAuthed('/')
             }
         }).state('app.login-lost', {
             protected: false,
@@ -66,7 +66,7 @@ angular.module('core.login').config( /*@ngInject*/ function($userProvider, $stat
                 }
             },
             resolve: {
-                authed: /*@ngInject*/ $userProvider.isAuthed('/')
+                authed: $userProvider.isAuthed('/')
             }
         });
     $locationProvider.html5Mode(true);
