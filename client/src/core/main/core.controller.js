@@ -42,7 +42,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     //
     // Moment
     //
-    moment.locale('pt_BR');
+    moment.locale(setting.locale);
     //
     // Events
     //  

@@ -4,6 +4,7 @@
         "slug": "appkit",
         "version": "1.0.0",
         "title": "appkit",
+        "locale": "en_US",
         "baseUrl": "https://app-kit.stpa.co",
         "titleSeparator": " — ",
         "description": "Skeleton for MEAN applications",

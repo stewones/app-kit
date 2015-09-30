@@ -485,7 +485,7 @@ angular.module('core.login').controller('$LostCtrl', /*@ngInject*/ function($sta
     }
 })
 angular.module("app.env",[]).constant("enviroment","development").constant("base",{url:"http://localhost:3000",urlUnsecure:"http://localhost:3000"}).constant("api",{url:"http://localhost:9000"});
-angular.module("app.setting",[]).constant("setting",{name:"app-kit",slug:"appkit",version:"1.0.0",title:"appkit",baseUrl:"https://app-kit.stpa.co",titleSeparator:" — ",description:"Skeleton for MEAN applications",keywords:"app kit js, mongodb, express, angular and node",copyright:"",google:{clientId:"",language:"en-EN"},facebook:{scope:"email",appId:"1572873089619343",appSecret:"4f4ddc65318b2222773dc8ceda3e107d",language:"en-EN"},ogLocale:"en_EN",ogSiteName:"app-kit",ogTitle:"app-kit",ogDescription:"Skeleton for MEAN applications",ogUrl:"https://app-kit.stpa.co",ogImage:""});
+angular.module("app.setting",[]).constant("setting",{name:"app-kit",slug:"appkit",version:"1.0.0",title:"appkit",locale:"en_US",baseUrl:"https://app-kit.stpa.co",titleSeparator:" — ",description:"Skeleton for MEAN applications",keywords:"app kit js, mongodb, express, angular and node",copyright:"",google:{clientId:"",language:"en-EN"},facebook:{scope:"email",appId:"1572873089619343",appSecret:"4f4ddc65318b2222773dc8ceda3e107d",language:"en-EN"},ogLocale:"en_EN",ogSiteName:"app-kit",ogTitle:"app-kit",ogDescription:"Skeleton for MEAN applications",ogUrl:"https://app-kit.stpa.co",ogImage:""});
 'use strict';
 angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, $translateProvider, enviroment, setting, api) {
     //
@@ -581,7 +581,7 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProv
     //
     // i18n options
     //
-    $translateProvider.preferredLanguage('en_US');
+    $translateProvider.preferredLanguage(setting.locale);
     $translateProvider.useSanitizeValueStrategy('escape');
     //
     // Debug options
@@ -633,7 +633,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
     //
     // Moment
     //
-    moment.locale('pt_BR');
+    moment.locale(setting.locale);
     //
     // Events
     //  
