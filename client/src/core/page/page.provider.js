@@ -12,7 +12,7 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_config
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena configurações
          **/
         this._config = {
@@ -23,7 +23,7 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_title
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena o título
          **/
         this._title = '';
@@ -31,7 +31,7 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_description
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena a descrição
          **/
         this._description = '';
@@ -39,15 +39,23 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_keywords
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * store keywords
          **/
         this._keywords = '';
         /**
          * @ngdoc object
+         * @name core.page.$pageProvider#_icon
+         * @propertyOf core.page.$pageProvider
+         * @description
+         * store favicon
+         **/
+        this._icon = '';
+        /**
+         * @ngdoc object
          * @name core.page.$pageProvider#_ogSiteName
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena open graph site name
          **/
         this._ogSiteName = '';
@@ -55,7 +63,7 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_ogTitle
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena open graph title
          **/
         this._ogTitle = '';
@@ -63,7 +71,7 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_ogDescription
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena open graph description
          **/
         this._ogDescription = '';
@@ -71,7 +79,7 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_ogUrl
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena open graph url
          **/
         this._ogUrl = '';
@@ -79,15 +87,15 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_ogImage
          * @propertyOf core.page.$pageProvider
-         * @description 
-         * armazena open graph image 
+         * @description
+         * armazena open graph image
          **/
         this._ogImage = '';
         /**
          * @ngdoc object
          * @name core.page.$pageProvider#_ogSection
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena open graph section
          **/
         this._ogSection = '';
@@ -95,7 +103,7 @@ angular.module('core.page').provider('$page',
          * @ngdoc object
          * @name core.page.$pageProvider#_ogTag
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * armazena open graph tags
          **/
         this._ogTag = '';
@@ -103,11 +111,11 @@ angular.module('core.page').provider('$page',
          * @ngdoc function
          * @name core.page.$pageProvider#$get
          * @propertyOf core.page.$pageProvider
-         * @description 
+         * @description
          * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($page) {        
+         * angular.module('myApp.module').controller('MyCtrl', function($page) {
          *      console.log($page.config('myOwnConfiguration'));
          *      //prints the current config
          *      //ex.: "{ configA: 54, configB: '=D' }"
@@ -116,42 +124,43 @@ angular.module('core.page').provider('$page',
          * @return {object} Retorna um objeto contendo valores das propriedades.
          **/
         this.$get = this.get = /*@ngInject*/ function($mdToast) {
-                return {
-                    config: this._config,
-                    load: load(),
-                    progress: progress(),
-                    toast: toast($mdToast),
-                    title: title,
-                    description: description,
-                    keywords: keywords,
-                    ogLocale: ogLocale,
-                    ogSiteName: ogSiteName,
-                    ogTitle: ogTitle,
-                    ogDescription: ogDescription,
-                    ogUrl: ogUrl,
-                    ogImage: ogImage,
-                    ogSection: ogSection,
-                    ogTag: ogTag
-                }
+            return {
+                config: this._config,
+                load: load(),
+                progress: progress(),
+                toast: toast($mdToast),
+                title: title,
+                description: description,
+                keywords: keywords,
+                icon: icon,
+                ogLocale: ogLocale,
+                ogSiteName: ogSiteName,
+                ogTitle: ogTitle,
+                ogDescription: ogDescription,
+                ogUrl: ogUrl,
+                ogImage: ogImage,
+                ogSection: ogSection,
+                ogTag: ogTag
             }
-            /**
-             * @ngdoc function
-             * @name core.page.$pageProvider#config
-             * @methodOf core.page.$pageProvider
-             * @description
-             * getter/setter para configurações
-             * @example
-             * <pre>
-             * angular.module('myApp.module').config(function($pageProvider) {     
-             *     $pageProvider.config('myOwnConfiguration', {
-             *          configA: 54,
-             *          configB: '=D'
-             *      })
-             * })
-             * </pre>
-             * @param {string} key chave
-             * @param {*} val valor   
-             **/
+        }
+        /**
+         * @ngdoc function
+         * @name core.page.$pageProvider#config
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/setter para configurações
+         * @example
+         * <pre>
+         * angular.module('myApp.module').config(function($pageProvider) {
+         *     $pageProvider.config('myOwnConfiguration', {
+         *          configA: 54,
+         *          configB: '=D'
+         *      })
+         * })
+         * </pre>
+         * @param {string} key chave
+         * @param {*} val valor
+         **/
         this.config = function(key, val) {
             if (key && (val || val === false)) {
                 return this._config[key] = val
@@ -189,7 +198,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para meta tag descrição
-         * @param {string} value descrição da página    
+         * @param {string} value descrição da página
          **/
         function description(value) {
             if (value) return this._description = value;
@@ -201,7 +210,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter for keywords
-         * @param {string} value    
+         * @param {string} value
          **/
         function keywords(value) {
             if (value) return this._keywords = value;
@@ -209,11 +218,23 @@ angular.module('core.page').provider('$page',
         }
         /**
          * @ngdoc function
+         * @name core.page.$pageProvider#icon
+         * @methodOf core.page.$pageProvider
+         * @description
+         * getter/getter for page favicon
+         * @param {string} value
+         **/
+        function icon(value) {
+            if (value) return this._icon = value;
+            else return this._icon;
+        }
+        /**
+         * @ngdoc function
          * @name core.page.$pageProvider#ogLocale
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para open-graph locale
-         * @param {string} value locale    
+         * @param {string} value locale
          **/
         function ogLocale(value) {
             if (value) return this._ogLocale = value;
@@ -225,7 +246,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para open-graph site name
-         * @param {string} value site name    
+         * @param {string} value site name
          **/
         function ogSiteName(value) {
             if (value) return this._ogSiteName = value;
@@ -237,7 +258,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para open-graph title
-         * @param {string} value title    
+         * @param {string} value title
          **/
         function ogTitle(value) {
             if (value) return this._ogTitle = value;
@@ -249,7 +270,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para open-graph description
-         * @param {string} value description    
+         * @param {string} value description
          **/
         function ogDescription(value) {
             if (value) return this._ogDescription = value;
@@ -261,7 +282,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para open-graph url
-         * @param {string} value url    
+         * @param {string} value url
          **/
         function ogUrl(value) {
             if (value) return this._ogUrl = value;
@@ -273,7 +294,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para open-graph image
-         * @param {string} value image    
+         * @param {string} value image
          **/
         function ogImage(value) {
             if (value) return this._ogImage = value;
@@ -285,7 +306,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para open-graph section
-         * @param {string} value section    
+         * @param {string} value section
          **/
         function ogSection(value) {
             if (value) return this._ogSection = value;
@@ -297,7 +318,7 @@ angular.module('core.page').provider('$page',
          * @methodOf core.page.$pageProvider
          * @description
          * getter/getter para open-graph tag
-         * @param {string} value tag    
+         * @param {string} value tag
          **/
         function ogTag(value) {
             if (value) return this._ogTag = value;
