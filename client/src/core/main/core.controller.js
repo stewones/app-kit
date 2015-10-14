@@ -23,22 +23,23 @@
 angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting, $rootScope, $scope, $state, $location, $mdSidenav, $timeout, $auth, $page, $User, $user, enviroment, $menu, $login, $app, $sessionStorage) {
     var app = this;
     //
-    // SEO
+    // SEO (moved to consumer app in BodyCtrl)
     //
-    $page.title(setting.title);
-    $page.description(setting.description);
-    $page.keywords(setting.keywords);
+    // $page.title(setting.title);
+    // $page.description(setting.description);
+    // $page.keywords(setting.keywords);
+    // $page.icon(setting.icon);
     //
-    // OPEN GRAPH
+    // OPEN GRAPH (moved to consumer app in BodyCtrl)
     //
-    $page.ogLocale(setting.ogLocale);
-    $page.ogSiteName(setting.ogSiteName);
-    $page.ogTitle(setting.ogTitle);
-    $page.ogDescription(setting.ogDescription);
-    $page.ogUrl(setting.ogUrl);
-    $page.ogImage(setting.ogImage);
-    $page.ogSection(setting.ogSection);
-    $page.ogTag(setting.ogTag);
+    // $page.ogLocale(setting.ogLocale);
+    // $page.ogSiteName(setting.ogSiteName);
+    // $page.ogTitle(setting.ogTitle);
+    // $page.ogDescription(setting.ogDescription);
+    // $page.ogUrl(setting.ogUrl);
+    // $page.ogImage(setting.ogImage);
+    // $page.ogSection(setting.ogSection);
+    // $page.ogTag(setting.ogTag);
     //
     // Moment
     //
