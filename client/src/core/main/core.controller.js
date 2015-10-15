@@ -166,7 +166,7 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             //
             var warning = $app.storage('session').get().warning;
             if (warning) {
-                $page.toast(warning, 5000, 'top right');
+                $page.toast(warning, 5000, 'top left');
                 $app.storage('session').set({
                     warning: ''
                 });
