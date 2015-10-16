@@ -12,7 +12,7 @@ angular.module('core.app').provider('$app',
          * @ngdoc object
          * @name app.kit.$appProvider#_config
          * @propertyOf app.kit.$appProvider
-         * @description 
+         * @description
          * armazena configurações
          **/
         this._config = {};
@@ -20,7 +20,7 @@ angular.module('core.app').provider('$app',
          * @ngdoc object
          * @name app.kit.$appProvider#_layoutUrl
          * @propertyOf app.kit.$appProvider
-         * @description 
+         * @description
          * url do template para layout
          **/
         this._layoutUrl = 'core/page/layout/layout.tpl.html';
@@ -28,7 +28,7 @@ angular.module('core.app').provider('$app',
          * @ngdoc object
          * @name app.kit.$appProvider#_toolbarUrl
          * @propertyOf app.kit.$appProvider
-         * @description 
+         * @description
          * url do template para toolbar
          **/
         this._toolbarUrl = 'core/page/toolbar/toolbar.tpl.html';
@@ -36,7 +36,7 @@ angular.module('core.app').provider('$app',
          * @ngdoc object
          * @name app.kit.$appProvider#_toolbarTitleUrl
          * @propertyOf app.kit.$appProvider
-         * @description 
+         * @description
          * url do template para o toolbar title
          **/
         this._toolbarTitleUrl = 'core/page/toolbar/title/toolbarTitle.tpl.html';
@@ -44,7 +44,7 @@ angular.module('core.app').provider('$app',
          * @ngdoc object
          * @name app.kit.$appProvider#_sidenavUrl
          * @propertyOf app.kit.$appProvider
-         * @description 
+         * @description
          * url do template para sidenav
          **/
         this._sidenavUrl = 'core/page/menu/sidenav.tpl.html';
@@ -52,7 +52,7 @@ angular.module('core.app').provider('$app',
          * @ngdoc object
          * @name app.kit.$appProvider#_logo
          * @propertyOf app.kit.$appProvider
-         * @description 
+         * @description
          * armazena logo
          **/
         this._logo = '';
@@ -60,22 +60,23 @@ angular.module('core.app').provider('$app',
          * @ngdoc object
          * @name app.kit.$appProvider#_logoWhite
          * @propertyOf app.kit.$appProvider
-         * @description 
+         * @description
          * armazena logo na versão branca
          **/
         this._logoWhite = '';
+  
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#$get
          * @propertyOf app.kit.$appProvider
-         * @description 
+         * @description
          * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($app) {     
+         * angular.module('myApp.module').controller('MyCtrl', function($app) {
          *      console.log($app.layoutUrl);
          *      //prints the default layoutUrl
-         *      //ex.: "core/page/layout/layout.tpl.html"     
+         *      //ex.: "core/page/layout/layout.tpl.html"
          *      console.log($app.config('myOwnConfiguration'));
          *      //prints the current config
          *      //ex.: "{ configA: 54, configB: '=D' }"
@@ -133,6 +134,7 @@ angular.module('core.app').provider('$app',
                 }
             }
         };
+
         /**
          * @ngdoc function
          * @name app.kit.$appProvider#config
@@ -141,7 +143,7 @@ angular.module('core.app').provider('$app',
          * getter/setter para configurações
          * @example
          * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
+         * angular.module('myApp.module').config(function($appProvider) {
          *     $appProvider.config('myOwnConfiguration', {
          *          configA: 54,
          *          configB: '=D'
@@ -149,7 +151,7 @@ angular.module('core.app').provider('$app',
          * })
          * </pre>
          * @param {string} key chave
-         * @param {*} val valor   
+         * @param {*} val valor
          **/
         this.config = function(key, val) {
             if (val) return this._config[key] = val;
@@ -163,11 +165,11 @@ angular.module('core.app').provider('$app',
          * getter/setter para o path da logo
          * @example
          * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
+         * angular.module('myApp.module').config(function($appProvider) {
          *     $appProvider.logo('assets/images/my-logo.png')
          * })
          * </pre>
-         * @param {string} value caminho para logomarca   
+         * @param {string} value caminho para logomarca
          **/
         this.logo = function(value) {
             if (value) return this._logo = value;
@@ -181,11 +183,11 @@ angular.module('core.app').provider('$app',
          * getter/setter para o path da logo na versão branca
          * @example
          * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
+         * angular.module('myApp.module').config(function($appProvider) {
          *     $appProvider.logoWhite('assets/images/my-logo.png')
          * })
          * </pre>
-         * @param {string} value caminho para logomarca   
+         * @param {string} value caminho para logomarca
          **/
         this.logoWhite = function(value) {
             if (value) return this._logoWhite = value;
@@ -199,7 +201,7 @@ angular.module('core.app').provider('$app',
          * getter/setter para url do layout
          * @example
          * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
+         * angular.module('myApp.module').config(function($appProvider) {
          *      $appProvider.layoutUrl('app/layout/my-layout.html')
          * })
          * </pre>
@@ -217,7 +219,7 @@ angular.module('core.app').provider('$app',
          * getter/setter para url do toolbar
          * @example
          * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
+         * angular.module('myApp.module').config(function($appProvider) {
          *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
          * })
          * </pre>
@@ -235,7 +237,7 @@ angular.module('core.app').provider('$app',
          * getter/setter para url do componente toolbar-title
          * @example
          * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
+         * angular.module('myApp.module').config(function($appProvider) {
          *      $appProvider.toolbarUrl('app/layout/my-toolbar.html')
          * })
          * </pre>
@@ -253,7 +255,7 @@ angular.module('core.app').provider('$app',
          * getter/setter para url do sidenav
          * @example
          * <pre>
-         * angular.module('myApp.module').config(function($appProvider) {     
+         * angular.module('myApp.module').config(function($appProvider) {
          *      $appProvider.sidenavUrl('app/layout/my-sidenav.html')
          * })
          * </pre>
