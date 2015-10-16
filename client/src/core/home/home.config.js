@@ -1,6 +1,7 @@
 'use strict';
 /*global window*/
 angular.module('core.home').config( /*@ngInject*/ function($pageProvider, $stateProvider, $urlRouterProvider, $locationProvider, $userProvider) {
+    //$pageProvider.abstractRoute = false;
     /**
      * States & Routes
      */

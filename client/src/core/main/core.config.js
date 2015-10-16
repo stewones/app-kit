@@ -1,28 +1,30 @@
 'use strict';
-angular.module('core.app').config( /*@ngInject*/ function($appProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, $translateProvider, enviroment, setting, api) {
-    //
-    // States & Routes
-    //    
-    $stateProvider.state('app', {
-        abstract: true,
-        views: {
-            'app': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $appProvider.layoutUrl();
+angular.module('core.app').config( /*@ngInject*/ function($appProvider, $pageProvider, $logProvider, $urlMatcherFactoryProvider, $stateProvider, $urlRouterProvider, $locationProvider, $mdThemingProvider, $authProvider, $httpProvider, $loginProvider, $userProvider, $sessionStorageProvider, $translateProvider, enviroment, setting, api) {
+    if ($pageProvider.abstractRoute) {
+        //
+        // States & Routes
+        //    
+        $stateProvider.state('app', {
+            abstract: true,
+            views: {
+                'app': {
+                    templateUrl: /*@ngInject*/ function() {
+                        return $appProvider.layoutUrl();
+                    },
                 },
-            },
-            'toolbar@app': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $appProvider.toolbarUrl();
-                }
-            },
-            'sidenav@app': {
-                templateUrl: /*@ngInject*/ function() {
-                    return $appProvider.sidenavUrl();
+                'toolbar@app': {
+                    templateUrl: /*@ngInject*/ function() {
+                        return $appProvider.toolbarUrl();
+                    }
+                },
+                'sidenav@app': {
+                    templateUrl: /*@ngInject*/ function() {
+                        return $appProvider.sidenavUrl();
+                    }
                 }
             }
-        }
-    });
+        });
+    }
     $locationProvider.html5Mode(true);
     //
     // Redirect Trailing Slash

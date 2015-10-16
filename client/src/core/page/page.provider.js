@@ -107,6 +107,7 @@ angular.module('core.page').provider('$page',
          * armazena open graph tags
          **/
         this._ogTag = '';
+        this.abstractRoute = true;
         /**
          * @ngdoc function
          * @name core.page.$pageProvider#$get
@@ -140,7 +141,8 @@ angular.module('core.page').provider('$page',
                 ogUrl: ogUrl,
                 ogImage: ogImage,
                 ogSection: ogSection,
-                ogTag: ogTag
+                ogTag: ogTag,
+                abstractRoute: this.abstractRoute
             }
         }
         /**
