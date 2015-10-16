@@ -511,11 +511,17 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $pagePro
             }
         },
         resolve: {
-            company: function($scope) {
-                console.log('aaa')
-                $scope.$emit('$CompanyResolved', {
-                    aa: 'bb'
-                });
+            company: function($rootScope, $location, $http, setting, api) {
+                if (setting.resolveCompany) {
+                    var baseUrl = $location.host().replace('www.', '');
+                    $http.post(api.url + '/api/companies/land', {
+                        ref: baseUrl
+                    }).then(function(response) {
+                        $rootScope.$emit('$CompanyResolved', response);
+                    }, function(response) {
+                        $rootScope.$emit('$CompanyResolved', false, response);
+                    });
+                }
             }
         }
     });
@@ -3054,17 +3060,6 @@ angular.module('core.utils').directive('addrForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
-angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
-    return {
-        restrict: 'EA',
-        link: /*@ngInject*/ function($scope) {
-            $timeout(function() {
-                $scope.$emit('reset');
-            }, 5000)
-        }
-    }
-});
-'use strict';
 angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
     var vm = this;
     vm.busy = false;
@@ -3132,6 +3127,17 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
     }
 });
 'use strict';
+angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
+    return {
+        restrict: 'EA',
+        link: /*@ngInject*/ function($scope) {
+            $timeout(function() {
+                $scope.$emit('reset');
+            }, 5000)
+        }
+    }
+});
+'use strict';
 angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, $auth, lodash) {
     var vm = this,
         _ = lodash;
@@ -3189,6 +3195,59 @@ angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function(
         controller: 'CompanyChooserCtrl',
         controllerAs: 'vm',
         templateUrl: 'core/utils/directives/companyChooser/companyChooser.tpl.html'
+    }
+});
+'use strict';
+//https://github.com/sparkalow/angular-count-to
+angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
+    return {
+        replace: false,
+        scope: true,
+        link: function(scope, element, attrs) {
+            var e = element[0];
+            var num, refreshInterval, duration, steps, step, countTo, value, increment;
+            var calculate = function() {
+                refreshInterval = 30;
+                step = 0;
+                scope.timoutId = null;
+                countTo = parseInt(attrs.countTo) || 0;
+                scope.value = parseInt(attrs.value, 10) || 0;
+                duration = (parseFloat(attrs.duration) * 1000) || 0;
+                steps = Math.ceil(duration / refreshInterval);
+                increment = ((countTo - scope.value) / steps);
+                num = scope.value;
+            }
+            var tick = function() {
+                scope.timoutId = $timeout(function() {
+                    num += increment;
+                    step++;
+                    if (step >= steps) {
+                        $timeout.cancel(scope.timoutId);
+                        num = countTo;
+                        e.textContent = countTo;
+                    } else {
+                        e.textContent = Math.round(num);
+                        tick();
+                    }
+                }, refreshInterval);
+            }
+            var start = function() {
+                if (scope.timoutId) {
+                    $timeout.cancel(scope.timoutId);
+                }
+                calculate();
+                tick();
+            }
+            attrs.$observe('countTo', function(val) {
+                if (val) {
+                    start();
+                }
+            });
+            attrs.$observe('value', function(val) {
+                start();
+            });
+            return true;
+        }
     }
 });
 'use strict';
@@ -3261,59 +3320,6 @@ angular.module('core.utils').directive('contactForm', /*@ngInject*/ function() {
         restrict: 'EA'
     }
 })
-'use strict';
-//https://github.com/sparkalow/angular-count-to
-angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
-    return {
-        replace: false,
-        scope: true,
-        link: function(scope, element, attrs) {
-            var e = element[0];
-            var num, refreshInterval, duration, steps, step, countTo, value, increment;
-            var calculate = function() {
-                refreshInterval = 30;
-                step = 0;
-                scope.timoutId = null;
-                countTo = parseInt(attrs.countTo) || 0;
-                scope.value = parseInt(attrs.value, 10) || 0;
-                duration = (parseFloat(attrs.duration) * 1000) || 0;
-                steps = Math.ceil(duration / refreshInterval);
-                increment = ((countTo - scope.value) / steps);
-                num = scope.value;
-            }
-            var tick = function() {
-                scope.timoutId = $timeout(function() {
-                    num += increment;
-                    step++;
-                    if (step >= steps) {
-                        $timeout.cancel(scope.timoutId);
-                        num = countTo;
-                        e.textContent = countTo;
-                    } else {
-                        e.textContent = Math.round(num);
-                        tick();
-                    }
-                }, refreshInterval);
-            }
-            var start = function() {
-                if (scope.timoutId) {
-                    $timeout.cancel(scope.timoutId);
-                }
-                calculate();
-                tick();
-            }
-            attrs.$observe('countTo', function(val) {
-                if (val) {
-                    start();
-                }
-            });
-            attrs.$observe('value', function(val) {
-                start();
-            });
-            return true;
-        }
-    }
-});
 'use strict';
 angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
     return {
@@ -3495,48 +3501,6 @@ angular.module('core.utils').directive('infiniteScroll', /*@ngInject*/ function 
     }
 })
 'use strict';
-angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, $page, $timeout, lodash, api) {
-    var vm = this,
-        _ = lodash;
-    $scope.lead = {};
-    $scope.register = function() {
-        vm.busy = true;
-        var onSuccess = function() {
-            vm.busy = false;
-            var name = $scope.lead.name ? $scope.lead.name : '';
-            $page.toast(name + ' seu contato foi enviado, agradecemos o interesse.', 10000);
-            $timeout(function() {
-                $scope.lead = {};
-            }, 500)
-        }
-        var onFail = function(response) {
-            vm.busy = false;
-            $page.toast(response.error ? response.error : response);
-        }
-        $http.post(api.url + '/api/leads', $scope.lead).success(onSuccess).error(onFail);
-    }
-
-    $scope.isDisabled = function(fieldName) {
-        return _.indexOf($scope.dont, fieldName) < 0 ? false : true;
-    }
-});
-'use strict';
-angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            label: '@',
-            dont: '=',
-            templateUrl: '='
-        },
-        templateUrl: function(elem, attr) {
-            return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/leadForm/leadForm.tpl.html';
-        },
-        controller: 'LeadFormCtrl',
-        controllerAs: 'vm',
-        replace: true
-    }
-})
-'use strict';
 angular.module('core.utils').controller('LiveChipsCtrl', /*@ngInject*/ function($scope, $rootScope) {
     var vm = this;
     vm.applyRole = applyRole;
@@ -3625,6 +3589,48 @@ angular.module('core.utils').directive('liveChips', /*@ngInject*/ function() {
 
     }
 });
+'use strict';
+angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, $page, $timeout, lodash, api) {
+    var vm = this,
+        _ = lodash;
+    $scope.lead = {};
+    $scope.register = function() {
+        vm.busy = true;
+        var onSuccess = function() {
+            vm.busy = false;
+            var name = $scope.lead.name ? $scope.lead.name : '';
+            $page.toast(name + ' seu contato foi enviado, agradecemos o interesse.', 10000);
+            $timeout(function() {
+                $scope.lead = {};
+            }, 500)
+        }
+        var onFail = function(response) {
+            vm.busy = false;
+            $page.toast(response.error ? response.error : response);
+        }
+        $http.post(api.url + '/api/leads', $scope.lead).success(onSuccess).error(onFail);
+    }
+
+    $scope.isDisabled = function(fieldName) {
+        return _.indexOf($scope.dont, fieldName) < 0 ? false : true;
+    }
+});
+'use strict';
+angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            label: '@',
+            dont: '=',
+            templateUrl: '='
+        },
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/leadForm/leadForm.tpl.html';
+        },
+        controller: 'LeadFormCtrl',
+        controllerAs: 'vm',
+        replace: true
+    }
+})
 'use strict';
 /**
  * @ngdoc object
