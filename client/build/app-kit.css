@@ -725,16 +725,6 @@ ul.top-menu li a:hover {
 .opacity-7 { opacity: .7 }
 .opacity-8 { opacity: .8 }
 .opacity-9 { opacity: .9 }
-.lead-form md-progress-circular {
-    margin: 14px 0 0 -18px;
-    opacity: 0
-}
-.lead-form md-progress-circular.busy {
-    opacity: 1
-}
-.lead-form md-input-container {
-    padding-bottom: 13px;
-}
 live-chips md-chips.md-default-theme .md-chips { padding: 0px; margin-top: 16px; }
 live-chips md-chips.md-default-theme .md-chips:first-child { margin-top: 0px; }
 live-chips .chips-wrap  { margin-bottom: 2px; }
@@ -750,8 +740,49 @@ live-chips .filter-opt { min-height: 23px; }
 live-chips .filter-opt a i { color: #ccc }
 live-chips .filter-opt a:hover { text-decoration: underline;} 
 live-chips .filter-opt .truncate { width: 155px !important;}
+.lead-form md-progress-circular {
+    margin: 14px 0 0 -18px;
+    opacity: 0
+}
+.lead-form md-progress-circular.busy {
+    opacity: 1
+}
+.lead-form md-input-container {
+    padding-bottom: 13px;
+}
 .opacity-9 { opacity: .9 }
 .opacity-1 { opacity: 1 }
+.toolbar-avatar menu-avatar img {
+    margin: 18px 0 0 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.toolbar-avatar .md-title {
+    margin-top: -18px;
+    height: 19px;
+    font-size: 14px;
+    margin-bottom: 0;
+    text-transform: capitalize;
+    text-align: right;
+}
+
+.toolbar-avatar .md-caption {
+    text-transform: lowercase;
+    font-size: 12px;
+    text-align: right;
+    height: 19px;
+    margin-top: -3px;
+}
+
+.toolbar-avatar md-menu-item {
+    height: 34px;
+}
+
+.toolbar-avatar button.logged-in-menu-button {
+    margin-top: -32px;
+    height: 95px;
+}
 .opt-out {
     margin: 10px 10px 30px 0;
     background-color: #fff;
@@ -826,35 +857,4 @@ live-chips .filter-opt .truncate { width: 155px !important;}
 .animate-repeat-opt-out.ng-leave, .animate-repeat-opt-out.ng-move.ng-move-active, .animate-repeat-opt-out.ng-enter.ng-enter-active {
     opacity: 1;
     /*max-height:40px;*/
-}
-.toolbar-avatar menu-avatar img {
-    margin: 18px 0 0 10px;
-    width: 50px;
-    height: 50px;
-}
-
-.toolbar-avatar .md-title {
-    margin-top: -18px;
-    height: 19px;
-    font-size: 14px;
-    margin-bottom: 0;
-    text-transform: capitalize;
-    text-align: right;
-}
-
-.toolbar-avatar .md-caption {
-    text-transform: lowercase;
-    font-size: 12px;
-    text-align: right;
-    height: 19px;
-    margin-top: -3px;
-}
-
-.toolbar-avatar md-menu-item {
-    height: 34px;
-}
-
-.toolbar-avatar button.logged-in-menu-button {
-    margin-top: -32px;
-    height: 95px;
 }
