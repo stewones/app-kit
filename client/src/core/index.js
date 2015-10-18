@@ -21,6 +21,5 @@ angular.module('app.kit', [
     //
     // Load core kit
     //
-    'core.app',
-    'core.home'
+    'core.app'    
 ]);

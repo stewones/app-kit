@@ -9,6 +9,7 @@ angular.module('core.app', [
     'app.env',
     'core.i18n',
     'core.utils',
+    'core.home',
     'core.page',
     'core.login',
     'core.user'
