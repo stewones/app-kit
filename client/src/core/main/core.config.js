@@ -25,12 +25,15 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $pagePro
         resolve: {
             company: function($rootScope, $location, $http, setting, api) {
                 if (setting.resolveCompany) {
+                    $page.load.init();
                     var baseUrl = $location.host().replace('www.', '');
                     $http.post(api.url + '/api/companies/land', {
                         ref: baseUrl
                     }).then(function(response) {
+                        $page.load.done();
                         $rootScope.$emit('$CompanyResolved', response);
                     }, function(response) {
+                        $page.load.done();
                         $rootScope.$emit('$CompanyResolved', false, response);
                     });
                 }

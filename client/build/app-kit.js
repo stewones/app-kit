@@ -513,12 +513,15 @@ angular.module('core.app').config( /*@ngInject*/ function($appProvider, $pagePro
         resolve: {
             company: function($rootScope, $location, $http, setting, api) {
                 if (setting.resolveCompany) {
+                    $page.load.init();
                     var baseUrl = $location.host().replace('www.', '');
                     $http.post(api.url + '/api/companies/land', {
                         ref: baseUrl
                     }).then(function(response) {
+                        $page.load.done();
                         $rootScope.$emit('$CompanyResolved', response);
                     }, function(response) {
+                        $page.load.done();
                         $rootScope.$emit('$CompanyResolved', false, response);
                     });
                 }
@@ -1979,6 +1982,63 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
     }
 })
 'use strict';
+/* global gapi */
+angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
+    var vm = this;
+    vm.clientId = setting.google.clientId;
+    vm.language = setting.google.language;
+    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
+        // Send login to server or save into cookie
+        gapi.client.load('plus', 'v1', apiClientLoaded);
+    });
+    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
+        // @todo Auth failure or signout detected
+    });
+
+    function apiClientLoaded() {
+        gapi.client.plus.people.get({
+            userId: 'me'
+        }).execute(handleResponse);
+    }
+
+    function handleResponse(glUser) {
+        login(glUser);
+    }
+
+    function login(glUser) {
+        $page.load.init();
+        var onSuccess = function(response) {
+            $page.load.done();
+            var msg = false;
+            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
+            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
+            $auth.setToken(response.data.token);
+            var userInstance = $user.instance();
+            if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true, msg);
+        }
+        var onFail = function(result) {
+            $page.load.done();
+            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(3000))
+        }
+        $http.post(api.url + '/auth/google', {
+            provider: 'google',
+            id: glUser.id,
+            firstName: glUser.name.givenName,
+            lastName: glUser.name.familyName,
+            email: glUser.emails[0].value,
+            gender: glUser.gender
+        }).then(onSuccess, onFail);
+    }
+})
+'use strict';
+angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
+    return {
+        templateUrl: "core/login/google/googleLogin.tpl.html",
+        controller: 'GoogleLoginCtrl',
+        controllerAs: 'google'
+    }
+})
+'use strict';
 /**
  * @ngdoc object
  * @name core.login.controller:$LoginFormCtrl
@@ -2046,63 +2106,6 @@ angular.module('core.login').directive('loginForm', /*@ngInject*/ function() {
         link: function() {}
     }
 });
-'use strict';
-/* global gapi */
-angular.module('google.login').controller('GoogleLoginCtrl', /*@ngInject*/ function($auth, $scope, $http, $mdToast, $state, $page, $user, setting, api) {
-    var vm = this;
-    vm.clientId = setting.google.clientId;
-    vm.language = setting.google.language;
-    $scope.$on('event:google-plus-signin-success', function( /*event, authResult*/ ) {
-        // Send login to server or save into cookie
-        gapi.client.load('plus', 'v1', apiClientLoaded);
-    });
-    $scope.$on('event:google-plus-signin-failure', function( /*event, authResult*/ ) {
-        // @todo Auth failure or signout detected
-    });
-
-    function apiClientLoaded() {
-        gapi.client.plus.people.get({
-            userId: 'me'
-        }).execute(handleResponse);
-    }
-
-    function handleResponse(glUser) {
-        login(glUser);
-    }
-
-    function login(glUser) {
-        $page.load.init();
-        var onSuccess = function(response) {
-            $page.load.done();
-            var msg = false;
-            var gender = (response.data.user.profile && response.data.user.profile.gender && response.data.user.profile.gender === 'F') ? 'a' : 'o';
-            if (response.data.new) msg = 'Olá ' + response.data.user.profile.firstName + ', você entrou. Seja bem vind' + gender + ' ao ' + setting.name;
-            $auth.setToken(response.data.token);
-            var userInstance = $user.instance();
-            if (typeof userInstance.init === 'function') $user.instance().init(response.data.user, true, msg);
-        }
-        var onFail = function(result) {
-            $page.load.done();
-            $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(3000))
-        }
-        $http.post(api.url + '/auth/google', {
-            provider: 'google',
-            id: glUser.id,
-            firstName: glUser.name.givenName,
-            lastName: glUser.name.familyName,
-            email: glUser.emails[0].value,
-            gender: glUser.gender
-        }).then(onSuccess, onFail);
-    }
-})
-'use strict';
-angular.module('google.login').directive('googleLogin', /*@ngInject*/ function() {
-    return {
-        templateUrl: "core/login/google/googleLogin.tpl.html",
-        controller: 'GoogleLoginCtrl',
-        controllerAs: 'google'
-    }
-})
 'use strict';
 angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ function($scope, $auth, $mdToast, $user, $page, $login, setting) {
     $scope.register = register;
@@ -4145,10 +4148,10 @@ $templateCache.put("core/page/menu/menuLink.tpl.html","<md-button ng-class=\"{\'
 $templateCache.put("core/page/menu/menuToggle.tpl.html","<md-button class=\"md-button-toggle\" ng-click=\"toggle()\" aria-controls=\"app-menu-{{section.name | nospace}}\" flex=\"\" layout=\"row\" aria-expanded=\"{{isOpen()}}\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i> <span class=\"title\">{{section.name}}</span> <span aria-hidden=\"true\" class=\"md-toggle-icon\" ng-class=\"{\'toggled\' : isOpen()}\"></span></md-button><ul ng-show=\"isOpen()\" id=\"app-menu-{{section.name | nospace}}\" class=\"menu-toggle-list\"><li ng-repeat=\"page in section.pages\"><div layout=\"row\"><menu-link section=\"page\" flex=\"\"></menu-link><md-button flex=\"25\" ng-click=\"cart.add(page._)\" aria-label=\"adicione {{page.name}} ao carrinho\" title=\"adicione {{page.name}} ao carrinho\" ng-if=\"section.product\"><i class=\"fa fa-cart-plus\"></i></md-button></div></li></ul>");
 $templateCache.put("core/page/menu/sidenav.tpl.html","<div layout=\"column\"><menu-avatar first-name=\"app.user.profile.firstName\" last-name=\"app.user.profile.lastName\" gender=\"app.user.profile.gender\" facebook=\"app.user.facebook\"></menu-avatar><div flex=\"\"><ul class=\"app-menu\"><li ng-repeat=\"section in app.menu().sections\" class=\"parent-list-item\" ng-class=\"{\'parentActive\' : app.menu().isSectionSelected(section)}\"><h2 class=\"menu-heading\" ng-if=\"section.type === \'heading\'\" id=\"heading_{{ section.name | nospace }}\" layout=\"row\"><i ng-if=\"section.icon\" class=\"{{section.icon}}\"></i><md-icon ng-if=\"section.iconMi\" md-font-set=\"material-icons\">{{section.icon}}</md-icon><my-svg-icon ng-if=\"section.iconSvg\" class=\"ic_24px\" icon=\"{{section.iconSvg}}\"></my-svg-icon><span>{{section.name}}</span></h2><menu-link section=\"section\" ng-if=\"section.type === \'link\'\"></menu-link><menu-toggle section=\"section\" ng-if=\"section.type === \'toggle\'\"></menu-toggle><ul ng-if=\"section.children\" class=\"menu-nested-list\"><li ng-repeat=\"child in section.children\" ng-class=\"{\'childActive\' : app.menu().isChildSectionSelected(child)}\"><menu-toggle section=\"child\"></menu-toggle></li></ul></li><li><a class=\"md-button md-default-theme\" ng-click=\"app.logout()\"><i class=\"fa fa-power-off\"></i> <span class=\"title\">Sair</span></a></li></ul></div><div layout=\"column\" layout-align=\"center center\" class=\"page-footer text-center\"><md-content flex=\"\" class=\"main-wrapper\"><div class=\"copyright\"><strong>{{ app.setting().copyright }} © {{ app.year() }}</strong></div><div class=\"terms\"><a ui-sref=\"app.pages({slug:\'privacy\'})\">Política de Privacidade</a> - <a ui-sref=\"app.pages({slug:\'terms\'})\">Termos de Serviço</a></div></md-content></div></div>");
 $templateCache.put("core/page/toolbar/toolbar.tpl.html","<div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><div hide=\"\" show-sm=\"\" show-md=\"\" layout=\"row\"><a ng-click=\"app.menu().open()\" ng-if=\"app.user().isAuthed()\" aria-label=\"menu\"><md-icon md-svg-src=\"assets/images/icons/ic_menu_24px.svg\"></md-icon></a><toolbar-title hide-sm=\"\" hide-md=\"\"></toolbar-title></div><toolbar-title hide=\"\" show-gt-md=\"\"></toolbar-title><div layout=\"row\" ng-if=\"app.state().current.name != \'app.home\'\"><ul class=\"top-menu\"><li></li></ul><toolbar-menu ng-if=\"app.user().isAuthed()\"></toolbar-menu><a ui-sref=\"app.home\"><img hide=\"\" show-sm=\"\" show-md=\"\" class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div></div>");
-$templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/menu/facepile/menuFacepile.tpl.html","<div layout=\"column\"><md-progress-circular class=\"loading md-primary\" md-mode=\"indeterminate\" md-diameter=\"28\" ng-show=\"loading\"></md-progress-circular><div ng-hide=\"loading\" class=\"fb-page\" data-href=\"{{url}}\" data-width=\"{{width}}\" data-hide-cover=\"{{hideCover}}\" data-show-facepile=\"{{facepile}}\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"></div></div></div>");
-$templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
+$templateCache.put("core/page/menu/avatar/menuAvatar.tpl.html","<div layout=\"column\" class=\"avatar-wrapper\"><img ng-src=\"{{vm.picture}}\" class=\"avatar\"><p class=\"name\"><strong>{{firstName}} {{lastName}}</strong></p></div>");
 $templateCache.put("core/page/toolbar/title/toolbarTitle.tpl.html","<div class=\"logo-company\" layout=\"row\" layout-align=\"space-between center\"><a href=\"/\"><img class=\"logo-header\" ng-src=\"{{app.logoWhite}}\"></a></div>");
+$templateCache.put("core/page/toolbar/menu/toolbarMenu.tpl.html","<ul class=\"top-menu\"><li ng-repeat=\"item in menu\"><a id=\"{{item.id}}\" title=\"{{item.name}}\"><i class=\"{{item.icon}}\"></i></a></li></ul>");
 $templateCache.put("core/utils/directives/addrForm/addrForm.tpl.html","<form name=\"handleForm\" class=\"addr-form\"><div layout=\"row\" layout-sm=\"column\"><ceper endpoint-url=\"{{vm.endpointCepUrl}}\" ng-model=\"ngModel.cep\" address=\"ngModel\"></ceper><md-input-container flex=\"\"><label>Endereço</label> <input ng-model=\"ngModel.street\" required=\"\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Número</label> <input type=\"number\" ng-model=\"ngModel.num\"></md-input-container><md-input-container flex=\"\"><label>Bairro</label> <input ng-model=\"ngModel.district\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Complemento</label> <input ng-model=\"ngModel.comp\" md-maxlength=\"50\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Cidade</label> <input ng-model=\"ngModel.city\" required=\"\"></md-input-container><md-select ng-model=\"ngModel.state\" placeholder=\"Estado\" flex=\"\" required=\"\"><md-option ng-value=\"opt.value\" ng-repeat=\"opt in vm.states\">{{ opt.name }}</md-option></md-select></div><md-button class=\"md-fab md-primary md-hue-2 save\" aria-label=\"Salvar\" ng-if=\"endpointUrl\" ng-click=\"vm.save()\" ng-disabled=\"vm.busy||handleForm.$invalid||!handleForm.$dirty||vm.pristine()\"><md-tooltip>Salvar</md-tooltip><i class=\"fa fa-thumbs-up\"></i></md-button></form>");
 $templateCache.put("core/utils/directives/ceper/ceper.tpl.html","<md-input-container class=\"ceper\" flex=\"\"><label><div clayout=\"row\"><label>Cep</label><md-progress-circular class=\"load\" md-mode=\"indeterminate\" md-diameter=\"18\" ng-show=\"vm.busy\"></md-progress-circular></div></label> <input type=\"text\" ng-minlength=\"\'8\'\" ng-maxlength=\"\'8\'\" ng-model=\"ngModel\" ng-change=\"vm.get()\" required=\"\"></md-input-container>");
 $templateCache.put("core/utils/directives/companyChooser/companyChooser.tpl.html","<div class=\"company-chooser\"><div ng-hide=\"hideMe\" ng-if=\"companies.length\"><md-select aria-label=\"placeholder\" ng-model=\"vm.companyid\" placeholder=\"{{placeholder}}\" flex=\"\" required=\"\"><md-option ng-value=\"opt.company._id\" ng-repeat=\"opt in companies\">{{ opt.company.name }}</md-option></md-select></div></div>");
@@ -4157,8 +4160,8 @@ $templateCache.put("core/utils/directives/dashboardStats/dashboardStats.tpl.html
 $templateCache.put("core/utils/directives/imageCutter/imageCutter.tpl.html","<div class=\"image-cutter-wrapper\"><ng-transclude ng-click=\"modal($event)\" ng-if=\"cutOnModal===\'true\'\"></ng-transclude><image-cutter-area ng-if=\"cutOnModal != \'true\'\" endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></div>");
 $templateCache.put("core/utils/directives/imageCutter/modal.tpl.html","<md-dialog class=\"image-cutter-wrapper\" aria-label=\"{{cutOnModalTitle}}\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>{{cutOnModalTitle}}</h5><span flex=\"\"></span><md-button class=\"close md-icon-button\" ng-click=\"hide()\"><i class=\"material-icons\">&#xE14C;</i></md-button></div></md-toolbar><md-dialog-content><p ng-if=\"cutText\">{{cutText}}</p><image-cutter-area endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></md-dialog-content></md-dialog>");
 $templateCache.put("core/utils/directives/leadForm/leadForm.tpl.html","<form class=\"lead-form\" name=\"leadForm\" novalidate=\"\"><md-input-container flex=\"\" ng-if=\"!isDisabled(\'name\')\"><label>Seu nome</label> <input name=\"name\" ng-model=\"lead.name\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Melhor email</label> <input name=\"email\" type=\"email\" ng-model=\"lead.email\" required=\"\"></md-input-container><md-input-container flex=\"\" ng-if=\"!isDisabled(\'company\')\"><label>Empresa</label> <input name=\"company\" ng-model=\"lead.company\" required=\"\"></md-input-container><md-input-container flex=\"\" ng-if=\"!isDisabled(\'phone\')\"><label>Telefone</label> <input name=\"phone\" ng-model=\"lead.phone\" ui-br-phone-number=\"\" required=\"\"></md-input-container><md-button ng-click=\"register()\" ng-disabled=\"leadForm.$invalid\" class=\"md-primary\">{{label?label:\'Enviar\'}}</md-button><md-progress-circular md-diameter=\"20\" class=\"md-warn md-hue-3\" md-mode=\"indeterminate\" ng-if=\"vm.busy\" ng-class=\"{\'busy\':vm.busy}\"></md-progress-circular><p class=\"lead-term\">*nunca divulgaremos seus dados</p></form>");
-$templateCache.put("core/utils/directives/moipCcForm/moipCcForm.tpl.html","<form name=\"handleForm\" class=\"moip-cc-form\"><div layout=\"row\" layout-sm=\"column\"><md-select ng-model=\"ngModel.empresa\" placeholder=\"Instituição\" flex=\"\" required=\"\"><md-option ng-value=\"opt\" ng-repeat=\"opt in vm.cc\">{{ opt }}</md-option></md-select><md-select ng-model=\"ngModel.parcelas\" placeholder=\"Parcelas\" flex=\"\" required=\"\"><md-option ng-value=\"opt\" ng-repeat=\"opt in parcels\">{{ opt }}</md-option></md-select></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Número do cartão</label> <input ng-model=\"ngModel.numero\" type=\"number\" ng-minlength=\"13\" ng-maxlength=\"19\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Validade (MM/AA)</label> <input ng-model=\"ngModel.validade\" mask=\"12/99\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Chave de segurança</label> <input type=\"number\" ng-model=\"ngModel.chave\" ng-minlength=\"3\" ng-maxlength=\"4\" required=\"\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Nome impresso</label> <input ng-model=\"ngModel.nome\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>CPF</label> <input ng-model=\"ngModel.cpf\" ui-br-cpf-mask=\"\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Nascimento</label> <input ng-model=\"ngModel.nascimento\" mask=\"39/19/9999\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Telefone</label> <input ng-model=\"ngModel.telefone\" ui-br-phone-number=\"\" required=\"\"></md-input-container></div></form>");
 $templateCache.put("core/utils/directives/liveChips/liveChips.tpl.html","<md-chips ng-model=\"vm.selectedItems\" md-autocomplete-snap=\"\" md-require-match=\"\"><md-autocomplete md-selected-item=\"vm.selectedItem\" md-search-text=\"vm.searchText\" md-items=\"item in vm.querySearch(vm.searchText)\" md-item-text=\"item\" placeholder=\"{{vm.placeholder}}\"><span md-highlight-text=\"vm.searchText\">{{item}}</span></md-autocomplete><md-chip-template><span><a ng-class=\"{\'truncate\':truncateInput}\" title=\"{{$chip}}\">{{$chip}}</a></span></md-chip-template></md-chips><v-accordion ng-hide=\"hideOptions\" class=\"vAccordion--default\" layout-align=\"start start\" layout-align-sm=\"center start\" control=\"accordion\"><v-pane><v-pane-header class=\"border-bottom\"><div>Opções</div></v-pane-header><v-pane-content><md-list><md-list-item class=\"filter-opt\" ng-repeat=\"chip in items track by $index\"><div class=\"md-list-item-text compact\"><a ng-class=\"{\'truncate\':truncateOptions}\" title=\"{{chip}}\" ng-click=\"vm.applyRole(chip,accordion)\"><i class=\"fa fa-gear\"></i> {{chip}}</a></div></md-list-item></md-list></v-pane-content></v-pane></v-accordion>");
+$templateCache.put("core/utils/directives/moipCcForm/moipCcForm.tpl.html","<form name=\"handleForm\" class=\"moip-cc-form\"><div layout=\"row\" layout-sm=\"column\"><md-select ng-model=\"ngModel.empresa\" placeholder=\"Instituição\" flex=\"\" required=\"\"><md-option ng-value=\"opt\" ng-repeat=\"opt in vm.cc\">{{ opt }}</md-option></md-select><md-select ng-model=\"ngModel.parcelas\" placeholder=\"Parcelas\" flex=\"\" required=\"\"><md-option ng-value=\"opt\" ng-repeat=\"opt in parcels\">{{ opt }}</md-option></md-select></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Número do cartão</label> <input ng-model=\"ngModel.numero\" type=\"number\" ng-minlength=\"13\" ng-maxlength=\"19\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Validade (MM/AA)</label> <input ng-model=\"ngModel.validade\" mask=\"12/99\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Chave de segurança</label> <input type=\"number\" ng-model=\"ngModel.chave\" ng-minlength=\"3\" ng-maxlength=\"4\" required=\"\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Nome impresso</label> <input ng-model=\"ngModel.nome\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>CPF</label> <input ng-model=\"ngModel.cpf\" ui-br-cpf-mask=\"\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Nascimento</label> <input ng-model=\"ngModel.nascimento\" mask=\"39/19/9999\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Telefone</label> <input ng-model=\"ngModel.telefone\" ui-br-phone-number=\"\" required=\"\"></md-input-container></div></form>");
 $templateCache.put("core/utils/directives/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");
 $templateCache.put("core/utils/directives/toolbarAvatar/toolbarAvatar.tpl.html","<div class=\"toolbar-avatar\"><md-menu><md-button aria-label=\"Open phone interactions menu\" ng-click=\"$mdOpenMenu()\" class=\"logged-in-menu-button\" ng-class=\"{\'md-icon-button\': app.mdMedia(\'sm\')}\"><div layout=\"row\" layout-align=\"end center\" class=\"toolbar-login-info\"><div layout=\"column\" layout-align=\"center\" class=\"toolbar-login-content\" show-gt-sm=\"\" hide-sm=\"\"><span class=\"md-title\">{{firstName}}</span> <span class=\"md-caption\">{{email}}</span></div><div layout=\"row\" layout-align=\"center center\"><menu-avatar facebook=\"facebook\" md-menu-origin=\"\"></menu-avatar></div></div></md-button><md-menu-content width=\"4\"><md-menu-item ng-repeat=\"item in menu\"><md-button ng-href=\"{{item.href}}\"><md-icon md-font-icon=\"fa {{item.icon}}\" md-menu-align-target=\"\"></md-icon>{{item.title}}</md-button></md-menu-item><md-menu-divider></md-menu-divider><md-menu-item><md-button ng-click=\"vm.logout()\"><md-icon md-font-icon=\"fa fa-power-off\" md-menu-align-target=\"\"></md-icon>Sair</md-button></md-menu-item></md-menu-content></md-menu></div>");
 $templateCache.put("core/utils/directives/imageCutter/area/imageCutterArea.tpl.html","<div class=\"image-cutter\"><image-crop data-width=\"{{cutWidth}}\" data-height=\"{{cutHeight}}\" data-shape=\"{{cutShape}}\" data-step=\"cutStep\" data-result=\"cutResult\"></image-crop><div hide=\"\"><md-button class=\"refresh md-raised\" ng-click=\"reboot()\" aria-label=\"Recomeçar\"><i class=\"fa fa-refresh\"></i><md-tooltip>Recomeçar</md-tooltip></md-button><div class=\"progress\" ng-show=\"busy\"><md-progress-circular class=\"md-hue-2\" md-mode=\"indeterminate\"></md-progress-circular></div></div></div>");}]);
