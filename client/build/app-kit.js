@@ -29,7 +29,6 @@ angular.module('core.app', [
     'app.env',
     'core.i18n',
     'core.utils',
-    'core.home',
     'core.page',
     'core.login',
     'core.user'
@@ -97,7 +96,8 @@ angular.module('app.kit', [
     //
     // Load core kit
     //
-    'core.app'
+    'core.app',
+    'core.home'
 ]);
 'use strict';
 /*global window*/
@@ -1507,7 +1507,7 @@ angular.module('core.user').provider('$user',
          * @ngdoc object
          * @name core.user.$userProvider#_instance
          * @propertyOf core.user.$userProvider
-         * @description 
+         * @description
          * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
          **/
         this._instance = null;
@@ -1515,7 +1515,7 @@ angular.module('core.user').provider('$user',
          * @ngdoc object
          * @name core.user.$userProvider#_setting
          * @propertyOf core.user.$userProvider
-         * @description 
+         * @description
          * Armazena configurações
          **/
         this._setting = {};
@@ -1523,18 +1523,19 @@ angular.module('core.user').provider('$user',
          * @ngdoc function
          * @name core.user.$userProvider#$get
          * @propertyOf core.user.$userProvider
-         * @description 
+         * @description
          * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($user) {     
+         * angular.module('myApp.module').controller('MyCtrl', function($user) {
          *      console.log($user.setting.roleForCompany);
          *      //printa a regra para empresa
          * })
          * </pre>
          * @return {object} objeto correspondente a uma Factory
          **/
-        this.$get = this.get = /*@ngInject*/ function($User, $app, $auth, $page, $rootScope, $sessionStorage, $translate) {
+        this.$get = this.get = /*@ngInject*/ function($User, $app, $auth, $page, $rootScope, $sessionStorage, $translate, lodash) {
+            var _ = lodash;
             return {
                 instance: function(user) {
                     if (user) return this._instance = user;
@@ -1614,7 +1615,7 @@ angular.module('core.user').provider('$user',
                  * @ngdoc function
                  * @name core.user.$userProvider#destroy
                  * @methodOf core.user.$userProvider
-                 * @description 
+                 * @description
                  * Apagar instância do usuário
                  * @example
                  * <pre>
@@ -1651,7 +1652,7 @@ angular.module('core.user').provider('$user',
                  * @ngdoc function
                  * @name core.user.$userProvider#logout
                  * @methodOf core.user.$userProvider
-                 * @description 
+                 * @description
                  * Apagar instância do usuário e sair
                  **/
                 logout: function(alert, cb) {
@@ -1681,8 +1682,14 @@ angular.module('core.user').provider('$user',
                     }
                     return role;
                 },
-                getCompany: function() {
+                getCompany: function(id) {
                     return this.getCompanies()[0].company;
+                    //@todo make this works with id param
+                    //     if (!id)
+                    //     return this.getCompanies()[0].company;
+                    // else _.each(this.getCompanies(), function(item){
+                    //     if (item.)
+                    // })
                 }
             }
         }
@@ -3198,59 +3205,6 @@ angular.module('core.utils').directive('companyChooser', /*@ngInject*/ function(
     }
 });
 'use strict';
-//https://github.com/sparkalow/angular-count-to
-angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
-    return {
-        replace: false,
-        scope: true,
-        link: function(scope, element, attrs) {
-            var e = element[0];
-            var num, refreshInterval, duration, steps, step, countTo, value, increment;
-            var calculate = function() {
-                refreshInterval = 30;
-                step = 0;
-                scope.timoutId = null;
-                countTo = parseInt(attrs.countTo) || 0;
-                scope.value = parseInt(attrs.value, 10) || 0;
-                duration = (parseFloat(attrs.duration) * 1000) || 0;
-                steps = Math.ceil(duration / refreshInterval);
-                increment = ((countTo - scope.value) / steps);
-                num = scope.value;
-            }
-            var tick = function() {
-                scope.timoutId = $timeout(function() {
-                    num += increment;
-                    step++;
-                    if (step >= steps) {
-                        $timeout.cancel(scope.timoutId);
-                        num = countTo;
-                        e.textContent = countTo;
-                    } else {
-                        e.textContent = Math.round(num);
-                        tick();
-                    }
-                }, refreshInterval);
-            }
-            var start = function() {
-                if (scope.timoutId) {
-                    $timeout.cancel(scope.timoutId);
-                }
-                calculate();
-                tick();
-            }
-            attrs.$observe('countTo', function(val) {
-                if (val) {
-                    start();
-                }
-            });
-            attrs.$observe('value', function(val) {
-                start();
-            });
-            return true;
-        }
-    }
-});
-'use strict';
 /**
  * @ngdoc object
  * @name core.utils.controller:ContactFormCtrl
@@ -3320,6 +3274,59 @@ angular.module('core.utils').directive('contactForm', /*@ngInject*/ function() {
         restrict: 'EA'
     }
 })
+'use strict';
+//https://github.com/sparkalow/angular-count-to
+angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
+    return {
+        replace: false,
+        scope: true,
+        link: function(scope, element, attrs) {
+            var e = element[0];
+            var num, refreshInterval, duration, steps, step, countTo, value, increment;
+            var calculate = function() {
+                refreshInterval = 30;
+                step = 0;
+                scope.timoutId = null;
+                countTo = parseInt(attrs.countTo) || 0;
+                scope.value = parseInt(attrs.value, 10) || 0;
+                duration = (parseFloat(attrs.duration) * 1000) || 0;
+                steps = Math.ceil(duration / refreshInterval);
+                increment = ((countTo - scope.value) / steps);
+                num = scope.value;
+            }
+            var tick = function() {
+                scope.timoutId = $timeout(function() {
+                    num += increment;
+                    step++;
+                    if (step >= steps) {
+                        $timeout.cancel(scope.timoutId);
+                        num = countTo;
+                        e.textContent = countTo;
+                    } else {
+                        e.textContent = Math.round(num);
+                        tick();
+                    }
+                }, refreshInterval);
+            }
+            var start = function() {
+                if (scope.timoutId) {
+                    $timeout.cancel(scope.timoutId);
+                }
+                calculate();
+                tick();
+            }
+            attrs.$observe('countTo', function(val) {
+                if (val) {
+                    start();
+                }
+            });
+            attrs.$observe('value', function(val) {
+                start();
+            });
+            return true;
+        }
+    }
+});
 'use strict';
 angular.module('core.utils').directive('dashboardStats', /*@ngInject*/ function() {
     return {
@@ -3501,6 +3508,48 @@ angular.module('core.utils').directive('infiniteScroll', /*@ngInject*/ function 
     }
 })
 'use strict';
+angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, $page, $timeout, lodash, api) {
+    var vm = this,
+        _ = lodash;
+    $scope.lead = {};
+    $scope.register = function() {
+        vm.busy = true;
+        var onSuccess = function() {
+            vm.busy = false;
+            var name = $scope.lead.name ? $scope.lead.name : '';
+            $page.toast(name + ' seu contato foi enviado, agradecemos o interesse.', 10000);
+            $timeout(function() {
+                $scope.lead = {};
+            }, 500)
+        }
+        var onFail = function(response) {
+            vm.busy = false;
+            $page.toast(response.error ? response.error : response);
+        }
+        $http.post(api.url + '/api/leads', $scope.lead).success(onSuccess).error(onFail);
+    }
+
+    $scope.isDisabled = function(fieldName) {
+        return _.indexOf($scope.dont, fieldName) < 0 ? false : true;
+    }
+});
+'use strict';
+angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
+    return {
+        scope: {
+            label: '@',
+            dont: '=',
+            templateUrl: '='
+        },
+        templateUrl: function(elem, attr) {
+            return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/leadForm/leadForm.tpl.html';
+        },
+        controller: 'LeadFormCtrl',
+        controllerAs: 'vm',
+        replace: true
+    }
+})
+'use strict';
 angular.module('core.utils').controller('LiveChipsCtrl', /*@ngInject*/ function($scope, $rootScope) {
     var vm = this;
     vm.applyRole = applyRole;
@@ -3589,48 +3638,6 @@ angular.module('core.utils').directive('liveChips', /*@ngInject*/ function() {
 
     }
 });
-'use strict';
-angular.module('core.utils').controller('LeadFormCtrl', /*@ngInject*/ function($scope, $http, $page, $timeout, lodash, api) {
-    var vm = this,
-        _ = lodash;
-    $scope.lead = {};
-    $scope.register = function() {
-        vm.busy = true;
-        var onSuccess = function() {
-            vm.busy = false;
-            var name = $scope.lead.name ? $scope.lead.name : '';
-            $page.toast(name + ' seu contato foi enviado, agradecemos o interesse.', 10000);
-            $timeout(function() {
-                $scope.lead = {};
-            }, 500)
-        }
-        var onFail = function(response) {
-            vm.busy = false;
-            $page.toast(response.error ? response.error : response);
-        }
-        $http.post(api.url + '/api/leads', $scope.lead).success(onSuccess).error(onFail);
-    }
-
-    $scope.isDisabled = function(fieldName) {
-        return _.indexOf($scope.dont, fieldName) < 0 ? false : true;
-    }
-});
-'use strict';
-angular.module('core.utils').directive('leadForm', /*@ngInject*/ function() {
-    return {
-        scope: {
-            label: '@',
-            dont: '=',
-            templateUrl: '='
-        },
-        templateUrl: function(elem, attr) {
-            return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/leadForm/leadForm.tpl.html';
-        },
-        controller: 'LeadFormCtrl',
-        controllerAs: 'vm',
-        replace: true
-    }
-})
 'use strict';
 /**
  * @ngdoc object
@@ -4150,8 +4157,8 @@ $templateCache.put("core/utils/directives/dashboardStats/dashboardStats.tpl.html
 $templateCache.put("core/utils/directives/imageCutter/imageCutter.tpl.html","<div class=\"image-cutter-wrapper\"><ng-transclude ng-click=\"modal($event)\" ng-if=\"cutOnModal===\'true\'\"></ng-transclude><image-cutter-area ng-if=\"cutOnModal != \'true\'\" endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></div>");
 $templateCache.put("core/utils/directives/imageCutter/modal.tpl.html","<md-dialog class=\"image-cutter-wrapper\" aria-label=\"{{cutOnModalTitle}}\"><md-toolbar><div class=\"md-toolbar-tools\"><h5>{{cutOnModalTitle}}</h5><span flex=\"\"></span><md-button class=\"close md-icon-button\" ng-click=\"hide()\"><i class=\"material-icons\">&#xE14C;</i></md-button></div></md-toolbar><md-dialog-content><p ng-if=\"cutText\">{{cutText}}</p><image-cutter-area endpoint-url=\"{{endpointUrl}}\" endpoint-params=\"endpointParams\" endpoint-success=\"endpointSuccess\" endpoint-fail=\"endpointFail\" cut-on-modal=\"{{cutOnModal}}\" cut-width=\"{{cutWidth}}\" cut-height=\"{{cutHeight}}\" cut-shape=\"{{cutShape}}\" cut-label=\"{{cutLabel}}\" cut-result=\"cutResult\" cut-step=\"cutStep\"></image-cutter-area></md-dialog-content></md-dialog>");
 $templateCache.put("core/utils/directives/leadForm/leadForm.tpl.html","<form class=\"lead-form\" name=\"leadForm\" novalidate=\"\"><md-input-container flex=\"\" ng-if=\"!isDisabled(\'name\')\"><label>Seu nome</label> <input name=\"name\" ng-model=\"lead.name\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Melhor email</label> <input name=\"email\" type=\"email\" ng-model=\"lead.email\" required=\"\"></md-input-container><md-input-container flex=\"\" ng-if=\"!isDisabled(\'company\')\"><label>Empresa</label> <input name=\"company\" ng-model=\"lead.company\" required=\"\"></md-input-container><md-input-container flex=\"\" ng-if=\"!isDisabled(\'phone\')\"><label>Telefone</label> <input name=\"phone\" ng-model=\"lead.phone\" ui-br-phone-number=\"\" required=\"\"></md-input-container><md-button ng-click=\"register()\" ng-disabled=\"leadForm.$invalid\" class=\"md-primary\">{{label?label:\'Enviar\'}}</md-button><md-progress-circular md-diameter=\"20\" class=\"md-warn md-hue-3\" md-mode=\"indeterminate\" ng-if=\"vm.busy\" ng-class=\"{\'busy\':vm.busy}\"></md-progress-circular><p class=\"lead-term\">*nunca divulgaremos seus dados</p></form>");
-$templateCache.put("core/utils/directives/liveChips/liveChips.tpl.html","<md-chips ng-model=\"vm.selectedItems\" md-autocomplete-snap=\"\" md-require-match=\"\"><md-autocomplete md-selected-item=\"vm.selectedItem\" md-search-text=\"vm.searchText\" md-items=\"item in vm.querySearch(vm.searchText)\" md-item-text=\"item\" placeholder=\"{{vm.placeholder}}\"><span md-highlight-text=\"vm.searchText\">{{item}}</span></md-autocomplete><md-chip-template><span><a ng-class=\"{\'truncate\':truncateInput}\" title=\"{{$chip}}\">{{$chip}}</a></span></md-chip-template></md-chips><v-accordion ng-hide=\"hideOptions\" class=\"vAccordion--default\" layout-align=\"start start\" layout-align-sm=\"center start\" control=\"accordion\"><v-pane><v-pane-header class=\"border-bottom\"><div>Opções</div></v-pane-header><v-pane-content><md-list><md-list-item class=\"filter-opt\" ng-repeat=\"chip in items track by $index\"><div class=\"md-list-item-text compact\"><a ng-class=\"{\'truncate\':truncateOptions}\" title=\"{{chip}}\" ng-click=\"vm.applyRole(chip,accordion)\"><i class=\"fa fa-gear\"></i> {{chip}}</a></div></md-list-item></md-list></v-pane-content></v-pane></v-accordion>");
 $templateCache.put("core/utils/directives/moipCcForm/moipCcForm.tpl.html","<form name=\"handleForm\" class=\"moip-cc-form\"><div layout=\"row\" layout-sm=\"column\"><md-select ng-model=\"ngModel.empresa\" placeholder=\"Instituição\" flex=\"\" required=\"\"><md-option ng-value=\"opt\" ng-repeat=\"opt in vm.cc\">{{ opt }}</md-option></md-select><md-select ng-model=\"ngModel.parcelas\" placeholder=\"Parcelas\" flex=\"\" required=\"\"><md-option ng-value=\"opt\" ng-repeat=\"opt in parcels\">{{ opt }}</md-option></md-select></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Número do cartão</label> <input ng-model=\"ngModel.numero\" type=\"number\" ng-minlength=\"13\" ng-maxlength=\"19\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Validade (MM/AA)</label> <input ng-model=\"ngModel.validade\" mask=\"12/99\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Chave de segurança</label> <input type=\"number\" ng-model=\"ngModel.chave\" ng-minlength=\"3\" ng-maxlength=\"4\" required=\"\"></md-input-container></div><div layout=\"row\" layout-sm=\"column\"><md-input-container flex=\"\"><label>Nome impresso</label> <input ng-model=\"ngModel.nome\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>CPF</label> <input ng-model=\"ngModel.cpf\" ui-br-cpf-mask=\"\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Nascimento</label> <input ng-model=\"ngModel.nascimento\" mask=\"39/19/9999\" required=\"\"></md-input-container><md-input-container flex=\"\"><label>Telefone</label> <input ng-model=\"ngModel.telefone\" ui-br-phone-number=\"\" required=\"\"></md-input-container></div></form>");
+$templateCache.put("core/utils/directives/liveChips/liveChips.tpl.html","<md-chips ng-model=\"vm.selectedItems\" md-autocomplete-snap=\"\" md-require-match=\"\"><md-autocomplete md-selected-item=\"vm.selectedItem\" md-search-text=\"vm.searchText\" md-items=\"item in vm.querySearch(vm.searchText)\" md-item-text=\"item\" placeholder=\"{{vm.placeholder}}\"><span md-highlight-text=\"vm.searchText\">{{item}}</span></md-autocomplete><md-chip-template><span><a ng-class=\"{\'truncate\':truncateInput}\" title=\"{{$chip}}\">{{$chip}}</a></span></md-chip-template></md-chips><v-accordion ng-hide=\"hideOptions\" class=\"vAccordion--default\" layout-align=\"start start\" layout-align-sm=\"center start\" control=\"accordion\"><v-pane><v-pane-header class=\"border-bottom\"><div>Opções</div></v-pane-header><v-pane-content><md-list><md-list-item class=\"filter-opt\" ng-repeat=\"chip in items track by $index\"><div class=\"md-list-item-text compact\"><a ng-class=\"{\'truncate\':truncateOptions}\" title=\"{{chip}}\" ng-click=\"vm.applyRole(chip,accordion)\"><i class=\"fa fa-gear\"></i> {{chip}}</a></div></md-list-item></md-list></v-pane-content></v-pane></v-accordion>");
 $templateCache.put("core/utils/directives/optOut/optOut.tpl.html","<div class=\"opt-out md-whiteframe-z1\" layout=\"column\"><img ng-if=\"itemImage\" ng-src=\"{{itemImage}}\"><md-button class=\"md-fab md-primary md-hue-1\" aria-label=\"{{putLabel}}\" ng-click=\"callAction($event)\"><md-tooltip ng-if=\"putLabel\">{{putLabel}}</md-tooltip><i class=\"fa fa-times\"></i></md-button><a class=\"md-primary\" href=\"{{itemLocation}}\"><h4 ng-if=\"itemTitle\" ng-bind=\"itemTitle | cut:true:18:\'..\'\"></h4><md-tooltip ng-if=\"itemTitleTooltip\">{{itemTitleTooltip}}</md-tooltip></a><p ng-bind-html=\"itemInfo\"></p></div>");
 $templateCache.put("core/utils/directives/toolbarAvatar/toolbarAvatar.tpl.html","<div class=\"toolbar-avatar\"><md-menu><md-button aria-label=\"Open phone interactions menu\" ng-click=\"$mdOpenMenu()\" class=\"logged-in-menu-button\" ng-class=\"{\'md-icon-button\': app.mdMedia(\'sm\')}\"><div layout=\"row\" layout-align=\"end center\" class=\"toolbar-login-info\"><div layout=\"column\" layout-align=\"center\" class=\"toolbar-login-content\" show-gt-sm=\"\" hide-sm=\"\"><span class=\"md-title\">{{firstName}}</span> <span class=\"md-caption\">{{email}}</span></div><div layout=\"row\" layout-align=\"center center\"><menu-avatar facebook=\"facebook\" md-menu-origin=\"\"></menu-avatar></div></div></md-button><md-menu-content width=\"4\"><md-menu-item ng-repeat=\"item in menu\"><md-button ng-href=\"{{item.href}}\"><md-icon md-font-icon=\"fa {{item.icon}}\" md-menu-align-target=\"\"></md-icon>{{item.title}}</md-button></md-menu-item><md-menu-divider></md-menu-divider><md-menu-item><md-button ng-click=\"vm.logout()\"><md-icon md-font-icon=\"fa fa-power-off\" md-menu-align-target=\"\"></md-icon>Sair</md-button></md-menu-item></md-menu-content></md-menu></div>");
 $templateCache.put("core/utils/directives/imageCutter/area/imageCutterArea.tpl.html","<div class=\"image-cutter\"><image-crop data-width=\"{{cutWidth}}\" data-height=\"{{cutHeight}}\" data-shape=\"{{cutShape}}\" data-step=\"cutStep\" data-result=\"cutResult\"></image-crop><div hide=\"\"><md-button class=\"refresh md-raised\" ng-click=\"reboot()\" aria-label=\"Recomeçar\"><i class=\"fa fa-refresh\"></i><md-tooltip>Recomeçar</md-tooltip></md-button><div class=\"progress\" ng-show=\"busy\"><md-progress-circular class=\"md-hue-2\" md-mode=\"indeterminate\"></md-progress-circular></div></div></div>");}]);

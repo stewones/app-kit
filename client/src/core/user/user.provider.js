@@ -12,7 +12,7 @@ angular.module('core.user').provider('$user',
          * @ngdoc object
          * @name core.user.$userProvider#_instance
          * @propertyOf core.user.$userProvider
-         * @description 
+         * @description
          * Instância de usuário armazenada pelo {@link core.user.service:$User serviço}
          **/
         this._instance = null;
@@ -20,7 +20,7 @@ angular.module('core.user').provider('$user',
          * @ngdoc object
          * @name core.user.$userProvider#_setting
          * @propertyOf core.user.$userProvider
-         * @description 
+         * @description
          * Armazena configurações
          **/
         this._setting = {};
@@ -28,18 +28,19 @@ angular.module('core.user').provider('$user',
          * @ngdoc function
          * @name core.user.$userProvider#$get
          * @propertyOf core.user.$userProvider
-         * @description 
+         * @description
          * getter que vira factory pelo angular para se tornar injetável em toda aplicação
          * @example
          * <pre>
-         * angular.module('myApp.module').controller('MyCtrl', function($user) {     
+         * angular.module('myApp.module').controller('MyCtrl', function($user) {
          *      console.log($user.setting.roleForCompany);
          *      //printa a regra para empresa
          * })
          * </pre>
          * @return {object} objeto correspondente a uma Factory
          **/
-        this.$get = this.get = /*@ngInject*/ function($User, $app, $auth, $page, $rootScope, $sessionStorage, $translate) {
+        this.$get = this.get = /*@ngInject*/ function($User, $app, $auth, $page, $rootScope, $sessionStorage, $translate, lodash) {
+            var _ = lodash;
             return {
                 instance: function(user) {
                     if (user) return this._instance = user;
@@ -119,7 +120,7 @@ angular.module('core.user').provider('$user',
                  * @ngdoc function
                  * @name core.user.$userProvider#destroy
                  * @methodOf core.user.$userProvider
-                 * @description 
+                 * @description
                  * Apagar instância do usuário
                  * @example
                  * <pre>
@@ -156,7 +157,7 @@ angular.module('core.user').provider('$user',
                  * @ngdoc function
                  * @name core.user.$userProvider#logout
                  * @methodOf core.user.$userProvider
-                 * @description 
+                 * @description
                  * Apagar instância do usuário e sair
                  **/
                 logout: function(alert, cb) {
@@ -186,8 +187,14 @@ angular.module('core.user').provider('$user',
                     }
                     return role;
                 },
-                getCompany: function() {
+                getCompany: function(id) {
                     return this.getCompanies()[0].company;
+                    //@todo make this works with id param
+                    //     if (!id)
+                    //     return this.getCompanies()[0].company;
+                    // else _.each(this.getCompanies(), function(item){
+                    //     if (item.)
+                    // })
                 }
             }
         }
