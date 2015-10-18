@@ -140,8 +140,30 @@ angular.module('core.page').provider('$page',
                 ogUrl: ogUrl,
                 ogImage: ogImage,
                 ogSection: ogSection,
-                ogTag: ogTag
+                ogTag: ogTag,
+                applySEO: applySEO
             }
+        }
+
+        function applySEO(setting) {
+            //
+            // SEO
+            //
+            this.title(setting.title);
+            this.description(setting.description);
+            this.keywords(setting.keywords);
+            this.icon(setting.icon);
+            //
+            // OPEN GRAPH
+            //
+            this.ogLocale(setting.ogLocale);
+            this.ogSiteName(setting.ogSiteName);
+            this.ogTitle(setting.ogTitle);
+            this.ogDescription(setting.ogDescription);
+            this.ogUrl(setting.ogUrl);
+            this.ogImage(setting.ogImage);
+            this.ogSection(setting.ogSection);
+            this.ogTag(setting.ogTag);
         }
         /**
          * @ngdoc function
