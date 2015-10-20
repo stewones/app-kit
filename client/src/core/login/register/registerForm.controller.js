@@ -6,13 +6,14 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
     function register(sign) {
         $page.load.init();
         var onSuccess = function(result) {
-            var msg = 'Olá ' + result.data.user.profile.firstName + ', você entrou para o ' + setting.name;
+            var msg = 'Olá ' + result.data.user.profile.firstName + ', você entrou para ' + setting.name;
             if ($login.config.signupWelcome) {
                 msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
             }
-            $page.load.done();
-            var userInstance = $user.instance();
-            if (typeof userInstance.init === 'function') $user.instance().init(result.data.user, true, msg, 10000);
+            $user.instantiate(result.data.user, true, msg, function() {
+                $rootScope.$emit('$LoginSuccess', result.data);
+                $page.load.done();
+            });
         }
         var onError = function(result) {
             $page.load.done();
