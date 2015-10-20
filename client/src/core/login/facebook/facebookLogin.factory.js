@@ -51,7 +51,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
             }
             var gender = '';
             gender = fbUser.gender && fbUser.gender === 'female' ? 'F' : gender;
-            $http.post(api.url + '/auth/facebook', {
+            $http.post(api.url + '/auth/facebook', angular.extend({
                 provider: 'facebook',
                 id: fbUser.id,
                 firstName: fbUser.first_name,
@@ -59,7 +59,7 @@ angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($root
                 email: fbUser.email,
                 gender: gender,
                 applicant: true
-            }).then(onSuccess, onFail);
+            }, $login.signupParams)).then(onSuccess, onFail);
         }
         var onFail = function() {}
         me().then(onSuccess, onFail);

@@ -18,12 +18,12 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
             $page.load.done();
             $mdToast.show($mdToast.simple().content(result.data && result.data.error ? result.data.error : 'error').position('bottom right').hideDelay(10000))
         }
-        $auth.signup({
+        $auth.signup(angular.extend({
             firstName: sign.firstName,
             lastName: sign.lastName,
             email: sign.email,
             password: sign.password,
             provider: 'local'
-        }).then(onSuccess, onError);
+        }, $login.signupParams)).then(onSuccess, onError);
     }
 })
