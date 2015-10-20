@@ -19,7 +19,6 @@
  * @param {var} cutResult resultado do corte (base64)
  * @param {var} cutStep passo atual do corte (1|2|3)
  **/
-
 angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function($mdDialog, $http, $rootScope) {
     return {
         scope: {
@@ -54,8 +53,7 @@ angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function($md
                         /**
                          * Enviar para o server
                          */
-                        if ($scope.cutOnModal)
-                            $scope.send()
+                        if ($scope.cutOnModal) $scope.send()
                     }
                 }
             })
@@ -73,7 +71,12 @@ angular.module('core.utils').directive('imageCutter', /*@ngInject*/ function($md
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     scope: $scope, // use parent scope in template
-                    preserveScope: true
+                    preserveScope: true,
+                    controller: /*@ngInject*/ function($scope, setting) {
+                        $scope.setting = function() {
+                            return setting;
+                        }
+                    }
                 });
             }
 
