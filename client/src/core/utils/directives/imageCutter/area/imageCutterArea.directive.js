@@ -32,7 +32,7 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
                     if (nv === 2) {
                         //add material classes and icon to "crop" button
                         $($elem).find('button:contains("Crop")')
-                            .addClass('md-raised md-primary md-button md-default-theme')
+                            .addClass('md-raised md-primary md-button')
                             .html('<span><i class="fa fa-crop"></i> ' + $scope.cutLabel + '<span>')
                             //coloca o bottao de reset ao lado do bottao de crop
                             .parent()

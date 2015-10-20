@@ -6,4 +6,23 @@
     <a ui-sref="app.home-secured">home secured</a>
     <hr />
     Company: {{app.user().current('company').name}}
+    <br />
+       <a
+                        class="image-cutter-wrapper"
+                        layout-padding
+                        image-cutter
+                        endpoint-url="{{vm.imageCutterEndpointUrl}}"
+                        endpoint-success="vm.imageCutterEndpointSuccess"
+                        endpoint-fail="vm.imageCutterEndpointFail"
+                        cut-on-modal="true"
+                        cut-on-modal-title="Alterar Banner"
+                        cut-width="930"
+                        cut-height="200"
+                        cut-shape="square"
+                        cut-label="Cortar">
+                        <div class="pic" ng-style="{'background-image': 'url('+prize.banner+')'}" class="md-whiteframe-z1" ng-if="prize.banner"></div>
+                        <div class="pic-caption md-caption" ng-if="!prize.banner">
+                            <i class="material-icons" style="font-size: 54px; margin-top: -10px; margin-left: -9px;">collections</i>
+                        </div>
+                        </a>
 </div>
