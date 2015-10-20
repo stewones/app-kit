@@ -11,6 +11,7 @@ angular.module('core.login').controller('RegisterFormCtrl', /*@ngInject*/ functi
                 msg = $login.config.signupWelcome.replace('@firstName', result.data.user.profile.firstName).replace('@appName', setting.name);
             }
             $user.instantiate(result.data.user, true, msg, function() {
+                $auth.setToken(response.data.token);
                 $rootScope.$emit('$LoginSuccess', result.data);
                 $page.load.done();
             });
