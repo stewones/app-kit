@@ -6,7 +6,7 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
         scope: true,
         link: function(scope, element, attrs) {
             var e = element[0];
-            var num, refreshInterval, duration, steps, step, countTo, value, increment, currency = parseInt(attrs.currency) || false;
+            var num, refreshInterval, duration, steps, step, countTo, value, increment, currency;
             var calculate = function() {
                 refreshInterval = 30;
                 step = 0;
@@ -16,7 +16,8 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
                 duration = (parseFloat(attrs.duration) * 1000) || 0;
                 steps = Math.ceil(duration / refreshInterval);
                 increment = ((countTo - scope.value) / steps);
-                num = scope.value;                
+                num = scope.value;   
+                currency = attrs.currency;         
             }
             var tick = function() {
                 scope.timoutId = $timeout(function() {
