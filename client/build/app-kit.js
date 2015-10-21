@@ -3074,6 +3074,17 @@ angular.module('core.utils').directive('addrForm', /*@ngInject*/ function() {
     }
 })
 'use strict';
+angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
+    return {
+        restrict: 'EA',
+        link: /*@ngInject*/ function($scope) {
+            $timeout(function() {
+                $scope.$emit('reset');
+            }, 5000)
+        }
+    }
+});
+'use strict';
 angular.module('core.utils').controller('CeperCtrl', /*@ngInject*/ function($scope, $http, $page) {
     var vm = this;
     vm.busy = false;
@@ -3137,17 +3148,6 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         controllerAs: 'vm',
         templateUrl: function(elem, attr) {
             return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/ceper/ceper.tpl.html';
-        }
-    }
-});
-'use strict';
-angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
-    return {
-        restrict: 'EA',
-        link: /*@ngInject*/ function($scope) {
-            $timeout(function() {
-                $scope.$emit('reset');
-            }, 5000)
         }
     }
 });
@@ -3289,7 +3289,7 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
         scope: true,
         link: function(scope, element, attrs) {
             var e = element[0];
-            var num, refreshInterval, duration, steps, step, countTo, value, increment;
+            var num, refreshInterval, duration, steps, step, countTo, value, increment, currency = parseInt(attrs.currency) || false;
             var calculate = function() {
                 refreshInterval = 30;
                 step = 0;
@@ -3299,8 +3299,7 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
                 duration = (parseFloat(attrs.duration) * 1000) || 0;
                 steps = Math.ceil(duration / refreshInterval);
                 increment = ((countTo - scope.value) / steps);
-                num = scope.value;
-                currency = parseInt(attrs.currency) || false;
+                num = scope.value;                
             }
             var tick = function() {
                 scope.timoutId = $timeout(function() {
