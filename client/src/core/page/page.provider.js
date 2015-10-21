@@ -160,7 +160,7 @@ angular.module('core.page').provider('$page',
             this.ogSiteName(setting.ogSiteName);
             this.ogTitle(setting.ogTitle);
             this.ogDescription(setting.ogDescription);
-            this.ogUrl(setting.ogUrl);
+            this.ogUrl(setting.ogUrl.replace('https://', 'http://')); //because https fails ?
             this.ogImage(setting.ogImage);
             this.ogSection(setting.ogSection);
             this.ogTag(setting.ogTag);
