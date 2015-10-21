@@ -2997,17 +2997,6 @@ angular.module('core.page').directive('toolbarTitle', /*@ngInject*/ function($ap
     }
 });
 'use strict';
-angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
-    return {
-        restrict: 'EA',
-        link: /*@ngInject*/ function($scope) {
-            $timeout(function() {
-                $scope.$emit('reset');
-            }, 5000)
-        }
-    }
-});
-'use strict';
 /**
  * @ngdoc object
  * @name core.utils.controller:AddrFormCtrl
@@ -3152,6 +3141,17 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
     }
 });
 'use strict';
+angular.module('core.utils').directive('angularChartsEvent', /*@ngInject*/ function($timeout) {
+    return {
+        restrict: 'EA',
+        link: /*@ngInject*/ function($scope) {
+            $timeout(function() {
+                $scope.$emit('reset');
+            }, 5000)
+        }
+    }
+});
+'use strict';
 angular.module('core.utils').controller('CompanyChooserCtrl', /*@ngInject*/ function($rootScope, $scope, $user, $auth, lodash) {
     var vm = this,
         _ = lodash;
@@ -3283,7 +3283,7 @@ angular.module('core.utils').directive('contactForm', /*@ngInject*/ function() {
 })
 'use strict';
 //https://github.com/sparkalow/angular-count-to
-angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
+angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout, $filter) {
     return {
         replace: false,
         scope: true,
@@ -3300,6 +3300,7 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
                 steps = Math.ceil(duration / refreshInterval);
                 increment = ((countTo - scope.value) / steps);
                 num = scope.value;
+                currency = parseInt(attrs.currency) || false;
             }
             var tick = function() {
                 scope.timoutId = $timeout(function() {
@@ -3308,7 +3309,8 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
                     if (step >= steps) {
                         $timeout.cancel(scope.timoutId);
                         num = countTo;
-                        e.textContent = countTo;
+                        if (!currency) e.textContent = countTo;
+                        else e.textContent = $filter('currency')(countTo);
                     } else {
                         e.textContent = Math.round(num);
                         tick();

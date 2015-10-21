@@ -1,6 +1,6 @@
 'use strict';
 //https://github.com/sparkalow/angular-count-to
-angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout) {
+angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeout, $filter) {
     return {
         replace: false,
         scope: true,
@@ -17,6 +17,7 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
                 steps = Math.ceil(duration / refreshInterval);
                 increment = ((countTo - scope.value) / steps);
                 num = scope.value;
+                currency = parseInt(attrs.currency) || false;
             }
             var tick = function() {
                 scope.timoutId = $timeout(function() {
@@ -25,7 +26,8 @@ angular.module('core.utils').directive('countTo', /*@ngInject*/ function($timeou
                     if (step >= steps) {
                         $timeout.cancel(scope.timoutId);
                         num = countTo;
-                        e.textContent = countTo;
+                        if (!currency) e.textContent = countTo;
+                        else e.textContent = $filter('currency')(countTo);
                     } else {
                         e.textContent = Math.round(num);
                         tick();
