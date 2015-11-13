@@ -20,7 +20,7 @@
     "satellizer": "~0.12.5",
     "angular-input-match": "~0.0.2",
     "angular-directive.g-signin": "*",
-    "angular-facebook": "~0.2.3",
+    "angular-facebook": "stewones/angular-facebook#master",
     "angular-truncate": "*",
     "angular-ui-router-anim-in-out": "~0.0.13",
     "v-accordion": "~1.2.3",
