@@ -10,7 +10,7 @@
  * @param {object} address model que representa os campos de endereço (street, district, city, state)
  * @param {string} endpointUrl endereço do server que deverá responder o json no formato esperado
  **/
-angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
+angular.module('core.utils').directive('ceper', /*@ngInject*/ function($rootScope) {
     return {
         scope: {
             ngModel: '=',
@@ -24,6 +24,11 @@ angular.module('core.utils').directive('ceper', /*@ngInject*/ function() {
         controllerAs: 'vm',
         templateUrl: function(elem, attr) {
             return attr.templateUrl ? attr.templateUrl : 'core/utils/directives/ceper/ceper.tpl.html';
+        },
+        link: function(scope, elem, attr) {
+            $rootScope.$on('CeperFocus', function(){ 
+               elem.find('input').focus();
+            })
         }
     }
 });
