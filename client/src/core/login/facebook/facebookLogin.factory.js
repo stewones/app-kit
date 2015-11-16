@@ -1,18 +1,10 @@
 'use strict';
-angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($rootScope, $auth, $mdToast, $http, Face, Facebook, $user, $page, $login, api, setting) {
+angular.module('facebook.login').factory('fbLogin', /*@ngInject*/ function($rootScope, $auth, $mdToast, $http, Facebook, $user, $page, $login, api, setting) {
     return {
         go: go
     }
 
     function go(cbSuccess, cbFail) {
-        Face.init({
-            appId: setting.store.facebook.appId,
-            status: true,
-            cookie: true,
-            xfbml: true,
-            version: 'v2.3',
-            locale: 'pt_BR'
-        });
         $page.load.init();
         Facebook.getLoginStatus(function(response) {
             if (response.status === 'connected') {
