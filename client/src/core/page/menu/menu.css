@@ -16,32 +16,32 @@ menu-toggle div {
 .menu-toggle-list.ng-hide {
     max-height: 0;
 }
-.app-menu .menu-toggle-list a.md-button {
+.appkit-menu .menu-toggle-list a.md-button {
     display: block;
     padding: 0 16px 0 42px;
     text-transform: none;
     font-size: 14px;
 }
-.app-menu li.parentActive, .app-menu li.parentActive .menu-toggle-list {
+.appkit-menu li.parentActive, .appkit-menu li.parentActive .menu-toggle-list {
 
     /*  background-color: rgba(255, 215, 150, 0.1);*/
 }
-.app-menu, .app-menu ul {
+.appkit-menu, .appkit-menu ul {
     margin-top: 0;
     list-style: none;
     padding: 0;
     background-color: transparent;
 }
-.app-menu li {
+.appkit-menu li {
     margin: 0;
 }
-.app-menu > li {
+.appkit-menu > li {
     border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
-.app-menu > li:first-child {
+.appkit-menu > li:first-child {
     border-top: 0px;
 }
-.app-menu .md-button {
+.appkit-menu .md-button {
     border-radius: 0;
     color: inherit;
     cursor: pointer;
@@ -56,23 +56,23 @@ menu-toggle div {
     white-space: normal;
     width: 100%;
 }
-.app-menu a.md-button {
+.appkit-menu a.md-button {
     display: block;
 }
-.app-menu .md-button:hover {
+.appkit-menu .md-button:hover {
 
     /*    background-color: rgba(255, 215, 150, 0.5) !important;*/
 }
 
-/*.app-menu button.md-button-moz-focus-inner {
+/*.appkit-menu button.md-button-moz-focus-inner {
   padding: 0;
 }*/
-.app-menu .md-button {
+.appkit-menu .md-button {
     text-transform: none;
 }
-.app-menu .md-button.active {
+.appkit-menu .md-button.active {
 }
-.app-menu .title {
+.appkit-menu .title {
     text-transform: capitalize;
 }
 md-option {

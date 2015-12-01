@@ -1,6 +1,6 @@
 <md-button class="md-button-toggle"
 ng-click="toggle()"
-aria-controls="app-menu-{{section.name | nospace}}"
+aria-controls="appkit-menu-{{section.name | nospace}}"
 flex layout="row"
 aria-expanded="{{isOpen()}}">
 <i  ng-if="section.icon" class="{{section.icon}}"></i>
@@ -11,7 +11,7 @@ aria-expanded="{{isOpen()}}">
 ng-class="{'toggled' : isOpen()}">
 </span>
 </md-button>
-<ul ng-show="isOpen()" id="app-menu-{{section.name | nospace}}" class="menu-toggle-list">
+<ul ng-show="isOpen()" id="appkit-menu-{{section.name | nospace}}" class="menu-toggle-list">
     <li ng-repeat="page in section.pages">
         <div layout="row">
             <menu-link section="page" flex></menu-link>

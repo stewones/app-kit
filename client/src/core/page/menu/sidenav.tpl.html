@@ -6,7 +6,7 @@
     facebook="app.user.facebook">
     </menu-avatar>
     <div flex>
-        <ul class="app-menu">
+        <ul class="appkit-menu">
             <li ng-repeat="section in app.menu().sections" class="parent-list-item" ng-class="{'parentActive' : app.menu().isSectionSelected(section)}">
                 <h2 class="menu-heading" ng-if="section.type === 'heading'" id="heading_{{ section.name | nospace }}" layout="row">
                 <i  ng-if="section.icon" class="{{section.icon}}"></i>
