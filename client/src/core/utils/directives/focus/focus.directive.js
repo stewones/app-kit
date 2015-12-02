@@ -7,15 +7,14 @@ angular.module('core.utils').directive('focus', /*@ngInject*/ function() {
         },
         restrict: 'A',
         link: function(scope, elem) {
+            elem.focus();
             scope.$watch('focusWhen', function(nv, ov) {
-                if (nv != ov) {
-                    if (nv) {
-                        elem.focus();
-                    }
+                if (nv && nv != ov) {
+                    elem.focus();
                 }
             });
-            if (scope.focus)
-                elem.focus();
+            // if (scope.focus)
+            //     elem.focus();
         }
     }
 })
