@@ -15,7 +15,7 @@ ng-class="{'toggled' : isOpen()}">
     <li ng-repeat="page in section.pages">
         <div layout="row">
             <menu-link section="page" flex></menu-link>
-            <md-button flex="25" ng-click="cart.add(page._)" aria-label="adicione {{page.name}} ao carrinho" title="adicione {{page.name}} ao carrinho" ng-if="section.product"><i class="fa fa-cart-plus"></i></md-button>
+            <md-button ng-click="cart.add(page._)" aria-label="adicione {{page.name}} ao carrinho" title="adicione {{page.name}} ao carrinho" ng-if="section.product"><i class="fa fa-cart-plus"></i></md-button>
         </div>
     </li>
 </ul>

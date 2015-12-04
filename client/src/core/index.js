@@ -11,7 +11,6 @@ angular.module('app.kit', [
 	//
     'ngMaterial',
     'ngAnimate',
-    'ngTouch',
     'ngSanitize',
     'ngStorage',
     'angulartics',
