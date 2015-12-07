@@ -54,7 +54,7 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
                          * Enviar para o server
                          */
 
-                        if (!$scope.cutOnModal || $scope.cutOnModal == 'false')
+                        //if (!$scope.cutOnModal || $scope.cutOnModal == 'false')
                             $scope.send();
                     }
 
