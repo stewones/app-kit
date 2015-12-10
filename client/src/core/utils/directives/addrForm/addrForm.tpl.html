@@ -1,5 +1,5 @@
 <form name="handleForm" class="addr-form">
-    <div layout="row" layout-sm="column">
+    <div layout="column" layout-gt-sm="row">
         <ceper template-url="core/utils/directives/addrForm/ceper.tpl.html" endpoint-url="{{vm.endpointCepUrl}}" ng-model="ngModel.cep" address="ngModel"></ceper>
         <md-input-container flex>
             <label>Endereço</label>
@@ -7,7 +7,7 @@
         </md-input-container>
 
     </div>
-    <div layout="row" layout-sm="column">
+    <div layout="column" layout-gt-sm="row">
         <md-input-container flex>
             <label>Número</label>
             <input type="number" ng-model="ngModel.num">
@@ -21,7 +21,7 @@
             <input ng-model="ngModel.comp" md-maxlength="50">
         </md-input-container>
     </div>
-    <div layout="row" layout-sm="column">
+    <div layout="column" layout-gt-sm="row">
         <md-input-container flex>
             <label>Cidade</label>
             <input ng-model="ngModel.city" required>
