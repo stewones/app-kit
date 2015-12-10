@@ -1,6 +1,6 @@
 <form name="handleForm" class="addr-form">
     <div layout="row" layout-sm="column">
-        <ceper endpoint-url="{{vm.endpointCepUrl}}" ng-model="ngModel.cep" address="ngModel"></ceper>
+        <ceper template-url="core/utils/directives/addrForm/ceper.tpl.html" endpoint-url="{{vm.endpointCepUrl}}" ng-model="ngModel.cep" address="ngModel"></ceper>
         <md-input-container flex>
             <label>Endereço</label>
             <input ng-model="ngModel.street" required>
