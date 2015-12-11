@@ -3,9 +3,10 @@
 angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
     var vm = this;
     return {
-        isImg: isImg,      
+        isImg: isImg,
         brStates: brStates,
-        age: age
+        age: age,
+        stripHtmlTags: stripHtmlTags
     }
 
     function isImg(src) {
@@ -108,5 +109,9 @@ angular.module('core.utils').factory('$utils', /*@ngInject*/ function($q) {
             value: "TO",
             name: "Tocantins"
         }];
+    }
+
+    function stripHtmlTags(string) {
+        return string.replace(/(<([^>]+)>)/ig, "");
     }
 })
