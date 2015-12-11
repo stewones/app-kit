@@ -123,7 +123,7 @@ angular.module('core.page').provider('$page',
          * </pre>
          * @return {object} Retorna um objeto contendo valores das propriedades.
          **/
-        this.$get = this.get = /*@ngInject*/ function($mdToast) {
+        this.$get = this.get = /*@ngInject*/ function($mdToast, $utils) {
             return {
                 config: this._config,
                 load: load(),
@@ -143,27 +143,28 @@ angular.module('core.page').provider('$page',
                 ogTag: ogTag,
                 applySEO: applySEO
             }
-        }
 
-        function applySEO(setting) {
-            //
-            // SEO
-            //
-            this.title(setting.title);
-            this.description(setting.description);
-            this.keywords(setting.keywords);
-            this.icon(setting.icon);
-            //
-            // OPEN GRAPH
-            //
-            this.ogLocale(setting.ogLocale);
-            this.ogSiteName(setting.ogSiteName);
-            this.ogTitle(setting.ogTitle);
-            this.ogDescription(setting.ogDescription);
-            this.ogUrl(setting.ogUrl.replace('https://', 'http://')); //because https fails ?
-            this.ogImage(setting.ogImage);
-            this.ogSection(setting.ogSection);
-            this.ogTag(setting.ogTag);
+            function applySEO(setting) {
+                if (!setting) var setting = {};
+                //
+                // SEO
+                //
+                this.title(setting.title);
+                this.description($utils.stripHtmlTags(setting.description));
+                this.keywords(setting.keywords);
+                this.icon(setting.icon);
+                //
+                // OPEN GRAPH
+                //
+                this.ogLocale(setting.ogLocale);
+                this.ogSiteName(setting.ogSiteName);
+                this.ogTitle(setting.ogTitle);
+                this.ogDescription($utils.stripHtmlTags(setting.ogDescription));
+                this.ogUrl(setting.ogUrl.replace('https://', 'http://')); //because https fails ?
+                this.ogImage(setting.ogImage);
+                this.ogSection(setting.ogSection);
+                this.ogTag(setting.ogTag);
+            }
         }
         /**
          * @ngdoc function
