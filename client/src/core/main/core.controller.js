@@ -63,21 +63,22 @@ angular.module('core.app').controller('$AppCtrl', /*@ngInject*/ function(setting
             bootstrap();
         }
     });
-    $rootScope.$on('$Unauthorized', function(ev, status) {
-        //
-        // Persists current location to execute redirection after login
-        // - Only if server status is 401
-        //
-        if (status === 401) {
-            $app.storage('session').set({
-                locationRedirect: $location.url()
-            });
-        }
-        $rootScope.$Unauthorized = true;
-        $user.destroy(function() {
-            return window.location.href = '/login/lost/session/';
-        });
-    });
+    //@deprecated - moved to app consumer to more flexibility
+    // $rootScope.$on('$Unauthorized', function(ev, status) {
+    //     //
+    //     // Persists current location to execute redirection after login
+    //     // - Only if server status is 401
+    //     //
+    //     if (status === 401) {
+    //         $app.storage('session').set({
+    //             locationRedirect: $location.url()
+    //         });
+    //     }
+    //     $rootScope.$Unauthorized = true;
+    //     $user.destroy(function() {
+    //         return window.location.href = '/login/lost/session/';
+    //     });
+    // });
     //
     // When user in...
     //
