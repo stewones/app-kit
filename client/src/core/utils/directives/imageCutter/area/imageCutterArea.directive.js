@@ -31,15 +31,9 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
                      */
                     if (nv === 2) {
                         //add material classes and icon to "crop" button
-                        $($elem).find('button:contains("Crop")')
-                            .addClass('md-raised md-primary md-button')
-                            .html('<span><i class="fa fa-crop"></i> ' + $scope.cutLabel + '<span>')
+                        $($elem).find('button:contains("Crop")').addClass('md-raised md-primary md-button').html('<span><i class="fa fa-crop"></i> ' + $scope.cutLabel + '<span>')
                             //coloca o bottao de reset ao lado do bottao de crop
-                            .parent()
-                            .append($($elem).find('button.refresh').removeAttr('ng-transclude'))
-                            .parent()
-                            .prepend($($elem).find('div.progress'));
-
+                            .parent().append($($elem).find('button.refresh').removeAttr('ng-transclude')).parent().prepend($($elem).find('div.progress'));
                         // var interval = setInterval(function() {
                         //     $scope.$apply(function() {
                         //         clearInterval(interval);
@@ -53,22 +47,16 @@ angular.module('core.utils').directive('imageCutterArea', /*@ngInject*/ function
                         /**
                          * Enviar para o server
                          */
-
-                        //if (!$scope.cutOnModal || $scope.cutOnModal == 'false')
-                            $scope.send();
+                        if (!$scope.cutOnModal || $scope.cutOnModal == 'false') $scope.send();
                     }
-
-
                 }
             })
             $rootScope.$on('ImageCutterToggleOpacity', function() {
                 toggleOpacity();
             })
-
             $rootScope.$on('ImageCutterReboot', function() {
                 reboot();
             })
-
             $rootScope.$on('ImageCutterToggleBusy', function() {
                 toggleBusy();
             })
