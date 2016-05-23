@@ -1,16 +1,16 @@
 {
-    "name": "app-kit",
-    "version": "1.1.0",
+    "name": "slush-appkit",
+    "version": "1.2.0",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/stewones/app-kit.git"
+        "url": "git+https://github.com/stewones/slush-appkit.git"
     },
-    "author": "ES Grupo",
-    "license": "ISC",
+    "author": "Stewan Pacheco",
+    "license": "MIT",
     "bugs": {
-        "url": "https://github.com/stewones/app-kit/issues"
+        "url": "https://github.com/stewones/slush-appkit/issues"
     },
-    "homepage": "https://github.com/stewones/app-kit#readme",
+    "homepage": "https://github.com/stewones/slush-appkit#readme",
     "main": "./index.js",
     "dependencies": {
         "body-parser": "^1.12.4",
@@ -18,6 +18,7 @@
         "express": "^4.12.4"
     },
     "devDependencies": {
+        "inquirer": "~0.5.1",
         "browser-sync": "~2.7.6",
         "browser-sync-spa": "~1.0.2",
         "chalk": "~0.5.1",
@@ -25,6 +26,10 @@
         "del": "~1.2.0",
         "expect.js": "^0.3.1",
         "gulp": "^3.9.0",
+        "underscore.string": "~2.3.3",
+        "gulp-conflict": "~0.2.0",
+        "gulp-install": "~0.2.0",
+        "gulp-template": "~0.1.1",
         "gulp-angular-constant": "^0.3.0",
         "gulp-angular-filesort": "~1.0.4",
         "gulp-angular-templatecache": "~1.6.0",
@@ -77,8 +82,13 @@
         "node": ">=0.10.0"
     },
     "scripts": {
-        "start": "node docs-server.js",
+        "start": "",
+        "slush": "slush",
         "test": "gulp test"
     },
-    "keywords": []
+    "keywords": [
+        "slushgenerator",
+        "angular",
+        "node"
+    ]
 }
