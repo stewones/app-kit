@@ -9,11 +9,11 @@ var _ = require('lodash'),
 
 gulp.task('default', function (done) {
     inquirer.prompt([
-        { type: 'input', name: 'name', message: 'Give your app a name. Default is `appkit`', default: gulp.args.join('appkit') }, // Get app name from arguments by default
-        { type: 'input', name: 'version', message: 'Give version for your app. default is `0.0.1`', default: gulp.args.join('0.0.1') },
-        { type: 'input', name: 'authorName', message: 'Give an author name for your app. default is `bot`', default: gulp.args.join('bot') },
-        { type: 'input', name: 'authorEmail', message: 'Give an author email for your app. default is `hello@world.com`', default: gulp.args.join('hello@world.com') },
-        { type: 'input', name: 'license', message: 'Give a license for your app. default is `MIT`', default: gulp.args.join('MIT') },
+        { type: 'input', name: 'name', message: 'Give your app a name:', default: 'appkit' }, // Get app name from arguments by default
+        { type: 'input', name: 'version', message: 'Give version for your app:', default:'0.0.1' },
+        { type: 'input', name: 'authorName', message: 'Give an author name for your app:', default: 'bot' },
+        { type: 'input', name: 'authorEmail', message: 'Give an author email for your app:', default: 'hello@world.com' },
+        { type: 'input', name: 'license', message: 'Give a license for your app:', default: 'MIT' },
         { type: 'confirm', name: 'moveon', message: 'Continue?' }
     ],
         function (answers) {
@@ -21,11 +21,11 @@ gulp.task('default', function (done) {
                 return done();
             }
             answers.nameDashed = _.kebabCase(answers.name);
-            var inject = [__dirname + '/template/client/**', '!' + __dirname + '/template/client/build/**'];
+            var inject = [__dirname + '/template/angular/app/**', '!' + __dirname + '/template/angular/app/build/**'];
             gulp.src(inject) // Note use of __dirname to be relative to generator
                 .pipe(template(answers))                 // Lodash template support
-                .pipe(conflict('./client'))                    // Confirms overwrites on file conflicts
-                .pipe(gulp.dest('./client'))                   // Without __dirname here = relative to cwd
+                .pipe(conflict('./'))                    // Confirms overwrites on file conflicts
+                .pipe(gulp.dest('./'))                   // Without __dirname here = relative to cwd
                 .pipe(install())                         // Run `bower install` and/or `npm install` if necessary
                 .on('end', function () {
                     done();                              // Finished!
