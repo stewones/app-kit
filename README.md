@@ -3,4 +3,4 @@ Project scaffold for MEAN applications.
 
 <img src="https://app-kit-assets.s3.amazonaws.com/mean-stack.png" width="450">
 
-## Moved to [apper](https://github.com/stewones/apper)
+## Moved to [Appfy](https://github.com/appfy)
